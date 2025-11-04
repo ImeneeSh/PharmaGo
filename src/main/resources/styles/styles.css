@@ -1,0 +1,216 @@
+.root {
+    -color-principal: #6E8268;
+    -color-sombre: #001910;
+    -color-arriere-plan: #F0F0F0;
+    -color-blanc: #FFFFFF;
+    -fx-font-family: "Open Sans", "Segoe UI", sans-serif;
+}
+
+.scroll-pane {
+    -fx-background-color: -color-arriere-plan;
+}
+
+.scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+.titre-section {
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-fill: -color-principal;
+    -fx-padding: 50px 0 20px 0;
+}
+
+.nav-bar {
+    -fx-background-color: transparent;
+    -fx-padding: 10px 100px 10px 100px;
+    -fx-alignment: CENTER_RIGHT;
+}
+
+.nav-item {
+    -fx-font-size: 18px;
+    -fx-font-family: "Open Sans", "Segoe UI", sans-serif;
+    -fx-text-fill: #001910;
+    -fx-cursor: hand;
+    -fx-font-weight: bold;
+    -fx-translate-y: 0;
+    -fx-underline: false;
+}
+
+.hyperlink:focused {
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.nav-item:hover {
+    -fx-text-fill: #6E8268;
+}
+
+.nav-bar ImageView {
+    -fx-translate-y: 0;
+}
+
+.nav-bar .label:hover {
+    -fx-text-fill: #6E8268;
+}
+
+.bouton-principal {
+    -fx-background-color: #6E8268;
+    -fx-text-fill: white;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-font-family: "Open Sans", sans-serif;
+    -fx-padding: 10px 30px 10px 30px;
+    -fx-background-radius: 10px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 8, 0, 0, 3);
+    -fx-content-display: left;
+    -fx-graphic-text-gap: 10px;
+}
+
+.bouton-principal:hover {
+    -fx-background-color: #5c6e57;
+}
+
+/* SECTION FONCTIONNALITES */
+
+.carte-fonctionnalite {
+    -fx-pref-width: 460px;
+    -fx-pref-height: 200px;
+    -fx-padding: 30px 40px;
+    -fx-alignment: CENTER_LEFT;
+    -fx-spacing: 15px;
+    -fx-background-color: #F3F4F3;
+    -fx-background-radius: 20px;
+    -fx-border-radius: 20px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.07), 10, 0, 0, 6);
+}
+
+
+.carte-fonctionnalite.visible {
+    -fx-opacity: 1;
+    -fx-translate-y: 0;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 12, 0, 0, 6);
+}
+
+.carte-fonctionnalite:hover {
+    -fx-background-color: #E9ECE9;
+    -fx-effect: dropshadow(gaussian, rgba(110,130,104,0.3), 14, 0, 0, 6);
+    -fx-scale-x: 1.03;
+    -fx-scale-y: 1.03;
+    -fx-cursor: hand;
+}
+
+.carte-fonctionnalite .label-titre {
+    -fx-font-weight: bold;
+    -fx-font-size: 18px;
+    -fx-text-fill: #001910;
+}
+
+.carte-fonctionnalite .label-description {
+    -fx-font-size: 14px;
+    -fx-text-fill: #333333;
+    -fx-wrap-text: true;
+}
+
+
+.bouton-aide-principal {
+    -fx-background-color: -color-principal;
+}
+.bouton-aide-secondaire {
+    -fx-background-color: -color-blanc;
+    -fx-border-color: #CCCCCC;
+    -fx-border-width: 1px;
+    -fx-text-fill: -color-sombre;
+}
+.bouton-aide-principal, .bouton-aide-secondaire {
+    -fx-font-size: 16px;
+    -fx-padding: 10px 20px;
+    -fx-background-radius: 5px;
+    -fx-cursor: hand;
+}
+
+.footer {
+    -fx-background-color: -color-arriere-plan;
+    -fx-padding: 20px 0;
+    -fx-alignment: CENTER;
+}
+.footer .label {
+    -fx-font-size: 14px;
+    -fx-fill: -color-principal;
+}
+
+
+StackPane {
+    -fx-background-color: transparent;
+}
+
+StackPane .label {
+    -fx-font-family: "Open Sans", "Segoe UI", sans-serif;
+}
+
+.bouton-principal {
+    -fx-padding: 12px 50px;
+}
+
+.section-accueil {
+    -fx-background-image: url("/assets/pharmago.png");
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: 100% 650px;
+    -fx-background-position: top center;
+    -fx-background-color: white;
+    -fx-pref-height: 650px;
+    -fx-padding: 0 0 80px 0;
+}
+
+/* SECTION À PROPOS */
+.section-apropos {
+    -fx-background-color: #F4F6F3;
+    -fx-padding: 80px 120px;
+    -fx-alignment: CENTER;
+}
+
+.texte-apropos {
+    -fx-font-size: 16px;
+    -fx-fill: #6E8268;
+    -fx-text-alignment: center;
+    -fx-wrap-text: true;
+}
+
+/* SECTION BESOIN D’AIDE */
+.section-aide {
+    -fx-background-color: #E8EBE7;
+    -fx-padding: 80px 120px;
+    -fx-alignment: CENTER;
+}
+
+.bouton-aide-principal {
+    -fx-background-color: #6E8268;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 15px;
+    -fx-background-radius: 8px;
+    -fx-padding: 10px 25px;
+}
+
+.bouton-aide-secondaire {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CCCCCC;
+    -fx-text-fill: #333333;
+    -fx-font-size: 15px;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-padding: 10px 25px;
+}
+
+.bouton-aide-principal:hover {
+    -fx-background-color: #5b6e57;
+}
+
+.bouton-aide-secondaire:hover {
+    -fx-border-color: #6E8268;
+    -fx-text-fill: #6E8268;
+}
+
+

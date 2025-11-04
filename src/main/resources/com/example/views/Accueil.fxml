@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- ce fichier décrit l’interface graphique principale de la page d’accueil -->
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+
+<!-- CONTENEUR PRINCIPALE-->
+<ScrollPane fx:id="scrollPane" fitToWidth="true" fitToHeight="true" hbarPolicy="NEVER" vbarPolicy="NEVER"
+            styleClass="scroll-pane"
+            xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.controllers.AccueilController">
+
+    <!-- les VBOX empilent les éléments verticalement les uns sous les autres -->
+    <VBox alignment="TOP_CENTER" styleClass="section-accueil">
+
+        <!-- BARRE DE NAVIGATION-->
+        <HBox styleClass="nav-bar" alignment="CENTER_RIGHT" spacing="50">
+            <Hyperlink text="Fonctionnalités" fx:id="linkFonctionnalites" styleClass="nav-item" />
+            <Hyperlink text="A propos" fx:id="linkApropos" styleClass="nav-item" />
+            <Hyperlink text="Aide" fx:id="linkAide" styleClass="nav-item" />
+
+            <ImageView fitHeight="100" preserveRatio="true">
+                <Image url="/assets/logo.png"/>
+            </ImageView>
+        </HBox>
+
+        <!-- permet de super poser plusieurs éléments comme ici on a mis l'image sous le texte ext..-->
+        <StackPane prefHeight="550" maxWidth="Infinity" style="-fx-background-color: transparent;">
+            <VBox alignment="CENTER_LEFT" spacing="20" style="-fx-padding: 100 0 0 120px;">
+                <Label text="Simplifiez vos" style="-fx-font-size: 52px; -fx-font-weight: bold; -fx-text-fill: #001910;" />
+                <Label text="livraisons" style="-fx-font-size: 52px; -fx-font-weight: bold; -fx-text-fill: #001910;" />
+                <Label text="pharmaceutiques" style="-fx-font-size: 52px; -fx-font-weight: bold; -fx-text-fill: #001910;" />
+                <Button text="Commencer" styleClass="bouton-principal" fx:id="boutonCommencer">
+                    <graphic>
+                        <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
+                            <Image url="/assets/livraison.png"/>
+                        </ImageView>
+                    </graphic>
+                </Button>
+            </VBox>
+        </StackPane>
+
+
+        <!-- SECTION FONCTIONNALITES-->
+        <VBox  fx:id="sectionFonctionnalites" alignment="TOP_CENTER" spacing="50" style="-fx-padding: 190px 0 50px 0;" maxWidth="900">
+        <Text text="Fonctionnalités principales" styleClass="titre-section" />
+
+            <GridPane fx:id="gridPane" hgap="60" vgap="60" alignment="CENTER">
+
+            <VBox styleClass="carte-fonctionnalite" GridPane.rowIndex="0" GridPane.columnIndex="0">
+                <ImageView fitHeight="30" fitWidth="30" preserveRatio="true">
+                    <Image url="/assets/liste-des-utilisateurs.png"/>
+                </ImageView>
+                    <Label text="Gestion des clients" styleClass="label-titre" />
+                    <Text text="Gérez facilement votre base de clients avec toutes leurs informations" styleClass="label-description" wrappingWidth="380" />
+                </VBox>
+
+                <VBox styleClass="carte-fonctionnalite" GridPane.rowIndex="0" GridPane.columnIndex="1">
+                    <ImageView fitHeight="30" fitWidth="30" preserveRatio="true">
+                        <Image url="/assets/medicament-medicamenteux.png"/>
+                    </ImageView>
+                    <Label text="Suivi des médicaments" styleClass="label-titre" />
+                    <Text text="Suivez vos stocks avec alertes de péremption automatiques" styleClass="label-description" wrappingWidth="380"/>
+                </VBox>
+
+                <VBox styleClass="carte-fonctionnalite" GridPane.rowIndex="1" GridPane.columnIndex="0">
+                    <ImageView fitHeight="30" fitWidth="30" preserveRatio="true">
+                        <Image url="/assets/livraison (1).png"/>
+                    </ImageView>
+                    <Label text="Livraisons intelligentes" styleClass="label-titre" />
+                    <Text text="Organisez vos livraisons par type et priorité" styleClass="label-description" wrappingWidth="380"/>
+                </VBox>
+
+                <VBox styleClass="carte-fonctionnalite" GridPane.rowIndex="1" GridPane.columnIndex="1">
+                    <ImageView fitHeight="30" fitWidth="30" preserveRatio="true">
+                        <Image url="/assets/securite.png"/>
+                    </ImageView>
+                    <Label text="Traçabilité complète" styleClass="label-titre" />
+                    <Text text="QR codes et tickets pour chaque livraison" styleClass="label-description" wrappingWidth="380"/>
+                </VBox>
+            </GridPane>
+        </VBox>
+
+        <!-- SECTION À PROPOS -->
+        <VBox fx:id="sectionApropos" alignment="TOP_CENTER" spacing="20" styleClass="section-apropos">
+            <Text text="À propos de PharmaGo" styleClass="titre-section" />
+            <Text wrappingWidth="800" textAlignment="CENTER" styleClass="texte-apropos">
+                PharmaGo est une solution moderne conçue spécifiquement pour les pharmacies centrales. Notre plateforme vous permet de gérer efficacement vos livraisons de médicaments, de suivre vos clients et d'assurer la traçabilité complète de votre chaîne logistique.
+            </Text>
+            <Text wrappingWidth="800" textAlignment="CENTER" styleClass="texte-apropos">
+                Avec des fonctionnalités de gestion avancées et des statistiques en temps réel, PharmaGo vous aide à optimiser vos opérations quotidiennes.
+            </Text>
+        </VBox>
+
+        <!-- SECTION AIDE -->
+        <VBox fx:id="sectionAide" alignment="TOP_CENTER" spacing="30" styleClass="section-aide">
+            <Text text="Besoin d'aide ?" styleClass="titre-section" />
+            <Text wrappingWidth="800" textAlignment="CENTER" styleClass="texte-apropos">
+                Notre équipe est là pour vous accompagner dans l'utilisation de PharmaGo. Consultez notre documentation ou contactez-nous directement.
+            </Text>
+            <HBox alignment="CENTER" spacing="20">
+                <Button text="Documentation" styleClass="bouton-aide-secondaire" />
+                <Button text="Nous contacter" styleClass="bouton-aide-principal" />
+            </HBox>
+        </VBox>
+
+        <!-- SECTION FOOTER-->
+        <HBox alignment="CENTER" styleClass="footer">
+            <Label text="© 2025 PharmaGo. Tous droits réservés." style="-fx-text-fill: -color-principal;" />
+        </HBox>
+    </VBox>
+</ScrollPane>
