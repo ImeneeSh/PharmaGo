@@ -18,24 +18,22 @@
 
     <!-- CONTENU CENTRAL DÉFILABLE -->
     <center>
-        <ScrollPane fitToWidth="true" fitToHeight="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" style="-fx-background-color:transparent;">
+        <ScrollPane fitToWidth="true" fitToHeight="true" hbarPolicy="NEVER" style="-fx-background-color:transparent;">
             <VBox alignment="TOP_CENTER" spacing="40" styleClass="dashboard-content">
 
                 <!-- Titre principal -->
-                <VBox alignment="TOP_LEFT" style="-fx-padding: 30 50 0 50;">
+                <VBox style="-fx-padding: 30 50 0 50;">
                     <Label text="Tableau de bord" styleClass="dashboard-title" />
                     <Label text="Bienvenue sur PharmaGo - Vue d'ensemble de votre activité" styleClass="dashboard-subtitle" />
                 </VBox>
 
                 <!-- Cartes principales -->
-                <GridPane hgap="50" vgap="50" alignment="TOP_LEFT" style="-fx-padding: 0 80 0 80;">
+                <GridPane hgap="50" vgap="50" style="-fx-padding: 0 80 0 80;">
                 <!-- Carte Clients -->
                     <VBox styleClass="card" GridPane.columnIndex="0" GridPane.rowIndex="0">
                         <HBox alignment="TOP_RIGHT">
                             <ImageView fitWidth="24" fitHeight="24" preserveRatio="true">
-                                <image>
-                                    <Image url="/assets/liste-des-utilisateurs.png" />
-                                </image>
+                                <Image url="/assets/liste-des-utilisateurs.png"/>
                             </ImageView>
                         </HBox>
                         <Label text="Total clients" styleClass="card-title"/>
@@ -47,9 +45,7 @@
                     <VBox styleClass="card" GridPane.columnIndex="1" GridPane.rowIndex="0">
                         <HBox alignment="TOP_RIGHT">
                             <ImageView fitWidth="24" fitHeight="24" preserveRatio="true">
-                                <image>
-                                    <Image url="/assets/pilule (1).png" />
-                                </image>
+                                <Image url="/assets/pilule (1).png"/>
                             </ImageView>
                         </HBox>
                         <Label text="Total médicaments" styleClass="card-title"/>
@@ -61,9 +57,7 @@
                     <VBox styleClass="card" GridPane.columnIndex="0" GridPane.rowIndex="1">
                         <HBox alignment="TOP_RIGHT">
                             <ImageView fitWidth="24" fitHeight="24" preserveRatio="true">
-                                <image>
-                                    <Image url="/assets/livraison (1).png" />
-                                </image>
+                                <Image url="/assets/livraison (1).png"/>
                             </ImageView>
                         </HBox>
                         <Label text="Total livraisons" styleClass="card-title"/>
@@ -75,9 +69,7 @@
                     <VBox styleClass="card" GridPane.columnIndex="1" GridPane.rowIndex="1">
                         <HBox alignment="TOP_RIGHT">
                             <ImageView fitWidth="24" fitHeight="24" preserveRatio="true">
-                                <image>
-                                    <Image url="/assets/livraison (4).png" />
-                                </image>
+                                <Image url="/assets/livraison (4).png"/>
                             </ImageView>
                         </HBox>
                         <Label text="Livraisons en attente" styleClass="card-title"/>
@@ -86,7 +78,7 @@
                 </GridPane>
 
                 <!-- Section Livraisons récentes -->
-                <VBox alignment="TOP_LEFT" style="-fx-padding: 0 50 0 50;">
+                <VBox style="-fx-padding: 0 50 0 50;">
                     <Label text="Livraisons récentes" styleClass="section-title"/>
                     <VBox spacing="10">
                         <HBox styleClass="recent-item" spacing="10">
@@ -117,7 +109,7 @@
 
 
                 <!-- Section Médicaments à surveiller -->
-                <VBox id="med-section" alignment="TOP_LEFT" style="-fx-padding: 0 50 50 50;">
+                <VBox id="med-section" style="-fx-padding: 0 50 50 50;">
                     <Label text="Médicaments à surveiller" styleClass="section-title"/>
                     <VBox spacing="10">
                         <HBox styleClass="recent-item" spacing="10">
