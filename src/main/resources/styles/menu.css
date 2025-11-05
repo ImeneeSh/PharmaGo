@@ -1,0 +1,62 @@
+/* --- STYLE DU MENU LATÉRAL --- */
+.side-menu {
+    -fx-background-color: #F5F5F5;
+    -fx-padding: 40 0 0 0;
+    -fx-alignment: TOP_CENTER;
+    -fx-min-width: 220px;
+    -fx-font-family: "Open Sans";
+}
+
+/* --- TITRE DU MENU --- */
+.menu-title {
+    -fx-text-fill: #6E8268;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+
+/* --- BOUTONS DU MENU --- */
+.menu-item, .menu-item-active {
+    -fx-font-size: 15px;
+    -fx-text-fill: #001910;
+    -fx-background-color: transparent;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-cursor: hand;
+    -fx-padding: 8 15;
+    -fx-alignment: CENTER_LEFT;
+    -fx-graphic-text-gap: 10;
+    -fx-pref-width: 180px;
+    -fx-text-alignment: LEFT;
+    -fx-content-display: LEFT;
+    -fx-wrap-text: true;
+    -fx-font-weight: 700;
+    -fx-line-spacing: 2px;
+}
+
+/* --- EFFET AU SURVOL --- */
+.menu-item:hover {
+    -fx-background-color: rgba(0, 85, 29, 0.08);
+}
+
+/* --- ÉLÉMENT ACTIF --- */
+.menu-item-active {
+    -fx-background-color: transparent;
+    -fx-text-fill: #001910;
+    -fx-border-width: 0 0 0 5;
+    -fx-border-color: #00551D;
+    -fx-border-radius: 0;
+}
+
+/* Icône colorée quand actif */
+.menu-item-active .icon {
+    -fx-opacity: 1.0;
+}
+.menu-item .icon {
+    -fx-opacity: 0.6;
+}
+
+.toggle-button {
+    -fx-text-overrun: clip;
+    -fx-wrap-text: true;
+    -fx-font-weight: bold;
+}
