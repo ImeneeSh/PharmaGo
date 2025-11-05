@@ -1,0 +1,146 @@
+.root-dashboard {
+    -fx-background-color: #FFFFFF;
+    -fx-font-family: "Open Sans", "Segoe UI", sans-serif;
+    -fx-background-radius: 15;
+}
+
+/* === CONTENU PRINCIPAL === */
+.dashboard-content {
+    -fx-background-color: #F5F5F5;
+    -fx-background-radius: 20;
+    -fx-padding: 40 0 60 0;
+}
+
+/* === TITRES === */
+.dashboard-title {
+    -fx-font-size: 30px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #001910;
+}
+
+.dashboard-subtitle {
+    -fx-text-fill: #6E8268;
+    -fx-font-size: 15px;
+    -fx-font-weight: 600;
+    -fx-padding: 10 0 0 0;
+}
+
+/* === CARTES === */
+.card {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 20;
+    -fx-padding: 30 45;
+    -fx-spacing: 12;
+    -fx-pref-width: 380;   /* plus large */
+    -fx-pref-height: 190;  /* plus grande */
+    -fx-alignment: CENTER_LEFT;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0, 0, 4);
+    -fx-cursor: hand;
+    -fx-transition: all 0.3s ease;
+}
+
+.card:hover {
+    -fx-translate-y: -6;
+    -fx-effect: dropshadow(gaussian, rgba(0,85,29,0.3), 14, 0, 0, 6);
+}
+
+/* === TEXTE DANS LES CARTES === */
+.card-title {
+    -fx-text-fill: #3B533B;
+    -fx-font-size: 17px;
+    -fx-font-weight: bold;
+}
+
+.card-number {
+    -fx-text-fill: #00551D;
+    -fx-font-size: 46px;
+    -fx-font-weight: bold;
+}
+
+.card-subtext {
+    -fx-text-fill: #4CAF50;
+    -fx-font-size: 14px;
+}
+
+.card ImageView {
+    -fx-opacity: 0.8;
+    -fx-translate-y: 5;
+}
+
+/* === SECTIONS === */
+.section-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #3B533B;
+    -fx-padding: 10 0 10 0;
+}
+
+/* === LIVRAISONS ET ALERTES (cartes de liste) === */
+.recent-item {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #DBDBDB;
+    -fx-border-width: 1;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-padding: 15 25;
+    -fx-alignment: CENTER_LEFT;
+    -fx-spacing: 10;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 4, 0, 0, 2);
+    -fx-pref-width: 650;
+}
+
+.recent-item VBox {
+    -fx-spacing: 3;
+}
+
+.recent-item Label {
+    -fx-text-overrun: clip;
+    -fx-wrap-text: true;
+}
+
+/* === LIVRAISONS RÉCENTES === */
+.recent-code {
+    -fx-font-weight: bold;
+    -fx-text-fill: #001910;
+    -fx-font-size: 14px;
+}
+
+.recent-name {
+    -fx-text-fill: #000000;
+    -fx-font-size: 13px;
+}
+
+/* === STATUTS === */
+.status-delivered {
+    -fx-background-color: rgba(76, 175, 80, 0.25); /* vert doux, transparent */
+    -fx-text-fill: #2E7D32;
+    -fx-padding: 5 12;
+    -fx-background-radius: 10;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.status-alert {
+    -fx-background-color: rgba(229, 115, 115, 0.25); /* rouge doux, transparent */
+    -fx-text-fill: #C62828;
+    -fx-padding: 5 12;
+    -fx-background-radius: 10;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+
+.recent-item:hover {
+    -fx-background-color: #F9F9F9;
+    -fx-border-color: #337B36;
+    -fx-effect: dropshadow(gaussian, rgba(51,123,54,0.15), 6, 0, 0, 3);
+    -fx-cursor: hand;
+}
+
+#med-section .recent-item:hover {
+    -fx-background-color: #FFF5F5;
+    -fx-border-color: #C62828;
+    -fx-effect: dropshadow(gaussian, rgba(198,40,40,0.25), 6, 0, 0, 3);
+}
+
+

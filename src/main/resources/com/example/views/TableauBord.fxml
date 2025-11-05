@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.controllers.TableauBordController"
+            styleClass="root-dashboard">
+
+
+    <!-- MENU VERTICAL FIXE -->
+    <left>
+        <fx:include source="Menu.fxml" />
+    </left>
+
+    <!-- CONTENU CENTRAL DÉFILABLE -->
+    <center>
+        <ScrollPane fitToWidth="true" fitToHeight="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" style="-fx-background-color:transparent;">
+            <VBox alignment="TOP_CENTER" spacing="40" styleClass="dashboard-content">
+
+                <!-- Titre principal -->
+                <VBox alignment="TOP_LEFT" style="-fx-padding: 30 50 0 50;">
+                    <Label text="Tableau de bord" styleClass="dashboard-title" />
+                    <Label text="Bienvenue sur PharmaGo - Vue d'ensemble de votre activité" styleClass="dashboard-subtitle" />
+                </VBox>
+
+                <!-- Cartes principales -->
+                <GridPane hgap="50" vgap="50" alignment="TOP_LEFT" style="-fx-padding: 0 80 0 80;">
+                <!-- Carte Clients -->
+                    <VBox styleClass="card" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                        <HBox alignment="TOP_RIGHT">
+                            <ImageView fitWidth="24" fitHeight="24" preserveRatio="true">
+                                <image>
+                                    <Image url="/assets/liste-des-utilisateurs.png" />
+                                </image>
+                            </ImageView>
+                        </HBox>
+                        <Label text="Total clients" styleClass="card-title"/>
+                        <Label text="350" styleClass="card-number"/>
+                        <Label text="+2 clients ce mois-ci" styleClass="card-subtext"/>
+                    </VBox>
+
+                    <!-- Carte Médicaments -->
+                    <VBox styleClass="card" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                        <HBox alignment="TOP_RIGHT">
+                            <ImageView fitWidth="24" fitHeight="24" preserveRatio="true">
+                                <image>
+                                    <Image url="/assets/pilule (1).png" />
+                                </image>
+                            </ImageView>
+                        </HBox>
+                        <Label text="Total médicaments" styleClass="card-title"/>
+                        <Label text="150" styleClass="card-number"/>
+                        <Label text="+5 médicaments ce mois-ci" styleClass="card-subtext"/>
+                    </VBox>
+
+                    <!-- Carte Livraisons -->
+                    <VBox styleClass="card" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                        <HBox alignment="TOP_RIGHT">
+                            <ImageView fitWidth="24" fitHeight="24" preserveRatio="true">
+                                <image>
+                                    <Image url="/assets/livraison (1).png" />
+                                </image>
+                            </ImageView>
+                        </HBox>
+                        <Label text="Total livraisons" styleClass="card-title"/>
+                        <Label text="167" styleClass="card-number"/>
+                        <Label text="+70 livraisons ce mois-ci" styleClass="card-subtext"/>
+                    </VBox>
+
+                    <!-- Carte Livraisons en attente -->
+                    <VBox styleClass="card" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                        <HBox alignment="TOP_RIGHT">
+                            <ImageView fitWidth="24" fitHeight="24" preserveRatio="true">
+                                <image>
+                                    <Image url="/assets/livraison (4).png" />
+                                </image>
+                            </ImageView>
+                        </HBox>
+                        <Label text="Livraisons en attente" styleClass="card-title"/>
+                        <Label text="10" styleClass="card-number"/>
+                    </VBox>
+                </GridPane>
+
+                <!-- Section Livraisons récentes -->
+                <VBox alignment="TOP_LEFT" style="-fx-padding: 0 50 0 50;">
+                    <Label text="Livraisons récentes" styleClass="section-title"/>
+                    <VBox spacing="10">
+                        <HBox styleClass="recent-item" spacing="10">
+                            <VBox HBox.hgrow="ALWAYS">
+                                <Label text="L0001" styleClass="recent-code"/>
+                                <Label text="Djamel Debbag" styleClass="recent-name"/>
+                            </VBox>
+                            <Label text="Livrée" styleClass="status-delivered"/>
+                        </HBox>
+
+                        <HBox styleClass="recent-item" spacing="10">
+                            <VBox HBox.hgrow="ALWAYS">
+                                <Label text="L0002" styleClass="recent-code"/>
+                                <Label text="Amina Berrabah" styleClass="recent-name"/>
+                            </VBox>
+                            <Label text="Livrée" styleClass="status-delivered"/>
+                        </HBox>
+
+                        <HBox styleClass="recent-item" spacing="10">
+                            <VBox HBox.hgrow="ALWAYS">
+                                <Label text="L0003" styleClass="recent-code"/>
+                                <Label text="Djamel Debbag" styleClass="recent-name"/>
+                            </VBox>
+                            <Label text="Livrée" styleClass="status-delivered"/>
+                        </HBox>
+                    </VBox>
+                </VBox>
+
+
+                <!-- Section Médicaments à surveiller -->
+                <VBox id="med-section" alignment="TOP_LEFT" style="-fx-padding: 0 50 50 50;">
+                    <Label text="Médicaments à surveiller" styleClass="section-title"/>
+                    <VBox spacing="10">
+                        <HBox styleClass="recent-item" spacing="10">
+                            <VBox HBox.hgrow="ALWAYS">
+                                <Label text="Insuline Rapide" styleClass="recent-code"/>
+                                <Label text="Expire le 15/03/2025" styleClass="recent-name"/>
+                            </VBox>
+                            <Label text="Attention" styleClass="status-alert"/>
+                        </HBox>
+
+                        <HBox styleClass="recent-item" spacing="10">
+                            <VBox HBox.hgrow="ALWAYS">
+                                <Label text="Insuline Lente" styleClass="recent-code"/>
+                                <Label text="Expire le 22/04/2025" styleClass="recent-name"/>
+                            </VBox>
+                            <Label text="Attention" styleClass="status-alert"/>
+                        </HBox>
+
+                        <HBox styleClass="recent-item" spacing="10">
+                            <VBox HBox.hgrow="ALWAYS">
+                                <Label text="Insuline Rapide" styleClass="recent-code"/>
+                                <Label text="Expire le 15/03/2025" styleClass="recent-name"/>
+                            </VBox>
+                            <Label text="Attention" styleClass="status-alert"/>
+                        </HBox>
+                    </VBox>
+                </VBox>
+            </VBox>
+        </ScrollPane>
+    </center>
+</BorderPane>

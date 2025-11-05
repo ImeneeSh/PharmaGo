@@ -14,19 +14,25 @@ public class MainApp extends Application {
     @Override
     public void start(Stage primaryStage) {
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/example/views/Accueil.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/example/views/TableauBord.fxml"));
             Parent root = fxmlLoader.load();
 
             Scene scene = new Scene(root, 1024, 768);
 
 
-            URL cssURL = getClass().getResource("/styles/styles.css");
+            URL cssURL = getClass().getResource("/styles/tableauBord.css");
             if (cssURL != null) {
                 System.out.println("CSS trouvé : " + cssURL);
                 scene.getStylesheets().add(cssURL.toExternalForm());
             } else {
                 System.err.println("Fichier CSS introuvable !");
             }
+
+            URL cssMenu = getClass().getResource("/styles/menu.css");
+            URL cssTableau = getClass().getResource("/styles/tableauBord.css");
+
+            if (cssMenu != null) scene.getStylesheets().add(cssMenu.toExternalForm());
+            if (cssTableau != null) scene.getStylesheets().add(cssTableau.toExternalForm());
 
             scene.getRoot().setStyle("-fx-font-family: 'Segoe UI', 'Arial', sans-serif;");
 
@@ -44,6 +50,8 @@ public class MainApp extends Application {
             e.printStackTrace();
         }
     }
+
+
 
     public static void main(String[] args) {
         launch(args);
