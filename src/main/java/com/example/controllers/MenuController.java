@@ -2,12 +2,17 @@ package com.example.controllers;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.Objects;
 import java.util.ResourceBundle;
@@ -59,11 +64,35 @@ public class MenuController implements Initializable {
             updateIcons();
         });
 
-        // Navigation temporaire (à personnaliser)
-        btnConsultation.setOnAction(e -> System.out.println("Aller vers Consultation globale"));
-        btnClients.setOnAction(e -> System.out.println("Aller vers Gestion des clients"));
-        btnMedicaments.setOnAction(e -> System.out.println("Aller vers Gestion des médicaments"));
-        btnLivraisons.setOnAction(e -> System.out.println("Aller vers Gestion des livraisons"));
+        // Navigation : connexion du bouton Tableau de bord
+        btnDashboard.setOnAction(e -> {
+            System.out.println("Clic sur Tableau de bord");
+            navigateToTableauBord();
+        });
+
+        // Navigation : connexion du bouton Consultation Globale
+        btnConsultation.setOnAction(e -> {
+            System.out.println("Clic sur Consultation Globale");
+            navigateToConsultationGlobale();
+        });
+
+        // Navigation : connexion du bouton Gestion des clients
+        btnClients.setOnAction(e -> {
+            System.out.println("Clic sur Gestion des clients");
+            ouvrirGestionClients();
+        });
+
+        // Navigation : connexion du bouton Gestion des médicaments
+        btnMedicaments.setOnAction(e -> {
+            System.out.println("Clic sur Gestion des médicaments");
+            ouvrirGestionMedicaments();
+        });
+
+        // Navigation : connexion du bouton Gestion des livraisons
+        btnLivraisons.setOnAction(e -> {
+            System.out.println("Clic sur Gestion des livraisons");
+            ouvrirGestionLivraisons();
+        });
     }
 
     private void disableDefaultButtonEffects(ToggleButton button) {
@@ -155,6 +184,398 @@ public class MenuController implements Initializable {
         view.setImage(new Image(resource.toExternalForm()));
     }
 
+    /**
+     * Navigation vers la page Tableau de bord
+     * Charge le fichier FXML TableauBord.fxml et change la scène
+     */
+    private void navigateToTableauBord() {
+        try {
+            // Charger le fichier FXML de la page Tableau de bord
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/example/views/TableauBord.fxml"));
+            Parent root = fxmlLoader.load();
+
+            // Récupérer la scène actuelle et la fenêtre (Stage)
+            Scene currentScene = null;
+            Stage stage = null;
+
+            // Essayer plusieurs méthodes pour obtenir la scène
+            if (btnDashboard != null) {
+                currentScene = btnDashboard.getScene();
+                if (currentScene != null) {
+                    stage = (Stage) currentScene.getWindow();
+                }
+            }
+
+            // Méthode alternative : depuis n'importe quel autre bouton
+            if (currentScene == null && btnConsultation != null) {
+                currentScene = btnConsultation.getScene();
+                if (currentScene != null) {
+                    stage = (Stage) currentScene.getWindow();
+                }
+            }
+
+            if (currentScene == null || stage == null) {
+                System.err.println("ERREUR: Impossible de récupérer la scène ou le Stage !");
+                return;
+            }
+
+            // Créer une nouvelle scène avec le contenu chargé
+            double width = currentScene.getWidth() > 0 ? currentScene.getWidth() : 1024;
+            double height = currentScene.getHeight() > 0 ? currentScene.getHeight() : 768;
+            Scene scene = new Scene(root, width, height);
+
+            // Charger les fichiers CSS nécessaires
+            URL cssMenu = getClass().getResource("/styles/menu.css");
+            URL cssTableau = getClass().getResource("/styles/tableauBord.css");
+
+            if (cssMenu != null) {
+                scene.getStylesheets().add(cssMenu.toExternalForm());
+            }
+            if (cssTableau != null) {
+                scene.getStylesheets().add(cssTableau.toExternalForm());
+            }
+
+            // Appliquer la police par défaut
+            scene.getRoot().setStyle("-fx-font-family: 'Segoe UI', 'Arial', sans-serif;");
+
+            // Définir la nouvelle scène et afficher
+            stage.setScene(scene);
+            System.out.println("Page Tableau de bord chargée avec succès !");
+
+        } catch (IOException e) {
+            System.err.println("Erreur lors du chargement de la page Tableau de bord : " + e.getMessage());
+            e.printStackTrace();
+        } catch (Exception e) {
+            System.err.println("ERREUR inattendue lors du chargement de la page Tableau de bord : " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Navigation vers la page Consultation Globale
+     * Charge le fichier FXML ConsultationGlobale.fxml et change la scène
+     */
+    private void navigateToConsultationGlobale() {
+        try {
+            // Charger le fichier FXML de la page Consultation Globale
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/example/views/ConsultationGlobale.fxml"));
+            Parent root = fxmlLoader.load();
+
+            // Récupérer la scène actuelle et la fenêtre (Stage)
+            Scene currentScene = btnConsultation.getScene();
+            Stage stage = (Stage) currentScene.getWindow();
+
+            // Créer une nouvelle scène avec le contenu chargé
+            Scene scene = new Scene(root, currentScene.getWidth(), currentScene.getHeight());
+
+            // Charger les fichiers CSS nécessaires
+            URL cssMenu = getClass().getResource("/styles/menu.css");
+            URL cssConsultation = getClass().getResource("/styles/ConsultationGloable.css");
+
+            if (cssMenu != null) {
+                scene.getStylesheets().add(cssMenu.toExternalForm());
+            }
+            if (cssConsultation != null) {
+                scene.getStylesheets().add(cssConsultation.toExternalForm());
+            }
+
+            // Appliquer la police par défaut
+            scene.getRoot().setStyle("-fx-font-family: 'Segoe UI', 'Arial', sans-serif;");
+
+            // Définir la nouvelle scène et afficher
+            stage.setScene(scene);
+
+        } catch (IOException e) {
+            System.err.println("Erreur lors du chargement de la page Consultation Globale : " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+    /**
+     * Navigation vers la page Gestion des clients
+     * Charge le fichier FXML GestionClients.fxml et change la scène
+     */
+    private void ouvrirGestionClients() {
+        try {
+            System.out.println("Début du chargement de GestionClients...");
+
+            // Charger le fichier FXML de la page Gestion des clients
+            URL fxmlUrl = getClass().getResource("/com/example/views/GestionClients.fxml");
+            if (fxmlUrl == null) {
+                System.err.println("ERREUR: Fichier FXML GestionClients.fxml introuvable !");
+                System.err.println("Chemin recherché: /com/example/views/GestionClients.fxml");
+                return;
+            }
+            System.out.println("Fichier FXML trouvé: " + fxmlUrl);
+
+            FXMLLoader fxmlLoader = new FXMLLoader(fxmlUrl);
+            Parent root = fxmlLoader.load();
+            System.out.println("FXML chargé avec succès");
+
+            // Récupérer la scène actuelle et la fenêtre (Stage)
+            // Essayer plusieurs méthodes pour obtenir la scène
+            Scene currentScene = null;
+            Stage stage = null;
+
+            // Méthode 1: depuis le bouton
+            if (btnClients != null) {
+                currentScene = btnClients.getScene();
+                if (currentScene != null) {
+                    stage = (Stage) currentScene.getWindow();
+                }
+            }
+
+            // Méthode 2: depuis le parent du bouton
+            if (currentScene == null && btnClients != null && btnClients.getParent() != null) {
+                currentScene = btnClients.getParent().getScene();
+                if (currentScene != null) {
+                    stage = (Stage) currentScene.getWindow();
+                }
+            }
+
+            // Méthode 3: depuis n'importe quel nœud de la scène
+            if (currentScene == null && btnDashboard != null) {
+                currentScene = btnDashboard.getScene();
+                if (currentScene != null) {
+                    stage = (Stage) currentScene.getWindow();
+                }
+            }
+
+            if (currentScene == null || stage == null) {
+                System.err.println("ERREUR: Impossible de récupérer la scène ou le Stage !");
+                System.err.println("btnClients.getScene() = " + (btnClients != null ? btnClients.getScene() : "btnClients est null"));
+                return;
+            }
+
+            System.out.println("Scène récupérée: " + currentScene);
+            System.out.println("Stage récupéré: " + stage);
+
+            // Créer une nouvelle scène avec le contenu chargé
+            double width = currentScene.getWidth() > 0 ? currentScene.getWidth() : 1024;
+            double height = currentScene.getHeight() > 0 ? currentScene.getHeight() : 768;
+            Scene scene = new Scene(root, width, height);
+            System.out.println("Nouvelle scène créée: " + width + "x" + height);
+
+            // Charger les fichiers CSS nécessaires
+            URL cssMenu = getClass().getResource("/styles/menu.css");
+            URL cssGestionClients = getClass().getResource("/styles/GestionClients.css");
+
+            if (cssMenu != null) {
+                scene.getStylesheets().add(cssMenu.toExternalForm());
+                System.out.println("CSS menu.css chargé");
+            } else {
+                System.err.println("ATTENTION: Fichier CSS menu.css introuvable !");
+            }
+
+            if (cssGestionClients != null) {
+                scene.getStylesheets().add(cssGestionClients.toExternalForm());
+                System.out.println("CSS GestionClients.css chargé");
+            } else {
+                System.err.println("ATTENTION: Fichier CSS GestionClients.css introuvable !");
+            }
+
+            // Appliquer la police par défaut
+            scene.getRoot().setStyle("-fx-font-family: 'Segoe UI', 'Arial', sans-serif;");
+
+            // Définir la nouvelle scène et afficher
+            stage.setScene(scene);
+            System.out.println("Page Gestion des clients chargée avec succès !");
+
+        } catch (IOException e) {
+            System.err.println("ERREUR lors du chargement de la page Gestion des clients : " + e.getMessage());
+            e.printStackTrace();
+        } catch (Exception e) {
+            System.err.println("ERREUR inattendue lors du chargement de la page Gestion des clients : " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Navigation vers la page Gestion des médicaments
+     * Charge le fichier FXML GestionMedicaments.fxml et change la scène
+     */
+    private void ouvrirGestionMedicaments() {
+        try {
+            System.out.println("Début du chargement de GestionMedicaments...");
+
+            // Charger le fichier FXML de la page Gestion des médicaments
+            URL fxmlUrl = getClass().getResource("/com/example/views/GestionMedicaments.fxml");
+            if (fxmlUrl == null) {
+                System.err.println("ERREUR: Fichier FXML GestionMedicaments.fxml introuvable !");
+                System.err.println("Chemin recherché: /com/example/views/GestionMedicaments.fxml");
+                return;
+            }
+            System.out.println("Fichier FXML trouvé: " + fxmlUrl);
+
+            FXMLLoader fxmlLoader = new FXMLLoader(fxmlUrl);
+            Parent root = fxmlLoader.load();
+            System.out.println("FXML chargé avec succès");
+
+            // Récupérer la scène actuelle et la fenêtre (Stage)
+            Scene currentScene = null;
+            Stage stage = null;
+
+            // Méthode 1: depuis le bouton
+            if (btnMedicaments != null) {
+                currentScene = btnMedicaments.getScene();
+                if (currentScene != null) {
+                    stage = (Stage) currentScene.getWindow();
+                }
+            }
+
+            // Méthode 2: depuis le parent du bouton
+            if (currentScene == null && btnMedicaments != null && btnMedicaments.getParent() != null) {
+                currentScene = btnMedicaments.getParent().getScene();
+                if (currentScene != null) {
+                    stage = (Stage) currentScene.getWindow();
+                }
+            }
+
+            // Méthode 3: depuis n'importe quel autre bouton
+            if (currentScene == null && btnDashboard != null) {
+                currentScene = btnDashboard.getScene();
+                if (currentScene != null) {
+                    stage = (Stage) currentScene.getWindow();
+                }
+            }
+
+            if (currentScene == null || stage == null) {
+                System.err.println("ERREUR: Impossible de récupérer la scène ou le Stage !");
+                return;
+            }
+
+            // Créer une nouvelle scène avec le contenu chargé
+            double width = currentScene.getWidth() > 0 ? currentScene.getWidth() : 1024;
+            double height = currentScene.getHeight() > 0 ? currentScene.getHeight() : 768;
+            Scene scene = new Scene(root, width, height);
+            System.out.println("Nouvelle scène créée: " + width + "x" + height);
+
+            // Charger les fichiers CSS nécessaires
+            URL cssMenu = getClass().getResource("/styles/menu.css");
+            URL cssGestionMedicaments = getClass().getResource("/styles/GestionMedicaments.css");
+
+            if (cssMenu != null) {
+                scene.getStylesheets().add(cssMenu.toExternalForm());
+                System.out.println("CSS menu.css chargé");
+            } else {
+                System.err.println("ATTENTION: Fichier CSS menu.css introuvable !");
+            }
+
+            if (cssGestionMedicaments != null) {
+                scene.getStylesheets().add(cssGestionMedicaments.toExternalForm());
+                System.out.println("CSS GestionMedicaments.css chargé");
+            } else {
+                System.err.println("ATTENTION: Fichier CSS GestionMedicaments.css introuvable !");
+            }
+
+            // Appliquer la police par défaut
+            scene.getRoot().setStyle("-fx-font-family: 'Segoe UI', 'Arial', sans-serif;");
+
+            // Définir la nouvelle scène et afficher
+            stage.setScene(scene);
+            System.out.println("Page Gestion des médicaments chargée avec succès !");
+
+        } catch (IOException e) {
+            System.err.println("ERREUR lors du chargement de la page Gestion des médicaments : " + e.getMessage());
+            e.printStackTrace();
+        } catch (Exception e) {
+            System.err.println("ERREUR inattendue lors du chargement de la page Gestion des médicaments : " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Navigation vers la page Gestion des livraisons
+     * Charge le fichier FXML GestionLivraisons.fxml et change la scène
+     */
+    private void ouvrirGestionLivraisons() {
+        try {
+            System.out.println("Début du chargement de GestionLivraisons...");
+
+            // Charger le fichier FXML de la page Gestion des livraisons
+            URL fxmlUrl = getClass().getResource("/com/example/views/GestionLivraisons.fxml");
+            if (fxmlUrl == null) {
+                System.err.println("ERREUR: Fichier FXML GestionLivraisons.fxml introuvable !");
+                System.err.println("Chemin recherché: /com/example/views/GestionLivraisons.fxml");
+                return;
+            }
+            System.out.println("Fichier FXML trouvé: " + fxmlUrl);
+
+            FXMLLoader fxmlLoader = new FXMLLoader(fxmlUrl);
+            Parent root = fxmlLoader.load();
+            System.out.println("FXML chargé avec succès");
+
+            // Récupérer la scène actuelle et la fenêtre (Stage)
+            Scene currentScene = null;
+            Stage stage = null;
+
+            // Méthode 1: depuis le bouton
+            if (btnLivraisons != null) {
+                currentScene = btnLivraisons.getScene();
+                if (currentScene != null) {
+                    stage = (Stage) currentScene.getWindow();
+                }
+            }
+
+            // Méthode 2: depuis le parent du bouton
+            if (currentScene == null && btnLivraisons != null && btnLivraisons.getParent() != null) {
+                currentScene = btnLivraisons.getParent().getScene();
+                if (currentScene != null) {
+                    stage = (Stage) currentScene.getWindow();
+                }
+            }
+
+            // Méthode 3: depuis n'importe quel autre bouton
+            if (currentScene == null && btnDashboard != null) {
+                currentScene = btnDashboard.getScene();
+                if (currentScene != null) {
+                    stage = (Stage) currentScene.getWindow();
+                }
+            }
+
+            if (currentScene == null || stage == null) {
+                System.err.println("ERREUR: Impossible de récupérer la scène ou le Stage !");
+                return;
+            }
+
+            // Créer une nouvelle scène avec le contenu chargé
+            double width = currentScene.getWidth() > 0 ? currentScene.getWidth() : 1024;
+            double height = currentScene.getHeight() > 0 ? currentScene.getHeight() : 768;
+            Scene scene = new Scene(root, width, height);
+            System.out.println("Nouvelle scène créée: " + width + "x" + height);
+
+            // Charger les fichiers CSS nécessaires
+            URL cssMenu = getClass().getResource("/styles/menu.css");
+            URL cssGestionLivraisons = getClass().getResource("/styles/GestionLivraisons.css");
+
+            if (cssMenu != null) {
+                scene.getStylesheets().add(cssMenu.toExternalForm());
+                System.out.println("CSS menu.css chargé");
+            } else {
+                System.err.println("ATTENTION: Fichier CSS menu.css introuvable !");
+            }
+
+            if (cssGestionLivraisons != null) {
+                scene.getStylesheets().add(cssGestionLivraisons.toExternalForm());
+                System.out.println("CSS GestionLivraisons.css chargé");
+            } else {
+                System.err.println("ATTENTION: Fichier CSS GestionLivraisons.css introuvable !");
+            }
+
+            // Appliquer la police par défaut
+            scene.getRoot().setStyle("-fx-font-family: 'Segoe UI', 'Arial', sans-serif;");
+
+            // Définir la nouvelle scène et afficher
+            stage.setScene(scene);
+            System.out.println("Page Gestion des livraisons chargée avec succès !");
+
+        } catch (IOException e) {
+            System.err.println("ERREUR lors du chargement de la page Gestion des livraisons : " + e.getMessage());
+            e.printStackTrace();
+        } catch (Exception e) {
+            System.err.println("ERREUR inattendue lors du chargement de la page Gestion des livraisons : " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 
 
 }

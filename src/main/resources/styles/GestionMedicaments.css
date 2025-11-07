@@ -1,0 +1,182 @@
+/* ============================================
+   STYLES POUR L'INTERFACE DE GESTION DES MÉDICAMENTS
+   ============================================ */
+
+/* === CONTENEUR PRINCIPAL === */
+/* Fond blanc pour la fenêtre principale */
+.root-gestion-medicaments {
+    -fx-background-color: #FFFFFF; /* Fond blanc pour la fenêtre principale */
+    -fx-font-family: "Open Sans", "Segoe UI", sans-serif;
+    -fx-padding: 20; /* Espacement uniforme de 20px avec les bords de la fenêtre */
+}
+
+/* === CONTENU CENTRAL DÉFILABLE === */
+/* Panneau de contenu avec fond gris, coins arrondis et ombre portée */
+.gestion-medicaments-content {
+    -fx-background-color: #F5F5F5; /* Fond gris pour le panneau de contenu */
+    -fx-background-radius: 20; /* Coins arrondis de 20px pour le panneau */
+    -fx-padding: 40 0 60 0;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 5); /* Ombre portée pour créer l'effet de profondeur */
+    -fx-min-height: -1; /* Permet au contenu de prendre toute la hauteur disponible */
+    -fx-clip-shape: null; /* Permet aux coins arrondis d'être visibles même dans le ScrollPane */
+}
+
+/* === TITRES === */
+/* Titre principal "Gestion des médicaments" en vert foncé */
+.gestion-title {
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #001910; /* Vert foncé */
+}
+
+/* Sous-titre en vert clair */
+.gestion-subtitle {
+    -fx-text-fill: #6E8268; /* Vert clair */
+    -fx-font-size: 15px;
+    -fx-font-weight: 600;
+}
+
+/* === BARRE DE RECHERCHE === */
+/* Conteneur de la barre de recherche */
+.search-container {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 10px;
+    -fx-padding: 12 15;
+    -fx-spacing: 10;
+    -fx-alignment: CENTER_LEFT;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 4, 0, 0, 2);
+}
+
+/* Champ de texte de recherche */
+.search-field {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-font-size: 14px;
+    -fx-text-fill: #333333;
+}
+
+.search-field:focused {
+    -fx-border-color: transparent;
+}
+
+/* === BOUTON AJOUTER MÉDICAMENT === */
+.btn-ajouter-medicament {
+    -fx-background-color: #6A7560; /* M^ vert que ajouter client :) */
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 10px;
+    -fx-padding: 12 20;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,85,29,0.3), 6, 0, 0, 3);
+    -fx-content-display: LEFT;
+    -fx-graphic-text-gap: 8;
+}
+
+.btn-ajouter-medicament:hover {
+    -fx-background-color: #004014; /* Vert plus foncé au survol */
+    -fx-effect: dropshadow(gaussian, rgba(0,85,29,0.4), 8, 0, 0, 4);
+}
+
+.btn-ajouter-medicament:pressed {
+    -fx-background-color: #003010;
+}
+
+/* === CARTE MÉDICAMENT === */
+/* Conteneur principal de chaque carte médicament (non périmé) */
+.medicament-card {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 15px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 6, 0, 0, 3);
+    -fx-alignment: TOP_LEFT;
+    -fx-cursor: hand;
+}
+
+/* Carte médicament périmé - bordure rouge */
+.medicament-card-expired {
+    -fx-border-color: #E53935; /* Rouge */
+    -fx-border-width: 2px;
+    -fx-border-radius: 15px;
+    -fx-background-color: #FFFFFF;
+}
+
+/* Effet au survol de la carte */
+.medicament-card:hover {
+    -fx-effect: dropshadow(gaussian, rgba(0,85,29,0.2), 10, 0, 0, 5);
+    -fx-translate-y: -3;
+}
+
+.medicament-card-expired:hover {
+    -fx-effect: dropshadow(gaussian, rgba(229,57,53,0.3), 10, 0, 0, 5);
+    -fx-translate-y: -3;
+}
+
+/* === ÉLÉMENTS DE LA CARTE MÉDICAMENT === */
+/* Code médicament (ex: M001) */
+.medicament-code {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #001910; /* Vert foncé */
+}
+
+/* Nom et dosage du médicament */
+.medicament-nom {
+    -fx-font-size: 16px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #333333;
+}
+
+/* Label "Date de péremption" */
+.medicament-date-label {
+    -fx-font-size: 12px;
+    -fx-text-fill: #666666;
+}
+
+/* Valeur de la date de péremption */
+.medicament-date-value {
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #333333;
+}
+
+/* === BOUTONS D'ACTION DANS LA CARTE === */
+/* Boutons icônes (modifier, supprimer) */
+.btn-icon {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-cursor: hand;
+    -fx-padding: 5;
+}
+
+.btn-icon:hover {
+    -fx-background-color: rgba(0,0,0,0.05);
+    -fx-background-radius: 5px;
+}
+
+/* === SECTION "PÉRIMÉ" === */
+/* Section affichée en bas de la carte pour les médicaments périmés */
+.section-perime {
+    -fx-background-color: #FFEBEE; /* Rouge clair */
+    -fx-background-radius: 8px;
+    -fx-alignment: CENTER_LEFT;
+}
+
+/* Label "Périmé" */
+.perime-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #C62828; /* Rouge foncé */
+}
+
+/* Sous-titre avec nombre de jours depuis expiration */
+.perime-subtitle {
+    -fx-font-size: 12px;
+    -fx-text-fill: #D32F2F; /* Rouge moyen */
+}
+
+/* === GRILLE DE MÉDICAMENTS === */
+/* Style pour la grille contenant les cartes médicaments */
+.medicaments-grid {
+    -fx-alignment: TOP_LEFT;
+}
+

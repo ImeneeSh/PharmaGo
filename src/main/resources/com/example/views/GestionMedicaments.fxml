@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+
+<!-- 
+    Interface de gestion des médicaments
+    Cette vue permet de visualiser, rechercher et gérer les médicaments et leurs dates de péremption
+-->
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.controllers.GestionMedicamentsController"
+            styleClass="root-gestion-medicaments">
+
+    <!-- MENU VERTICAL FIXE À GAUCHE -->
+    <left>
+        <fx:include source="Menu.fxml" />
+    </left>
+
+    <!-- CONTENU CENTRAL DÉFILABLE -->
+    <!-- HBox pour créer l'espacement entre le menu et le contenu -->
+    <center>
+        <HBox spacing="0">
+            <!-- Region invisible pour créer l'espacement de 3mm (≈12px) entre le menu et le contenu -->
+            <Region prefWidth="12" />
+            <ScrollPane fitToWidth="true" fitToHeight="true" hbarPolicy="NEVER" style="-fx-background-color:transparent;" HBox.hgrow="ALWAYS">
+                <VBox alignment="TOP_CENTER" spacing="40" styleClass="gestion-medicaments-content" VBox.vgrow="ALWAYS">
+
+                <!-- SECTION EN-TÊTE : Titre et sous-titre -->
+                <VBox style="-fx-padding: 30 50 0 50;" spacing="8">
+                    <!-- Titre principal "Gestion des médicaments" en vert foncé -->
+                    <Label text="Gestion des médicaments" styleClass="gestion-title" />
+                    <!-- Sous-titre en vert clair -->
+                    <Label text="Suivez vos stocks et dates de péremption" styleClass="gestion-subtitle" />
+                </VBox>
+
+                <!-- SECTION RECHERCHE ET BOUTON AJOUTER -->
+                <HBox spacing="15" alignment="CENTER_LEFT" style="-fx-padding: 0 50 0 50;">
+                    <!-- Barre de recherche avec icône de loupe -->
+                    <HBox styleClass="search-container" HBox.hgrow="ALWAYS">
+                        <ImageView fitWidth="20" fitHeight="20" preserveRatio="true" style="-fx-opacity: 0.6;">
+                            <Image url="/assets/loupe.png"/>
+                        </ImageView>
+                        <TextField fx:id="searchField" 
+                                   promptText="Rechercher par nom ou identifiant..." 
+                                   styleClass="search-field" 
+                                   HBox.hgrow="ALWAYS"/>
+                    </HBox>
+                    
+                    <!-- Bouton pour ajouter un nouveau médicament -->
+                    <Button fx:id="btnAjouterMedicament" text="Ajouter un médicament" styleClass="btn-ajouter-medicament">
+                        <graphic>
+                            <ImageView fitWidth="18" fitHeight="18" preserveRatio="true">
+                                <Image url="/assets/icone-plus.png"/>
+                            </ImageView>
+                        </graphic>
+                    </Button>
+                </HBox>
+
+                <!-- SECTION GRILLE DE CARTES MÉDICAMENTS -->
+                <VBox style="-fx-padding: 0 50 50 50;" spacing="20">
+                    <!-- Grille pour afficher les cartes médicaments (3 colonnes) -->
+                    <GridPane fx:id="medicamentsGrid" 
+                              hgap="20" 
+                              vgap="20" 
+                              alignment="TOP_LEFT">
+                        <!-- Les cartes médicaments seront ajoutées dynamiquement ici -->
+                    </GridPane>
+                </VBox>
+
+            </VBox>
+        </ScrollPane>
+        </HBox>
+    </center>
+</BorderPane>
+

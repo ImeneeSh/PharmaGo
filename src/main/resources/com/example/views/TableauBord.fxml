@@ -17,9 +17,13 @@
     </left>
 
     <!-- CONTENU CENTRAL DÉFILABLE -->
+    <!-- HBox pour créer l'espacement entre le menu et le contenu -->
     <center>
-        <ScrollPane fitToWidth="true" fitToHeight="true" hbarPolicy="NEVER" style="-fx-background-color:transparent;">
-            <VBox alignment="TOP_CENTER" spacing="40" styleClass="dashboard-content">
+        <HBox spacing="0">
+            <!-- Region invisible pour créer l'espacement de 3mm (≈12px) entre le menu et le contenu -->
+            <Region prefWidth="12" />
+            <ScrollPane fitToWidth="true" fitToHeight="true" hbarPolicy="NEVER" style="-fx-background-color:transparent;" HBox.hgrow="ALWAYS">
+                <VBox alignment="TOP_CENTER" spacing="40" styleClass="dashboard-content" VBox.vgrow="ALWAYS">
 
                 <!-- Titre principal -->
                 <VBox style="-fx-padding: 30 50 0 50;">
@@ -139,5 +143,6 @@
                 </VBox>
             </VBox>
         </ScrollPane>
+        </HBox>
     </center>
 </BorderPane>

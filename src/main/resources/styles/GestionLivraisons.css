@@ -1,0 +1,221 @@
+/* ============================================
+   STYLES POUR L'INTERFACE DE GESTION DES LIVRAISONS
+   ============================================ */
+
+/* === CONTENEUR PRINCIPAL === */
+/* Fond blanc pour la fenêtre principale */
+.root-gestion-livraisons {
+    -fx-background-color: #FFFFFF; /* Fond blanc pour la fenêtre principale */
+    -fx-font-family: "Open Sans", "Segoe UI", sans-serif;
+    -fx-padding: 20; /* Espacement uniforme de 20px avec les bords de la fenêtre */
+}
+
+/* === CONTENU CENTRAL DÉFILABLE === */
+/* Panneau de contenu avec fond gris, coins arrondis et ombre portée */
+.gestion-livraisons-content {
+    -fx-background-color: #F5F5F5; /* Fond gris pour le panneau de contenu */
+    -fx-background-radius: 20; /* Coins arrondis de 20px pour le panneau */
+    -fx-padding: 40 0 60 0;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 5); /* Ombre portée pour créer l'effet de profondeur */
+    -fx-min-height: -1; /* Permet au contenu de prendre toute la hauteur disponible */
+    -fx-clip-shape: null; /* Permet aux coins arrondis d'être visibles même dans le ScrollPane */
+}
+
+/* === TITRES === */
+/* Titre principal "Gestion des livraisons" en vert foncé */
+.gestion-title {
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #001910; /* Vert foncé */
+}
+
+/* Sous-titre en vert clair */
+.gestion-subtitle {
+    -fx-text-fill: #6E8268; /* Vert clair */
+    -fx-font-size: 15px;
+    -fx-font-weight: 600;
+}
+
+/* === BARRE DE RECHERCHE === */
+/* Conteneur de la barre de recherche */
+.search-container {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 10px;
+    -fx-padding: 12 15;
+    -fx-spacing: 10;
+    -fx-alignment: CENTER_LEFT;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 4, 0, 0, 2);
+}
+
+/* Champ de texte de recherche */
+.search-field {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-font-size: 14px;
+    -fx-text-fill: #333333;
+}
+
+.search-field:focused {
+    -fx-border-color: transparent;
+}
+
+/* === BOUTON NOUVELLE LIVRAISON === */
+.btn-nouvelle-livraison {
+    -fx-background-color: #6A7560; /* Vert-gris comme dans l'image */
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 10px;
+    -fx-padding: 12 20;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 6, 0, 0, 3);
+    -fx-content-display: LEFT;
+    -fx-graphic-text-gap: 8;
+}
+
+.btn-nouvelle-livraison:hover {
+    -fx-background-color: #5A6550; /* Plus foncé au survol */
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 8, 0, 0, 4);
+}
+
+.btn-nouvelle-livraison:pressed {
+    -fx-background-color: #4A5540;
+}
+
+/* === DROPDOWNS DE FILTRES === */
+/* Style pour les ComboBox de filtres */
+.filter-dropdown {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 10px;
+    -fx-border-color: transparent;
+    -fx-font-size: 14px;
+    -fx-padding: 10 15;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 4, 0, 0, 2);
+}
+
+.filter-dropdown:hover {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 6, 0, 0, 3);
+}
+
+.filter-dropdown:focused {
+    -fx-border-color: #6E8268;
+    -fx-border-width: 2px;
+}
+
+/* Style pour la liste déroulante des ComboBox */
+.filter-dropdown .list-view {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 10px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 8, 0, 0, 4);
+}
+
+/* === CARTE LIVRAISON === */
+/* Conteneur principal de chaque carte livraison */
+.livraison-card {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 15px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 6, 0, 0, 3);
+    -fx-alignment: TOP_LEFT;
+    -fx-cursor: hand;
+}
+
+/* Effet au survol de la carte */
+.livraison-card:hover {
+    -fx-effect: dropshadow(gaussian, rgba(0,85,29,0.2), 10, 0, 0, 5);
+    -fx-translate-y: -3;
+}
+
+/* === ÉLÉMENTS DE LA CARTE LIVRAISON === */
+/* Numéro livraison (ex: L0001) */
+.livraison-numero {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #001910; /* Vert foncé */
+}
+
+/* Nom du client */
+.livraison-client {
+    -fx-font-size: 16px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #333333;
+}
+
+/* Informations de la livraison (date, médicaments) */
+.livraison-info {
+    -fx-font-size: 14px;
+    -fx-text-fill: #666666;
+}
+
+/* Taxe */
+.livraison-taxe {
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #333333;
+}
+
+/* === BOUTONS D'ACTION DANS LA CARTE === */
+/* Boutons icônes (QR code, modifier, supprimer) */
+.btn-icon {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-cursor: hand;
+    -fx-padding: 5;
+}
+
+.btn-icon:hover {
+    -fx-background-color: rgba(0,0,0,0.05);
+    -fx-background-radius: 5px;
+}
+
+/* === TAGS DE STATUT === */
+/* Style de base pour tous les tags */
+.tag {
+    -fx-background-radius: 15px;
+    -fx-padding: 5 12;
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+    -fx-alignment: CENTER;
+}
+
+/* Tag statut "livrée" - fond vert clair */
+.tag-statut-livrée {
+    -fx-background-color: #C8E6C9; /* Vert clair */
+    -fx-text-fill: #2E7D32; /* Vert foncé */
+}
+
+/* Tag statut "en cours" - fond bleu clair */
+.tag-statut-en-cours {
+    -fx-background-color: #BBDEFB; /* Bleu clair */
+    -fx-text-fill: #1976D2; /* Bleu foncé */
+}
+
+/* Tag statut "en attente" - fond orange clair */
+.tag-statut-en-attente {
+    -fx-background-color: #FFE0B2; /* Orange clair */
+    -fx-text-fill: #F57C00; /* Orange foncé */
+}
+
+/* Tag statut "annulée" - fond rouge clair */
+.tag-statut-annulée {
+    -fx-background-color: #FFCDD2; /* Rouge clair */
+    -fx-text-fill: #C62828; /* Rouge foncé */
+}
+
+/* Tag type (sous chaine du froid, etc.) - fond gris */
+.tag-type {
+    -fx-background-color: #E0E0E0; /* Gris clair */
+    -fx-text-fill: #424242; /* Gris foncé */
+}
+
+/* Tag urgent - fond rouge clair */
+.tag-urgent {
+    -fx-background-color: #FFEBEE; /* Rouge très clair */
+    -fx-text-fill: #E53935; /* Rouge */
+}
+
+/* === GRILLE DE LIVRAISONS === */
+/* Style pour la grille contenant les cartes livraisons */
+.livraisons-grid {
+    -fx-alignment: TOP_LEFT;
+}
+

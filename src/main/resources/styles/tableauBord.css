@@ -1,14 +1,20 @@
+/* === CONTENEUR PRINCIPAL === */
+/* Fond blanc pour la fenêtre principale */
 .root-dashboard {
-    -fx-background-color: #FFFFFF;
+    -fx-background-color: #FFFFFF; /* Fond blanc pour la fenêtre principale */
     -fx-font-family: "Open Sans", "Segoe UI", sans-serif;
-    -fx-background-radius: 15;
+    -fx-padding: 20; /* Espacement uniforme de 20px avec les bords de la fenêtre */
 }
 
 /* === CONTENU PRINCIPAL === */
+/* Panneau de contenu avec fond gris, coins arrondis et ombre portée */
 .dashboard-content {
-    -fx-background-color: #F5F5F5;
-    -fx-background-radius: 20;
+    -fx-background-color: #F5F5F5; /* Fond gris pour le panneau de contenu */
+    -fx-background-radius: 20; /* Coins arrondis de 20px pour le panneau */
     -fx-padding: 40 0 60 0;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 5); /* Ombre portée pour créer l'effet de profondeur */
+    -fx-min-height: -1; /* Permet au contenu de prendre toute la hauteur disponible */
+    -fx-clip-shape: null; /* Permet aux coins arrondis d'être visibles même dans le ScrollPane */
 }
 
 /* === TITRES === */
