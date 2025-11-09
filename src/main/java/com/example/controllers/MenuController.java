@@ -24,12 +24,14 @@ public class MenuController implements Initializable {
     @FXML private ToggleButton btnClients;
     @FXML private ToggleButton btnMedicaments;
     @FXML private ToggleButton btnLivraisons;
+    @FXML private ToggleButton btnUtilisateurs;
 
     @FXML private ImageView iconDashboard;
     @FXML private ImageView iconConsultation;
     @FXML private ImageView iconClients;
     @FXML private ImageView iconMedicaments;
     @FXML private ImageView iconLivraisons;
+    @FXML private ImageView iconUtilisateurs;
 
     private final ToggleGroup menuGroup = new ToggleGroup();
     private static final String BASE_STYLE = "-fx-focus-color: transparent; " +
@@ -46,6 +48,7 @@ public class MenuController implements Initializable {
         btnClients.setToggleGroup(menuGroup);
         btnMedicaments.setToggleGroup(menuGroup);
         btnLivraisons.setToggleGroup(menuGroup);
+        btnUtilisateurs.setToggleGroup(menuGroup);
 
         // Désactiver les effets visuels par défaut pour tous les boutons
         disableDefaultButtonEffects(btnDashboard);
@@ -53,6 +56,7 @@ public class MenuController implements Initializable {
         disableDefaultButtonEffects(btnClients);
         disableDefaultButtonEffects(btnMedicaments);
         disableDefaultButtonEffects(btnLivraisons);
+        disableDefaultButtonEffects(btnUtilisateurs);
 
         // Initialisation
         btnDashboard.setSelected(true);
@@ -92,6 +96,11 @@ public class MenuController implements Initializable {
         btnLivraisons.setOnAction(e -> {
             System.out.println("Clic sur Gestion des livraisons");
             ouvrirGestionLivraisons();
+        });
+
+        btnUtilisateurs.setOnAction(e -> {
+            System.out.println("Clic sur Gestion des utilisateurs");
+            ouvrirGestionUtilisateurs();
         });
     }
 
@@ -159,6 +168,7 @@ public class MenuController implements Initializable {
             applyCorrectStyle(btnClients);
             applyCorrectStyle(btnMedicaments);
             applyCorrectStyle(btnLivraisons);
+            applyCorrectStyle(btnUtilisateurs);
         });
     }
 
@@ -173,6 +183,9 @@ public class MenuController implements Initializable {
         setIcon(iconLivraisons, btnLivraisons.isSelected()
                 ? "/assets/livraison (3).png"
                 : "/assets/livraison (1).png");
+        setIcon(iconUtilisateurs, btnUtilisateurs.isSelected()
+                ? "/assets/silhouette-dutilisateurs-multiples.png"
+                : "/assets/liste-des-utilisateurs.png");
     }
 
     private void setIcon(ImageView view, String path) {
@@ -573,6 +586,101 @@ public class MenuController implements Initializable {
             e.printStackTrace();
         } catch (Exception e) {
             System.err.println("ERREUR inattendue lors du chargement de la page Gestion des livraisons : " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private void ouvrirGestionUtilisateurs() {
+        try {
+            System.out.println("Début du chargement de GestionUtilisateurs...");
+
+            // Charger le fichier FXML de la page Gestion des clients
+            URL fxmlUrl = getClass().getResource("/com/example/views/GestionUtilisateurs.fxml");
+            if (fxmlUrl == null) {
+                System.err.println("ERREUR: Fichier FXML GestionUtilisateurs.fxml introuvable !");
+                System.err.println("Chemin recherché: /com/example/views/GestionUtilisateurs.fxml");
+                return;
+            }
+            System.out.println("Fichier FXML trouvé: " + fxmlUrl);
+
+            FXMLLoader fxmlLoader = new FXMLLoader(fxmlUrl);
+            Parent root = fxmlLoader.load();
+            System.out.println("FXML chargé avec succès");
+
+            // Récupérer la scène actuelle et la fenêtre (Stage)
+            // Essayer plusieurs méthodes pour obtenir la scène
+            Scene currentScene = null;
+            Stage stage = null;
+
+            // Méthode 1: depuis le bouton
+            if (btnUtilisateurs != null) {
+                currentScene = btnUtilisateurs.getScene();
+                if (currentScene != null) {
+                    stage = (Stage) currentScene.getWindow();
+                }
+            }
+
+            // Méthode 2: depuis le parent du bouton
+            if (currentScene == null && btnUtilisateurs != null && btnUtilisateurs.getParent() != null) {
+                currentScene = btnUtilisateurs.getParent().getScene();
+                if (currentScene != null) {
+                    stage = (Stage) currentScene.getWindow();
+                }
+            }
+
+            // Méthode 3: depuis n'importe quel nœud de la scène
+            if (currentScene == null && btnDashboard != null) {
+                currentScene = btnDashboard.getScene();
+                if (currentScene != null) {
+                    stage = (Stage) currentScene.getWindow();
+                }
+            }
+
+            if (currentScene == null || stage == null) {
+                System.err.println("ERREUR: Impossible de récupérer la scène ou le Stage !");
+                System.err.println("btnClients.getScene() = " + (btnUtilisateurs != null ? btnUtilisateurs.getScene() : "btnUtilisateurs est null"));
+                return;
+            }
+
+            System.out.println("Scène récupérée: " + currentScene);
+            System.out.println("Stage récupéré: " + stage);
+
+            // Créer une nouvelle scène avec le contenu chargé
+            double width = currentScene.getWidth() > 0 ? currentScene.getWidth() : 1024;
+            double height = currentScene.getHeight() > 0 ? currentScene.getHeight() : 768;
+            Scene scene = new Scene(root, width, height);
+            System.out.println("Nouvelle scène créée: " + width + "x" + height);
+
+            // Charger les fichiers CSS nécessaires
+            URL cssMenu = getClass().getResource("/styles/menu.css");
+            URL cssGestionUtilisateurs = getClass().getResource("/styles/GestionUtilisateurs.css");
+
+            if (cssMenu != null) {
+                scene.getStylesheets().add(cssMenu.toExternalForm());
+                System.out.println("CSS menu.css chargé");
+            } else {
+                System.err.println("ATTENTION: Fichier CSS menu.css introuvable !");
+            }
+
+            if (cssGestionUtilisateurs != null) {
+                scene.getStylesheets().add(cssGestionUtilisateurs.toExternalForm());
+                System.out.println("CSS GestionUtilisateurs.css chargé");
+            } else {
+                System.err.println("ATTENTION: Fichier CSS GestionUtilisateurs.css introuvable !");
+            }
+
+            // Appliquer la police par défaut
+            scene.getRoot().setStyle("-fx-font-family: 'Segoe UI', 'Arial', sans-serif;");
+
+            // Définir la nouvelle scène et afficher
+            stage.setScene(scene);
+            System.out.println("Page Gestion des utilisateurs chargée avec succès !");
+
+        } catch (IOException e) {
+            System.err.println("ERREUR lors du chargement de la page Gestion des utilisateurs : " + e.getMessage());
+            e.printStackTrace();
+        } catch (Exception e) {
+            System.err.println("ERREUR inattendue lors du chargement de la page Gestion des utilisateurs : " + e.getMessage());
             e.printStackTrace();
         }
     }

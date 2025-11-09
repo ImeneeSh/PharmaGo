@@ -51,5 +51,11 @@
                 <ImageView fx:id="iconLivraisons" fitHeight="18" fitWidth="18" />
             </graphic>
         </ToggleButton>
+
+        <ToggleButton fx:id="btnUtilisateurs" text="Gestion des utilisateurs" styleClass="menu-item">
+            <graphic>
+                <ImageView fx:id="iconUtilisateurs" fitHeight="18" fitWidth="18" />
+            </graphic>
+        </ToggleButton>
     </VBox>
 </VBox>
