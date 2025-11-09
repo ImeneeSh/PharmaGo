@@ -1,13 +1,19 @@
 package com.example.controllers;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -244,21 +250,33 @@ public class GestionClientsController implements Initializable {
      * @param client Le client à supprimer
      */
     private void supprimerClient(Client client) {
-        // Confirmation avant suppression
-        Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmation.setTitle("Confirmation de suppression");
-        confirmation.setHeaderText("Supprimer le client ?");
-        confirmation.setContentText("Êtes-vous sûr de vouloir supprimer le client " + client.getCode() + " ?");
-        
-        confirmation.showAndWait().ifPresent(response -> {
-            if (response == ButtonType.OK) {
-                // Supprimer le client de la liste
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/views/ConfirmerSuppression.fxml"));
+            Parent root = loader.load();
+
+            ConfirmerSuppressionController controller = loader.getController();
+            controller.setClient(client);
+
+            Stage dialogStage = new Stage();
+            dialogStage.initModality(Modality.APPLICATION_MODAL);
+            dialogStage.setResizable(false);
+            dialogStage.setTitle("Confirmation de suppression");
+            Scene scene = new Scene(root);
+            scene.getStylesheets().add(getClass().getResource("/styles/GestionClients.css").toExternalForm());
+            dialogStage.setScene(scene);
+            dialogStage.showAndWait();
+
+            if (controller.isConfirmation()) {
                 clients.remove(client);
                 filtrerClients(searchField.getText());
                 System.out.println("Client " + client.getCode() + " supprimé");
             }
-        });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
+
 
     /**
      * Action pour voir les livraisons d'un client
