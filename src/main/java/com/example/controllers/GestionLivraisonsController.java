@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
+import java.text.Normalizer;
 
 /**
  * Contrôleur pour l'interface de gestion des livraisons
@@ -73,23 +74,23 @@ public class GestionLivraisonsController implements Initializable {
     private void initialiserDonneesTest() {
         // Livraison avec plusieurs tags (livrée, sous chaine du froid, urgent)
         livraisons.add(new Livraison("L0001", "Djammel Debbag", LocalDate.of(2025, 12, 31), 2, 250, 
-            "livrée", "sous chaine du froid", true));
+            2250 ,"livrée", "sous chaine du froid", true));
         
         // Autres livraisons de test
-        livraisons.add(new Livraison("L0002", "Amina Berrabah", LocalDate.of(2025, 11, 15), 3, 350, 
-            "en cours", "sous congélation", false));
+        livraisons.add(new Livraison("L0002", "Amina Berrabah", LocalDate.of(2025, 11, 15), 3, 350,
+                2250 ,"en cours", "sous congélation", false));
         
-        livraisons.add(new Livraison("L0003", "Karim Benali", LocalDate.of(2025, 10, 20), 1, 150, 
-            "livrée", "dangereuses", false));
+        livraisons.add(new Livraison("L0003", "Karim Benali", LocalDate.of(2025, 10, 20), 1, 150,
+                2250 ,"livrée", "dangereuses", false));
         
-        livraisons.add(new Livraison("L0004", "Fatima Zohra", LocalDate.of(2025, 12, 10), 4, 450, 
-            "en attente", "sous chaine du froid", true));
+        livraisons.add(new Livraison("L0004", "Fatima Zohra", LocalDate.of(2025, 12, 10), 4, 450,
+                2250 ,"en attente", "sous chaine du froid", true));
         
-        livraisons.add(new Livraison("L0005", "Mohamed Amine", LocalDate.of(2025, 11, 25), 2, 280, 
-            "livrée", "normale", false));
+        livraisons.add(new Livraison("L0005", "Mohamed Amine", LocalDate.of(2025, 11, 25), 2, 280,
+                2250 ,"livrée", "normale", false));
         
-        livraisons.add(new Livraison("L0006", "Sara Bouzid", LocalDate.of(2025, 12, 5), 5, 520, 
-            "en cours", "sous chaine du froid", true));
+        livraisons.add(new Livraison("L0006", "Sara Bouzid", LocalDate.of(2025, 12, 5), 5, 520,
+                2250 ,"en cours", "sous chaine du froid", true));
         
         livraisonsFiltres = new ArrayList<>(livraisons);
     }
@@ -182,18 +183,18 @@ public class GestionLivraisonsController implements Initializable {
     private void afficherLivraisons() {
         // Vider la grille avant de la remplir
         livraisonsGrid.getChildren().clear();
-        
+
         // Calculer le nombre de colonnes (3 colonnes par ligne)
         int colonnes = 3;
-        
+
         // Créer une carte pour chaque livraison filtrée
         for (int i = 0; i < livraisonsFiltres.size(); i++) {
             Livraison livraison = livraisonsFiltres.get(i);
-            
+
             // Calculer la position dans la grille
             int colonne = i % colonnes;
             int ligne = i / colonnes;
-            
+
             // Créer et ajouter la carte livraison
             VBox carteLivraison = creerCarteLivraison(livraison);
             livraisonsGrid.add(carteLivraison, colonne, ligne);
@@ -290,18 +291,23 @@ public class GestionLivraisonsController implements Initializable {
         // Taxe
         Label taxeLabel = new Label("Taxe : " + livraison.getTaxe() + " DA");
         taxeLabel.getStyleClass().add("livraison-taxe");
-        
+
         infosLivraison.getChildren().addAll(dateBox, medicamentsBox, taxeLabel);
-        
+
+        // Coût total
+        Label coutLabel = new Label("Coût total : " + livraison.getCout() + " DA");
+        coutLabel.getStyleClass().add("livraison-taxe");
+        infosLivraison.getChildren().add(coutLabel);
+
+
         // Tags de statut en bas de la carte
         HBox tagsBox = new HBox(8);
         tagsBox.setAlignment(Pos.CENTER_LEFT);
         tagsBox.setSpacing(8);
-        
-        // Tag statut (livrée, en cours, etc.)
+
         Label tagStatut = new Label(livraison.getStatut());
         tagStatut.getStyleClass().add("tag");
-        tagStatut.getStyleClass().add("tag-statut-" + livraison.getStatut().replace(" ", "-"));
+        tagStatut.getStyleClass().add("tag-statut-" + normaliserClasseCSS(livraison.getStatut()));
         tagsBox.getChildren().add(tagStatut);
         
         // Tag type (sous chaine du froid, etc.)
@@ -382,17 +388,19 @@ public class GestionLivraisonsController implements Initializable {
         private LocalDate date;
         private int nombreMedicaments;
         private int taxe;
+        private float cout ;
         private String statut; // livrée, en cours, en attente, annulée
         private String type; // sous chaine du froid, sous congélation, dangereuses, normale
         private boolean urgent;
 
         public Livraison(String numero, String client, LocalDate date, int nombreMedicaments, 
-                        int taxe, String statut, String type, boolean urgent) {
+                        int taxe, float cout , String statut, String type, boolean urgent) {
             this.numero = numero;
             this.client = client;
             this.date = date;
             this.nombreMedicaments = nombreMedicaments;
             this.taxe = taxe;
+            this.cout = cout;
             this.statut = statut;
             this.type = type;
             this.urgent = urgent;
@@ -404,6 +412,7 @@ public class GestionLivraisonsController implements Initializable {
         public LocalDate getDate() { return date; }
         public int getNombreMedicaments() { return nombreMedicaments; }
         public int getTaxe() { return taxe; }
+        public float getCout() { return cout; }
         public String getStatut() { return statut; }
         public String getType() { return type; }
         public boolean isUrgent() { return urgent; }
@@ -425,9 +434,20 @@ public class GestionLivraisonsController implements Initializable {
         public void setDate(LocalDate date) { this.date = date; }
         public void setNombreMedicaments(int nombreMedicaments) { this.nombreMedicaments = nombreMedicaments; }
         public void setTaxe(int taxe) { this.taxe = taxe; }
+        public void setCout (float cout) { this.cout = cout ;}
         public void setStatut(String statut) { this.statut = statut; }
         public void setType(String type) { this.type = type; }
         public void setUrgent(boolean urgent) { this.urgent = urgent; }
     }
+
+
+    private String normaliserClasseCSS(String texte) {
+        if (texte == null) return "";
+        // Supprime les accents et met en minuscules
+        String sansAccent = Normalizer.normalize(texte, Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", ""); // Enlève les diacritiques
+        return sansAccent.toLowerCase().replace(" ", "-");
+    }
+
 }
 

@@ -178,7 +178,7 @@
 }
 
 /* Tag statut "livrée" - fond vert clair */
-.tag-statut-livrée {
+.tag-statut-livree {
     -fx-background-color: #C8E6C9; /* Vert clair */
     -fx-text-fill: #2E7D32; /* Vert foncé */
 }
