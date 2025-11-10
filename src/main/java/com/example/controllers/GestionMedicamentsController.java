@@ -1,13 +1,19 @@
 package com.example.controllers;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -303,20 +309,31 @@ public class GestionMedicamentsController implements Initializable {
      * @param medicament Le médicament à supprimer
      */
     private void supprimerMedicament(Medicament medicament) {
-        // Confirmation avant suppression
-        Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmation.setTitle("Confirmation de suppression");
-        confirmation.setHeaderText("Supprimer le médicament ?");
-        confirmation.setContentText("Êtes-vous sûr de vouloir supprimer le médicament " + medicament.getCode() + " ?");
-        
-        confirmation.showAndWait().ifPresent(response -> {
-            if (response == ButtonType.OK) {
-                // Supprimer le médicament de la liste
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/views/ConfirmerSuppression.fxml"));
+            Parent root = loader.load();
+
+            ConfirmerSuppressionController controller = loader.getController();
+            controller.setMedicament(medicament);
+
+            Stage dialogStage = new Stage();
+            dialogStage.initModality(Modality.APPLICATION_MODAL);
+            dialogStage.setResizable(false);
+            dialogStage.setTitle("Confirmation de suppression");
+            Scene scene = new Scene(root);
+            scene.getStylesheets().add(getClass().getResource("/styles/GestionMedicaments.css").toExternalForm());
+            dialogStage.setScene(scene);
+            dialogStage.showAndWait();
+
+            if (controller.isConfirmation()) {
                 medicaments.remove(medicament);
                 filtrerMedicaments(searchField.getText());
-                System.out.println("Médicament " + medicament.getCode() + " supprimé");
+                System.out.println("Client " + medicament.getCode() + " supprimé");
             }
-        });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**

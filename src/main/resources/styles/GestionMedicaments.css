@@ -180,3 +180,70 @@
     -fx-alignment: TOP_LEFT;
 }
 
+/* =========================================================================*/
+
+/* === DIALOG DE SUPPRESSION === */
+
+.dialog-background {
+    -fx-background-color: rgba(0, 0, 0, 0.35); /* Fond semi-transparent */
+    -fx-alignment: CENTER;
+}
+
+.dialog-box {
+    -fx-background-color: #FFFFFF;
+    -fx-padding: 30 40;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 10, 0, 0, 4);
+    -fx-min-width: 400;
+    -fx-max-width: 450;
+}
+
+.dialog-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #001910;
+    -fx-alignment: CENTER;
+}
+
+.dialog-client-code {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #001910;
+}
+
+.dialog-client-nom {
+    -fx-font-size: 15px;
+    -fx-text-fill: #333333;
+}
+
+.dialog-client-info {
+    -fx-font-size: 13px;
+    -fx-text-fill: #666666;
+}
+
+/* Boutons */
+.btn-annuler {
+    -fx-background-color: #B0B0B0;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-padding: 10 25;
+}
+
+.btn-annuler:hover {
+    -fx-background-color: #A0A0A0;
+}
+
+.btn-confirmer {
+    -fx-background-color: #E53935;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-padding: 10 25;
+}
+
+.btn-confirmer:hover {
+    -fx-background-color: #C62828;
+}
+
+
+
