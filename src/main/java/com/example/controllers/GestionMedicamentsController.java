@@ -328,7 +328,7 @@ public class GestionMedicamentsController implements Initializable {
             if (controller.isConfirmation()) {
                 medicaments.remove(medicament);
                 filtrerMedicaments(searchField.getText());
-                System.out.println("Client " + medicament.getCode() + " supprimé");
+                System.out.println("Médicament " + medicament.getCode() + " supprimé");
             }
 
         } catch (Exception e) {

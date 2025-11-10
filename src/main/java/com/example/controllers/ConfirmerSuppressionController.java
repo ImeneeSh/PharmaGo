@@ -23,6 +23,12 @@ public class ConfirmerSuppressionController {
     @FXML private Label prix;
     @FXML private VBox blocMedicament;
 
+    // Partie livraison
+    @FXML private Label quantiteLivraison;
+    @FXML private Label taxe ;
+    @FXML private Label coutTotal ;
+    @FXML private VBox blocLivraison ;
+
     // 🔹 Boutons
     @FXML private Button btnAnnuler;
     @FXML private Button btnConfirmer;
@@ -38,6 +44,7 @@ public class ConfirmerSuppressionController {
         // Par défaut : cacher les blocs spécifiques
         if (blocClient != null) blocClient.setVisible(false);
         if (blocMedicament != null) blocMedicament.setVisible(false);
+        if(blocLivraison != null) blocLivraison.setVisible(false);
     }
 
     // ============================================================
@@ -66,6 +73,22 @@ public class ConfirmerSuppressionController {
 
         blocClient.setVisible(false);
         blocMedicament.setVisible(true);
+    }
+
+    // ============================================================
+    // Cas livraison
+    // ============================================================
+    public void setLivraison(GestionLivraisonsController.Livraison livraison) {
+        titreLabel.setText("Supprimer cette livraison ?");
+        codeLabel.setText("Code : " + livraison.getNumero());
+        nomLabel.setText("Nom du client : " + livraison.getClient());
+        quantiteLivraison.setText("Quantité : " + livraison.getNombreMedicaments());
+        taxe.setText(String.format("Taxe : %d DA", livraison.getTaxe()));
+        coutTotal.setText(String.format("Cout total : %.2f DA", livraison.getCout()));
+
+
+        blocLivraison.setVisible(false);
+        blocLivraison.setVisible(true);
     }
 
     // ============================================================

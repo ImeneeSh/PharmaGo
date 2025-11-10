@@ -1,13 +1,19 @@
 package com.example.controllers;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -361,21 +367,32 @@ public class GestionLivraisonsController implements Initializable {
      * Action pour supprimer une livraison
      * @param livraison La livraison à supprimer
      */
-    private void supprimerLivraison(Livraison livraison) {
-        // Confirmation avant suppression
-        Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmation.setTitle("Confirmation de suppression");
-        confirmation.setHeaderText("Supprimer la livraison ?");
-        confirmation.setContentText("Êtes-vous sûr de vouloir supprimer la livraison " + livraison.getNumero() + " ?");
-        
-        confirmation.showAndWait().ifPresent(response -> {
-            if (response == ButtonType.OK) {
-                // Supprimer la livraison de la liste
+    private void supprimerLivraison(GestionLivraisonsController.Livraison livraison) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/views/ConfirmerSuppression.fxml"));
+            Parent root = loader.load();
+
+            ConfirmerSuppressionController controller = loader.getController();
+            controller.setLivraison(livraison);
+
+            Stage dialogStage = new Stage();
+            dialogStage.initModality(Modality.APPLICATION_MODAL);
+            dialogStage.setResizable(false);
+            dialogStage.setTitle("Confirmation de suppression");
+            Scene scene = new Scene(root);
+            scene.getStylesheets().add(getClass().getResource("/styles/GestionLivraisons.css").toExternalForm());
+            dialogStage.setScene(scene);
+            dialogStage.showAndWait();
+
+            if (controller.isConfirmation()) {
                 livraisons.remove(livraison);
                 appliquerFiltres();
-                System.out.println("Livraison " + livraison.getNumero() + " supprimée");
+                System.out.println("Livraison " + livraison.getNumero() + " supprimé");
             }
-        });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
