@@ -245,5 +245,19 @@
     -fx-background-color: #C62828;
 }
 
+/*=================================================================*/
+
+.btn-ajouter {
+    -fx-background-color: #6E8268; /* Vert doux */
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-padding: 10 25;
+}
+
+.btn-ajouter:hover {
+    -fx-background-color: #001910;
+}
+
 
 
