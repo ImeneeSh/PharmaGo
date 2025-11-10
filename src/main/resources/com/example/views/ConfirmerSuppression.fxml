@@ -51,6 +51,9 @@
                 <Label fx:id="taxe" styleClass="dialog-client-info"/>
                 <Label fx:id="coutTotal" styleClass="dialog-client-info"/>
             </VBox>
+
+            <VBox fx:id="blocUtilisateur" alignment="CENTER" spacing="5">
+            </VBox>
         </VBox>
 
         <!-- Boutons -->

@@ -1,13 +1,19 @@
 package com.example.controllers;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -201,9 +207,6 @@ public class GestionUtilisateursController implements Initializable {
         iconLocalisation.setFitHeight(16);
         iconLocalisation.setPreserveRatio(true);
         iconLocalisation.setStyle("-fx-opacity: 0.6;");
-        Label adresseLabel = new Label(utilisateur.getAdresse());
-        adresseLabel.getStyleClass().add("utilisateur-info");
-        adresseBox.getChildren().addAll(iconLocalisation, adresseLabel);
 
         // Téléphone avec icône de téléphone
         HBox telephoneBox = new HBox(8);
@@ -213,9 +216,6 @@ public class GestionUtilisateursController implements Initializable {
         iconTelephone.setFitHeight(16);
         iconTelephone.setPreserveRatio(true);
         iconTelephone.setStyle("-fx-opacity: 0.6;");
-        Label telephoneLabel = new Label(utilisateur.getTelephone());
-        telephoneLabel.getStyleClass().add("utilisateur-info");
-        telephoneBox.getChildren().addAll(iconTelephone, telephoneLabel);
 
         infosContact.getChildren().addAll(adresseBox, telephoneBox);
 
@@ -239,21 +239,32 @@ public class GestionUtilisateursController implements Initializable {
      * Action pour supprimer un client
      * @param utilisateur Le client à supprimer
      */
-    private void supprimerUtilisateur(Utilisateur utilisateur) {
-        // Confirmation avant suppression
-        Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmation.setTitle("Confirmation de suppression");
-        confirmation.setHeaderText("Supprimer l'utilisateur ?");
-        confirmation.setContentText("Êtes-vous sûr de vouloir supprimer l'utilisateur " + utilisateur.getCode() + " ?");
+    private void supprimerUtilisateur(GestionUtilisateursController.Utilisateur utilisateur) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/views/ConfirmerSuppression.fxml"));
+            Parent root = loader.load();
 
-        confirmation.showAndWait().ifPresent(response -> {
-            if (response == ButtonType.OK) {
-                // Supprimer le client de la liste
+            ConfirmerSuppressionController controller = loader.getController();
+            controller.setUtilisateur(utilisateur);
+
+            Stage dialogStage = new Stage();
+            dialogStage.initModality(Modality.APPLICATION_MODAL);
+            dialogStage.setResizable(false);
+            dialogStage.setTitle("Confirmation de suppression");
+            Scene scene = new Scene(root);
+            scene.getStylesheets().add(getClass().getResource("/styles/GestionUtilisateurs.css").toExternalForm());
+            dialogStage.setScene(scene);
+            dialogStage.showAndWait();
+
+            if (controller.isConfirmation()) {
                 utilisateurs.remove(utilisateur);
                 filtrerUtilisateurs(searchField.getText());
                 System.out.println("Utilisateur " + utilisateur.getCode() + " supprimé");
             }
-        });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -277,8 +288,6 @@ public class GestionUtilisateursController implements Initializable {
         // Getters
         public String getCode() { return code; }
         public String getNom() { return nom; }
-        public String getAdresse() { return adresse; }
-        public String getTelephone() { return telephone; }
 
         // Setters (si nécessaire)
         public void setCode(String code) { this.code = code; }

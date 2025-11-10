@@ -29,6 +29,9 @@ public class ConfirmerSuppressionController {
     @FXML private Label coutTotal ;
     @FXML private VBox blocLivraison ;
 
+    // Partie utilisateur
+    @FXML private VBox blocUtilisateur ;
+
     // 🔹 Boutons
     @FXML private Button btnAnnuler;
     @FXML private Button btnConfirmer;
@@ -89,6 +92,18 @@ public class ConfirmerSuppressionController {
 
         blocLivraison.setVisible(false);
         blocLivraison.setVisible(true);
+    }
+
+    // ============================================================
+    // Cas utilisateur
+    // ============================================================
+    public void setUtilisateur(GestionUtilisateursController.Utilisateur utilisateur) {
+        titreLabel.setText("Supprimer cet utilisateur ?");
+        codeLabel.setText("Code : " + utilisateur.getCode());
+        nomLabel.setText("Nom de l'utilisateur: " + utilisateur.getNom());
+
+        blocUtilisateur.setVisible(false);
+        blocUtilisateur.setVisible(true);
     }
 
     // ============================================================
