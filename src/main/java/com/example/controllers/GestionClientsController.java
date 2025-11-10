@@ -115,11 +115,33 @@ public class GestionClientsController implements Initializable {
      */
     private void configurerBoutonAjouter() {
         btnAjouterClient.setOnAction(event -> {
-            // TODO: Ouvrir une fenêtre/dialogue pour ajouter un nouveau client
-            System.out.println("Action: Ajouter un nouveau client");
-            // Exemple: ouvrir un dialogue ou changer de vue
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/views/AjouterClient.fxml"));
+                Parent root = loader.load();
+
+                AjouterClientController controller = loader.getController();
+
+                Stage dialogStage = new Stage();
+                dialogStage.initModality(Modality.APPLICATION_MODAL);
+                dialogStage.setResizable(false);
+                dialogStage.setTitle("Ajouter un client");
+                Scene scene = new Scene(root);
+                scene.getStylesheets().add(getClass().getResource("/styles/GestionClients.css").toExternalForm());
+                dialogStage.setScene(scene);
+                dialogStage.showAndWait();
+
+                if (controller.isConfirme()) {
+                    clients.add(controller.getNouveauClient());
+                    filtrerClients(searchField.getText());
+                    System.out.println("Nouveau client ajouté !");
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         });
     }
+
 
     /**
      * Affiche les cartes clients dans la grille

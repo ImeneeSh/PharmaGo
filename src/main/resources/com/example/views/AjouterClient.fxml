@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="com.example.controllers.AjouterClientController"
+           styleClass="dialog-background">
+
+    <VBox alignment="CENTER" spacing="25" styleClass="dialog-box">
+
+        <!-- Titre -->
+        <Label text="Ajout d’un nouveau client" styleClass="dialog-title" />
+
+        <!-- Formulaire -->
+        <GridPane hgap="20" vgap="15" alignment="CENTER">
+            <columnConstraints>
+                <ColumnConstraints percentWidth="50" />
+                <ColumnConstraints percentWidth="50" />
+            </columnConstraints>
+
+            <rowConstraints>
+                <RowConstraints vgrow="NEVER" />
+                <RowConstraints vgrow="NEVER" />
+            </rowConstraints>
+
+            <TextField fx:id="nomField" promptText="nom" />
+            <TextField fx:id="prenomField" promptText="prénom" GridPane.columnIndex="1"/>
+
+            <TextField fx:id="adresseField" promptText="adresse" GridPane.rowIndex="1"/>
+            <TextField fx:id="telephoneField" promptText="numéro de téléphone" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+        </GridPane>
+
+        <!-- Boutons -->
+        <HBox alignment="CENTER" spacing="25">
+            <Button fx:id="btnAnnuler" text="annuler" styleClass="btn-annuler"/>
+            <Button fx:id="btnConfirmer" text="confirmer" styleClass="btn-ajouter"/>
+        </HBox>
+    </VBox>
+</StackPane>
