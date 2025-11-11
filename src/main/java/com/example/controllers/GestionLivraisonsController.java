@@ -176,9 +176,30 @@ public class GestionLivraisonsController implements Initializable {
      */
     private void configurerBoutonNouvelleLivraison() {
         btnNouvelleLivraison.setOnAction(event -> {
-            // TODO: Ouvrir une fenêtre/dialogue pour créer une nouvelle livraison
-            System.out.println("Action: Créer une nouvelle livraison");
-            // Exemple: ouvrir un dialogue ou changer de vue
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/views/AjouterLivraison.fxml"));
+                Parent root = loader.load();
+
+                AjouterLivraisonController controller = loader.getController();
+
+                Stage dialogStage = new Stage();
+                dialogStage.initModality(Modality.APPLICATION_MODAL);
+                dialogStage.setResizable(false);
+                dialogStage.setTitle("Ajouter une livraison");
+                Scene scene = new Scene(root);
+                scene.getStylesheets().add(getClass().getResource("/styles/GestionLivraisons.css").toExternalForm());
+                dialogStage.setScene(scene);
+                dialogStage.showAndWait();
+
+                if (controller.isConfirme()) {
+                    livraisons.add(controller.getNouvelleLivraison());
+                    appliquerFiltres();
+                    System.out.println("Nouvelle livraison ajouté !");
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         });
     }
 
