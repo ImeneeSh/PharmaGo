@@ -5,15 +5,20 @@ package com.example.controllers;
 import javafx.animation.*;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -41,7 +46,25 @@ public class AccueilController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
 
         if (boutonCommencer != null) {
-            boutonCommencer.setOnAction(event -> System.out.println("C’est parti !"));
+            boutonCommencer.setOnAction(event -> {
+                try {
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/views/Authentification.fxml"));
+                    Parent root = loader.load();
+
+                    // On récupère le stage courant
+                    Stage stage = (Stage) boutonCommencer.getScene().getWindow();
+
+                    // Nouvelle scène avec CSS
+                    Scene scene = new Scene(root);
+                    scene.getStylesheets().add(getClass().getResource("/styles/Authentification.css").toExternalForm());
+
+                    stage.setScene(scene);
+                    stage.show();
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
         }
 
         linkFonctionnalites.setOnAction(e -> scrollTo(sectionFonctionnalites));
