@@ -14,56 +14,62 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class AuthentificationController {
+public class InscriptionController {
 
     @FXML
     private ImageView logoImage;
 
     @FXML
-    private TextField emailField;
+    private TextField nomField, prenomField, emailField;
 
     @FXML
-    private PasswordField passwordField;
+    private PasswordField passwordField, confirmPasswordField;
 
     @FXML
-    private Button btnLogin;
+    private Button btnInscrire;
 
     @FXML
-    private Hyperlink linkInscrire;
+    private Hyperlink linkConnexion;
 
     @FXML
     public void initialize() {
         // Charger le logo
         logoImage.setImage(new Image(getClass().getResourceAsStream("/assets/logo.png")));
 
-        // Action bouton login
-        btnLogin.setOnAction(event -> seConnecter());
+        // Action bouton inscription
+        btnInscrire.setOnAction(event -> sInscrire());
 
-        // Action lien inscription
-        linkInscrire.setOnAction(event -> ouvrirInscription());
+        // Action lien connexion
+        linkConnexion.setOnAction(event -> ouvrirConnexion());
     }
 
-    private void seConnecter() {
+    private void sInscrire() {
+        String nom = nomField.getText();
+        String prenom = prenomField.getText();
         String email = emailField.getText();
         String password = passwordField.getText();
+        String confirmPassword = confirmPasswordField.getText();
 
-        System.out.println("Email: " + email + ", Mot de passe: " + password);
+        // 🔹 Exemple de vérification simple
+        if(!password.equals(confirmPassword)) {
+            System.out.println("Les mots de passe ne correspondent pas !");
+            return;
+        }
+
+        System.out.println("Nom: " + nom + ", Prénom: " + prenom + ", Email: " + email);
 
         try {
-            // Charger le FXML du tableau de bord
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/views/TableauBord.fxml"));
             Parent root = loader.load();
 
-            // Créer la scène
             Scene scene = new Scene(root);
 
-            // 🔹 Charger et appliquer les fichiers CSS
+            // Appliquer les CSS du tableau de bord et menu
             String tableauCss = getClass().getResource("/styles/tableauBord.css").toExternalForm();
             String menuCss = getClass().getResource("/styles/menu.css").toExternalForm();
             scene.getStylesheets().addAll(tableauCss, menuCss);
 
-            // Changer la scène dans la fenêtre actuelle
-            Stage stage = (Stage) btnLogin.getScene().getWindow();
+            Stage stage = (Stage) btnInscrire.getScene().getWindow();
             stage.setScene(scene);
             stage.setTitle("Tableau de bord");
             stage.show();
@@ -73,27 +79,25 @@ public class AuthentificationController {
         }
     }
 
-
-
-    private void ouvrirInscription() {
+    private void ouvrirConnexion() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/views/Inscription.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/views/Authentification.fxml"));
             Parent root = loader.load();
 
             Scene scene = new Scene(root);
 
-            // Charger CSS login (ou tableauBord si tu veux garder le même style)
+            // Charger CSS login
             String loginCss = getClass().getResource("/styles/Authentification.css").toExternalForm();
             scene.getStylesheets().add(loginCss);
 
-            Stage stage = (Stage) linkInscrire.getScene().getWindow();
+            Stage stage = (Stage) linkConnexion.getScene().getWindow();
+
             stage.setScene(scene);
-            stage.setTitle("Inscription");
+            stage.setTitle("Connexion");
             stage.show();
 
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
 }
