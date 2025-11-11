@@ -66,12 +66,13 @@ public class GestionUtilisateursController implements Initializable {
      * À remplacer par un appel à la base de données ou service
      */
     private void initialiserDonneesTest() {
-        utilisateurs.add(new Utilisateur("U001", "Djammel Debbag", "Rue de la liberté, Bejaia", "+213 7778879767"));
-        utilisateurs.add(new Utilisateur("U002", "Amina Berrabah", "Avenue des Martyrs, Alger", "+213 555123456"));
-        utilisateurs.add(new Utilisateur("U003", "Karim Benali", "Boulevard Mohamed V, Oran", "+213 666789012"));
-        utilisateurs.add(new Utilisateur("U004", "Fatima Zohra", "Rue Didouche Mourad, Constantine", "+213 777345678"));
-        utilisateurs.add(new Utilisateur("U005", "Mohamed Amine", "Place Emir Abdelkader, Tlemcen", "+213 555901234"));
-        utilisateurs.add(new Utilisateur("U006", "Sara Bouzid", "Avenue Larbi Ben M'hidi, Annaba", "+213 666567890"));
+        utilisateurs.add(new Utilisateur("U001", "Djammel Debbag", "djammel@example.com", "password1"));
+        utilisateurs.add(new Utilisateur("U002", "Amina Berrabah", "amina@example.com", "password2"));
+        utilisateurs.add(new Utilisateur("U003", "Karim Benali", "karim@example.com", "password3"));
+        utilisateurs.add(new Utilisateur("U004", "Fatima Zohra", "fatima@example.com", "password4"));
+        utilisateurs.add(new Utilisateur("U005", "Mohamed Amine", "mohamed@example.com", "password5"));
+        utilisateurs.add(new Utilisateur("U006", "Sara Bouzid", "sara@example.com", "password6"));
+
 
         utilisateursFiltres = new ArrayList<>(utilisateurs);
     }
@@ -115,9 +116,30 @@ public class GestionUtilisateursController implements Initializable {
      */
     private void configurerBoutonAjouter() {
         btnAjouterUtilisateur.setOnAction(event -> {
-            // TODO: Ouvrir une fenêtre/dialogue pour ajouter un nouveau utilisateur
-            System.out.println("Action: Ajouter un nouveau utilisateur");
-            // Exemple: ouvrir un dialogue ou changer de vue
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/views/AjouterUtilisateur.fxml"));
+                Parent root = loader.load();
+
+                AjouterUtilisateurController controller = loader.getController();
+
+                Stage dialogStage = new Stage();
+                dialogStage.initModality(Modality.APPLICATION_MODAL);
+                dialogStage.setResizable(false);
+                dialogStage.setTitle("Ajouter un utilisateur");
+                Scene scene = new Scene(root);
+                scene.getStylesheets().add(getClass().getResource("/styles/GestionUtilisateurs.css").toExternalForm());
+                dialogStage.setScene(scene);
+                dialogStage.showAndWait();
+
+                if (controller.isConfirme()) {
+                    utilisateurs.add(controller.getNouvelUtilisateur());
+                    filtrerUtilisateurs(searchField.getText());
+                    System.out.println("Nouvel utilisateur ajouté !");
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         });
     }
 
@@ -275,24 +297,27 @@ public class GestionUtilisateursController implements Initializable {
     public static class Utilisateur {
         private String code;
         private String nom;
-        private String adresse;
-        private String telephone;
+        private String email;
+        private String motDePasse;
 
-        public Utilisateur(String code, String nom, String adresse, String telephone) {
+        public Utilisateur(String code, String nom, String email, String motDePasse) {
             this.code = code;
             this.nom = nom;
-            this.adresse = adresse;
-            this.telephone = telephone;
+            this.email = email;
+            this.motDePasse = motDePasse;
         }
 
         // Getters
         public String getCode() { return code; }
         public String getNom() { return nom; }
+        public String getEmail() { return email; }
+        public String getMotDePasse() { return motDePasse; }
 
-        // Setters (si nécessaire)
+        // Setters
         public void setCode(String code) { this.code = code; }
         public void setNom(String nom) { this.nom = nom; }
-        public void setAdresse(String adresse) { this.adresse = adresse; }
-        public void setTelephone(String telephone) { this.telephone = telephone; }
+        public void setEmail(String email) { this.email = email; }
+        public void setMotDePasse(String motDePasse) { this.motDePasse = motDePasse; }
     }
+
 }
