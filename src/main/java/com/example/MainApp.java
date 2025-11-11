@@ -14,13 +14,13 @@ public class MainApp extends Application {
     @Override
     public void start(Stage primaryStage) {
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/example/views/TableauBord.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/example/views/Authentification.fxml"));
             Parent root = fxmlLoader.load();
 
             Scene scene = new Scene(root, 1024, 768);
 
 
-            URL cssURL = getClass().getResource("/styles/tableauBord.css");
+            URL cssURL = getClass().getResource("/styles/Authentification.css");
             if (cssURL != null) {
                 System.out.println("CSS trouvé : " + cssURL);
                 scene.getStylesheets().add(cssURL.toExternalForm());
