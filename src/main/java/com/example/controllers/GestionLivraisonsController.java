@@ -45,6 +45,8 @@ public class GestionLivraisonsController implements Initializable {
     @FXML
     private GridPane livraisonsGrid; // Grille pour afficher les cartes livraisons
 
+    private String medicament;
+
     // Liste des livraisons (sera remplacée par une vraie source de données)
     private List<Livraison> livraisons = new ArrayList<>();
     
@@ -79,24 +81,21 @@ public class GestionLivraisonsController implements Initializable {
      */
     private void initialiserDonneesTest() {
         // Livraison avec plusieurs tags (livrée, sous chaine du froid, urgent)
-        livraisons.add(new Livraison("L0001", "Djammel Debbag", LocalDate.of(2025, 12, 31), 2, 250, 
-            2250 ,"livrée", "sous chaine du froid", true));
-        
-        // Autres livraisons de test
+        livraisons.add(new Livraison("L0001", "Djammel Debbag", LocalDate.of(2025, 12, 31), 2, 250,
+                2250 ,"livrée", "sous chaine du froid", true, "Paracetamol"));
+
         livraisons.add(new Livraison("L0002", "Amina Berrabah", LocalDate.of(2025, 11, 15), 3, 350,
-                2250 ,"en cours", "sous congélation", false));
-        
-        livraisons.add(new Livraison("L0003", "Karim Benali", LocalDate.of(2025, 10, 20), 1, 150,
-                2250 ,"livrée", "dangereuses", false));
-        
-        livraisons.add(new Livraison("L0004", "Fatima Zohra", LocalDate.of(2025, 12, 10), 4, 450,
-                2250 ,"en attente", "sous chaine du froid", true));
-        
-        livraisons.add(new Livraison("L0005", "Mohamed Amine", LocalDate.of(2025, 11, 25), 2, 280,
-                2250 ,"livrée", "normale", false));
-        
-        livraisons.add(new Livraison("L0006", "Sara Bouzid", LocalDate.of(2025, 12, 5), 5, 520,
-                2250 ,"en cours", "sous chaine du froid", true));
+                2250 ,"en cours", "sous congélation", false, "Ibuprofen"));
+        livraisons.add(new Livraison("L0001", "Djammel Debbag", LocalDate.of(2025, 12, 31), 2, 250,
+                2250 ,"livrée", "sous chaine du froid", true, "Paracetamol"));
+
+        livraisons.add(new Livraison("L0002", "Amina Berrabah", LocalDate.of(2025, 11, 15), 3, 350,
+                2250 ,"en cours", "sous congélation", false, "Ibuprofen"));
+        livraisons.add(new Livraison("L0001", "Djammel Debbag", LocalDate.of(2025, 12, 31), 2, 250,
+                2250 ,"livrée", "sous chaine du froid", true, "Paracetamol"));
+
+        livraisons.add(new Livraison("L0002", "Amina Berrabah", LocalDate.of(2025, 11, 15), 3, 350,
+                2250 ,"en cours", "sous congélation", false, "Ibuprofen"));
         
         livraisonsFiltres = new ArrayList<>(livraisons);
     }
@@ -426,13 +425,15 @@ public class GestionLivraisonsController implements Initializable {
         private LocalDate date;
         private int nombreMedicaments;
         private int taxe;
-        private float cout ;
-        private String statut; // livrée, en cours, en attente, annulée
-        private String type; // sous chaine du froid, sous congélation, dangereuses, normale
+        private float cout;
+        private String statut;
+        private String type;
         private boolean urgent;
+        private String medicament;
 
-        public Livraison(String numero, String client, LocalDate date, int nombreMedicaments, 
-                        int taxe, float cout , String statut, String type, boolean urgent) {
+        public Livraison(String numero, String client, LocalDate date, int nombreMedicaments,
+                         int taxe, float cout, String statut, String type, boolean urgent,
+                         String medicament) {
             this.numero = numero;
             this.client = client;
             this.date = date;
@@ -442,7 +443,9 @@ public class GestionLivraisonsController implements Initializable {
             this.statut = statut;
             this.type = type;
             this.urgent = urgent;
+            this.medicament = medicament;
         }
+
 
         // Getters
         public String getNumero() { return numero; }
@@ -454,6 +457,8 @@ public class GestionLivraisonsController implements Initializable {
         public String getStatut() { return statut; }
         public String getType() { return type; }
         public boolean isUrgent() { return urgent; }
+        public String getMedicament() { return medicament; }
+
 
         /**
          * Retourne la date formatée (dd/MM/yyyy)

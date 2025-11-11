@@ -16,6 +16,8 @@ public class AjouterLivraisonController {
     @FXML private TextField coutField;
     @FXML private ComboBox<String> statutField;      // Changement TextField -> ComboBox
     @FXML private ComboBox<String> typeField;        // Changement TextField -> ComboBox
+    @FXML private TextField medicamentField;
+
 
     @FXML private Button btnAnnuler;
     @FXML private Button btnConfirmer;
@@ -50,6 +52,7 @@ public class AjouterLivraisonController {
             String type = typeField.getValue();
             String numero = "L" + (int)(Math.random() * 10000);
             boolean urgent = false; // Par défaut, ou ajouter un Checkbox
+            String nomMedicament = medicamentField.getText();
 
             nouvelleLivraison = new GestionLivraisonsController.Livraison(
                     numero,
@@ -60,7 +63,8 @@ public class AjouterLivraisonController {
                     cout,
                     statut,
                     type,
-                    urgent
+                    urgent,
+                    nomMedicament
             );
 
             fermer(true);
@@ -83,4 +87,6 @@ public class AjouterLivraisonController {
     public GestionLivraisonsController.Livraison getNouvelleLivraison() {
         return nouvelleLivraison;
     }
+
+
 }
