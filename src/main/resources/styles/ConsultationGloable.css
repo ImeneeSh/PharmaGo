@@ -25,7 +25,7 @@
 /* === TITRES DE LA PAGE === */
 /* Titre principal "Consultation global" */
 .consultation-title {
-    -fx-font-size: 30px;
+    -fx-font-size: 32px;
     -fx-font-weight: bold;
     -fx-text-fill: #001910;
 }
@@ -45,17 +45,10 @@
     -fx-background-color: #FFFFFF;
     -fx-background-radius: 20;
     -fx-padding: 30 45;
-    -fx-spacing: 25;
-    /* Largeur flexible : minimum 300px, maximum 900px, préférée 33% de l'espace disponible */
-    -fx-min-width: 300;
-    -fx-pref-width: 400;
-    -fx-max-width: 900;
-    /* Hauteur flexible : minimum 160px, maximum 250px */
-    -fx-min-height: 160;
+    -fx-spacing: 12;
+    -fx-pref-width: 380;
     -fx-pref-height: 190;
-    -fx-max-height: 250;
-    /* Alignement centré pour tous les éléments de la carte */
-    -fx-alignment: CENTER;
+    -fx-alignment: CENTER_LEFT;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0, 0, 4);
     -fx-cursor: hand;
     -fx-transition: all 0.3s ease;
@@ -74,39 +67,28 @@
     -fx-max-width: Infinity; /* Permet au conteneur de s'étendre */
 }
 
-/* === CARTE MÉTRIQUE (statistiques principales) === */
-.metric-card {
-    -fx-background-color: #FFFFFF;
-    -fx-background-radius: 18;
-    -fx-padding: 25 20;
-    -fx-alignment: CENTER;
-    -fx-spacing: 8;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 8, 0, 0, 3);
-}
-
-/* Titre de la carte (ex: Clients actifs) - centré */
+/* Titre de la carte (ex: Clients actifs) */
 .metric-card-title {
     -fx-text-fill: #3B533B;
-    -fx-font-size: 20px;
-    -fx-font-weight: 700;
-    -fx-alignment: CENTER;
-    -fx-text-alignment: CENTER;
+    -fx-font-size: 17px;
+    -fx-font-weight: bold;
+    -fx-alignment: CENTER_LEFT;
+    -fx-text-alignment: LEFT;
 }
 
 /* Nombre principal (ex: 350, 150, 167) */
 .metric-card-number {
     -fx-text-fill: #00551D;
-    -fx-font-size: 60px;
-    -fx-font-weight: 800;
-    -fx-alignment: CENTER;
+    -fx-font-size: 46px;
+    -fx-font-weight: bold;
+    -fx-alignment: CENTER_LEFT;
 }
 
 /* Texte secondaire (ex: +2 clients ce mois-ci) */
 .metric-card-subtext {
     -fx-text-fill: #4CAF50;
-    -fx-font-size: 13px;
-    -fx-font-weight: 600;
-    -fx-alignment: CENTER;
+    -fx-font-size: 14px;
+    -fx-alignment: CENTER_LEFT;
 }
 
 .metric-card ImageView {
@@ -128,17 +110,17 @@
 .section-title {
     -fx-font-size: 20px;
     -fx-font-weight: bold;
-    -fx-text-fill: #6E8268;
+    -fx-text-fill: #3B533B;
     -fx-padding: 10 0 10 0;
 }
 /* === BARRES DE PROGRESSION (Livraisons par type) === */
 /* === PANEL BLANC (contenant les barres de progression : Livraisons par type) === */
 /* Padding uniforme : même espacement que le conteneur parent */
 .delivery-progress-panel {
-    -fx-background-color: #FFFFFF;
-    -fx-background-radius: 20;
-    -fx-padding: 30 40 30 40; /* haut droite bas gauche - uniforme avec section-container */
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.10), 8, 0, 0, 3);
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-padding: 0;
+    -fx-effect: null;
 }
 
 
@@ -312,19 +294,19 @@
     -fx-font-weight: bold;
 }
 
-/* === Effet au survol réactif (sans bordure verte) === */
+/* === Effet au survol réactif === */
 .metric-card:hover {
     -fx-translate-y: -6;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 12, 0, 0, 6);
+    -fx-effect: dropshadow(gaussian, rgba(0,85,29,0.3), 14, 0, 0, 6);
     -fx-cursor: hand;
 }
 
 /* === PANEL BLANC (contenant les clients les plus actifs) === */
 /* Padding uniforme : même espacement que le conteneur parent */
 .active-clients-panel {
-    -fx-background-color: #FFFFFF;
-    -fx-background-radius: 20;
-    -fx-padding: 30 40 30 40; /* haut droite bas gauche - uniforme avec section-container */
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.10), 8, 0, 0, 3);
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-padding: 0;
+    -fx-effect: null;
 }
 

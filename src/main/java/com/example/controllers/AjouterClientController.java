@@ -15,7 +15,9 @@ public class AjouterClientController {
     @FXML private Button btnConfirmer;
 
     private GestionClientsController.Client nouveauClient;
+    private GestionClientsController.Client clientAModifier;
     private boolean confirme = false;
+    private boolean modeModification = false;
 
     @FXML
     public void initialize() {
@@ -23,14 +25,45 @@ public class AjouterClientController {
         btnConfirmer.setOnAction(e -> valider());
     }
 
+    /**
+     * Prépare le contrôleur pour la modification d'un client existant
+     * @param client Le client à modifier
+     */
+    public void preparerModification(GestionClientsController.Client client) {
+        this.clientAModifier = client;
+        this.modeModification = true;
+        
+        // Séparer le nom complet en nom et prénom
+        String[] nomParts = client.getNom().split(" ", 2);
+        if (nomParts.length > 0) {
+            nomField.setText(nomParts[0]);
+            if (nomParts.length > 1) {
+                prenomField.setText(nomParts[1]);
+            }
+        }
+        
+        adresseField.setText(client.getAdresse());
+        telephoneField.setText(client.getTelephone());
+    }
+
     private void valider() {
         String nomComplet = nomField.getText() + " " + prenomField.getText();
-        nouveauClient = new GestionClientsController.Client(
-                "C" + (int)(Math.random() * 1000), // Génération temporaire d’un code
-                nomComplet,
-                adresseField.getText(),
-                telephoneField.getText()
-        );
+        
+        if (modeModification && clientAModifier != null) {
+            // Mode modification : mettre à jour le client existant
+            clientAModifier.setNom(nomComplet);
+            clientAModifier.setAdresse(adresseField.getText());
+            clientAModifier.setTelephone(telephoneField.getText());
+            nouveauClient = clientAModifier;
+        } else {
+            // Mode ajout : créer un nouveau client
+            nouveauClient = new GestionClientsController.Client(
+                    "C" + (int)(Math.random() * 1000), // Génération temporaire d'un code
+                    nomComplet,
+                    adresseField.getText(),
+                    telephoneField.getText()
+            );
+        }
         fermer(true);
     }
 

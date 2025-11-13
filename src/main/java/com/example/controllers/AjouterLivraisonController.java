@@ -23,7 +23,9 @@ public class AjouterLivraisonController {
     @FXML private Button btnConfirmer;
 
     private GestionLivraisonsController.Livraison nouvelleLivraison;
+    private GestionLivraisonsController.Livraison livraisonAModifier;
     private boolean confirme = false;
+    private boolean modeModification = false;
 
     @FXML
     public void initialize() {
@@ -34,11 +36,37 @@ public class AjouterLivraisonController {
         statutField.getItems().addAll("livrée", "en cours", "en attente", "annulée");
 
         // Initialisation ComboBox pour typeField
-        typeField.getItems().addAll("livrée", "en cours", "en attente", "annulée");
+        typeField.getItems().addAll("sous chaine du froid", "sous congélation", "dangereuses", "normale");
 
         // Actions des boutons
         btnAnnuler.setOnAction(e -> fermer(false));
         btnConfirmer.setOnAction(e -> valider());
+    }
+
+    /**
+     * Prépare le contrôleur pour la modification d'une livraison existante
+     * @param livraison La livraison à modifier
+     */
+    public void preparerModification(GestionLivraisonsController.Livraison livraison) {
+        this.livraisonAModifier = livraison;
+        this.modeModification = true;
+        
+        // Séparer le nom complet en nom et prénom
+        String[] nomParts = livraison.getClient().split(" ", 2);
+        if (nomParts.length > 0) {
+            nomField.setText(nomParts[0]);
+            if (nomParts.length > 1) {
+                prenomField.setText(nomParts[1]);
+            }
+        }
+        
+        dateLivField.setValue(livraison.getDate());
+        qttField.getValueFactory().setValue(livraison.getNombreMedicaments());
+        taxeField.setText(String.valueOf(livraison.getTaxe()));
+        coutField.setText(String.valueOf(livraison.getCout()));
+        statutField.setValue(livraison.getStatut());
+        typeField.setValue(livraison.getType());
+        medicamentField.setText(livraison.getMedicament());
     }
 
     private void valider() {
@@ -50,22 +78,36 @@ public class AjouterLivraisonController {
             float cout = Float.parseFloat(coutField.getText());
             String statut = statutField.getValue();
             String type = typeField.getValue();
-            String numero = "L" + (int)(Math.random() * 10000);
             boolean urgent = false; // Par défaut, ou ajouter un Checkbox
             String nomMedicament = medicamentField.getText();
 
-            nouvelleLivraison = new GestionLivraisonsController.Livraison(
-                    numero,
-                    nomComplet,
-                    dateLiv,
-                    quantite,
-                    taxe,
-                    cout,
-                    statut,
-                    type,
-                    urgent,
-                    nomMedicament
-            );
+            if (modeModification && livraisonAModifier != null) {
+                // Mode modification : mettre à jour la livraison existante
+                livraisonAModifier.setClient(nomComplet);
+                livraisonAModifier.setDate(dateLiv);
+                livraisonAModifier.setNombreMedicaments(quantite);
+                livraisonAModifier.setTaxe(taxe);
+                livraisonAModifier.setCout(cout);
+                livraisonAModifier.setStatut(statut);
+                livraisonAModifier.setType(type);
+                livraisonAModifier.setMedicament(nomMedicament);
+                nouvelleLivraison = livraisonAModifier;
+            } else {
+                // Mode ajout : créer une nouvelle livraison
+                String numero = "L" + (int)(Math.random() * 10000);
+                nouvelleLivraison = new GestionLivraisonsController.Livraison(
+                        numero,
+                        nomComplet,
+                        dateLiv,
+                        quantite,
+                        taxe,
+                        cout,
+                        statut,
+                        type,
+                        urgent,
+                        nomMedicament
+                );
+            }
 
             fermer(true);
         } catch (Exception e) {

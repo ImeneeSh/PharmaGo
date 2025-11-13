@@ -263,8 +263,31 @@ public class GestionClientsController implements Initializable {
      * @param client Le client à modifier
      */
     private void modifierClient(Client client) {
-        // TODO: Ouvrir une fenêtre/dialogue pour modifier le client
-        System.out.println("Action: Modifier le client " + client.getCode());
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/views/AjouterClient.fxml"));
+            Parent root = loader.load();
+
+            AjouterClientController controller = loader.getController();
+            controller.preparerModification(client);
+
+            Stage dialogStage = new Stage();
+            dialogStage.initModality(Modality.APPLICATION_MODAL);
+            dialogStage.setResizable(false);
+            dialogStage.setTitle("Modifier un client");
+            Scene scene = new Scene(root);
+            scene.getStylesheets().add(getClass().getResource("/styles/GestionClients.css").toExternalForm());
+            dialogStage.setScene(scene);
+            dialogStage.showAndWait();
+
+            if (controller.isConfirme()) {
+                // Le client a déjà été modifié via la référence
+                filtrerClients(searchField.getText());
+                System.out.println("Client " + client.getCode() + " modifié !");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**

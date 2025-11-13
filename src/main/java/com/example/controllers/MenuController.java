@@ -18,6 +18,8 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class MenuController implements Initializable {
+    private static String currentPage = "TableauBord"; // ou n'importe quelle valeur par défaut
+
 
     @FXML private ToggleButton btnDashboard;
     @FXML private ToggleButton btnConsultation;
@@ -58,9 +60,8 @@ public class MenuController implements Initializable {
         disableDefaultButtonEffects(btnLivraisons);
         disableDefaultButtonEffects(btnUtilisateurs);
 
-        // Initialisation
-        btnDashboard.setSelected(true);
-        updateIcons();
+        // Sélectionner le bouton correspondant à la page actuelle
+        selectButtonForCurrentPage();
 
         // Ajout d'un listener pour mettre à jour le style et les icônes
         menuGroup.selectedToggleProperty().addListener((obs, oldToggle, newToggle) -> {
@@ -71,35 +72,41 @@ public class MenuController implements Initializable {
         // Navigation : connexion du bouton Tableau de bord
         btnDashboard.setOnAction(e -> {
             System.out.println("Clic sur Tableau de bord");
+            setCurrentPage("TableauBord");
             navigateToTableauBord();
         });
 
         // Navigation : connexion du bouton Consultation Globale
         btnConsultation.setOnAction(e -> {
             System.out.println("Clic sur Consultation Globale");
+            setCurrentPage("ConsultationGlobale");
             navigateToConsultationGlobale();
         });
 
         // Navigation : connexion du bouton Gestion des clients
         btnClients.setOnAction(e -> {
             System.out.println("Clic sur Gestion des clients");
+            setCurrentPage("GestionClients");
             ouvrirGestionClients();
         });
 
         // Navigation : connexion du bouton Gestion des médicaments
         btnMedicaments.setOnAction(e -> {
             System.out.println("Clic sur Gestion des médicaments");
+            setCurrentPage("GestionMedicaments");
             ouvrirGestionMedicaments();
         });
 
         // Navigation : connexion du bouton Gestion des livraisons
         btnLivraisons.setOnAction(e -> {
             System.out.println("Clic sur Gestion des livraisons");
+            setCurrentPage("GestionLivraisons");
             ouvrirGestionLivraisons();
         });
 
         btnUtilisateurs.setOnAction(e -> {
             System.out.println("Clic sur Gestion des utilisateurs");
+            setCurrentPage("GestionUtilisateurs");
             ouvrirGestionUtilisateurs();
         });
     }
@@ -170,6 +177,50 @@ public class MenuController implements Initializable {
             applyCorrectStyle(btnLivraisons);
             applyCorrectStyle(btnUtilisateurs);
         });
+    }
+
+    /**
+     * Sélectionne le bouton correspondant à la page actuelle
+     */
+    private void selectButtonForCurrentPage() {
+        // Désélectionner tous les boutons d'abord
+        menuGroup.selectToggle(null);
+        
+        // Sélectionner le bouton correspondant à la page actuelle
+        switch (currentPage) {
+            case "TableauBord":
+                btnDashboard.setSelected(true);
+                break;
+            case "ConsultationGlobale":
+                btnConsultation.setSelected(true);
+                break;
+            case "GestionClients":
+                btnClients.setSelected(true);
+                break;
+            case "GestionMedicaments":
+                btnMedicaments.setSelected(true);
+                break;
+            case "GestionLivraisons":
+                btnLivraisons.setSelected(true);
+                break;
+            case "GestionUtilisateurs":
+                btnUtilisateurs.setSelected(true);
+                break;
+            default:
+                btnDashboard.setSelected(true);
+                break;
+        }
+        
+        // Mettre à jour les styles et icônes
+        updateActiveButton();
+        updateIcons();
+    }
+
+    /**
+     * Définit la page actuelle (méthode publique pour être appelée depuis l'extérieur)
+     */
+    public static void setCurrentPage(String pageName) {
+        currentPage = pageName;
     }
 
     private void updateIcons() {
@@ -253,6 +304,7 @@ public class MenuController implements Initializable {
 
             // Définir la nouvelle scène et afficher
             stage.setScene(scene);
+            setCurrentPage("TableauBord");
             System.out.println("Page Tableau de bord chargée avec succès !");
 
         } catch (IOException e) {
@@ -297,6 +349,7 @@ public class MenuController implements Initializable {
 
             // Définir la nouvelle scène et afficher
             stage.setScene(scene);
+            setCurrentPage("ConsultationGlobale");
 
         } catch (IOException e) {
             System.err.println("Erreur lors du chargement de la page Consultation Globale : " + e.getMessage());
@@ -391,6 +444,7 @@ public class MenuController implements Initializable {
 
             // Définir la nouvelle scène et afficher
             stage.setScene(scene);
+            setCurrentPage("GestionClients");
             System.out.println("Page Gestion des clients chargée avec succès !");
 
         } catch (IOException e) {
@@ -485,6 +539,7 @@ public class MenuController implements Initializable {
 
             // Définir la nouvelle scène et afficher
             stage.setScene(scene);
+            setCurrentPage("GestionMedicaments");
             System.out.println("Page Gestion des médicaments chargée avec succès !");
 
         } catch (IOException e) {
@@ -579,6 +634,7 @@ public class MenuController implements Initializable {
 
             // Définir la nouvelle scène et afficher
             stage.setScene(scene);
+            setCurrentPage("GestionLivraisons");
             System.out.println("Page Gestion des livraisons chargée avec succès !");
 
         } catch (IOException e) {
@@ -674,6 +730,7 @@ public class MenuController implements Initializable {
 
             // Définir la nouvelle scène et afficher
             stage.setScene(scene);
+            setCurrentPage("GestionUtilisateurs");
             System.out.println("Page Gestion des utilisateurs chargée avec succès !");
 
         } catch (IOException e) {

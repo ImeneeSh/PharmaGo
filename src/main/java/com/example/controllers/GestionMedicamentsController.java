@@ -321,8 +321,31 @@ public class GestionMedicamentsController implements Initializable {
      * @param medicament Le médicament à modifier
      */
     private void modifierMedicament(Medicament medicament) {
-        // TODO: Ouvrir une fenêtre/dialogue pour modifier le médicament
-        System.out.println("Action: Modifier le médicament " + medicament.getCode());
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/views/AjouterMedicament.fxml"));
+            Parent root = loader.load();
+
+            AjouterMedicamentController controller = loader.getController();
+            controller.preparerModification(medicament);
+
+            Stage dialogStage = new Stage();
+            dialogStage.initModality(Modality.APPLICATION_MODAL);
+            dialogStage.setResizable(false);
+            dialogStage.setTitle("Modifier un médicament");
+            Scene scene = new Scene(root);
+            scene.getStylesheets().add(getClass().getResource("/styles/GestionMedicaments.css").toExternalForm());
+            dialogStage.setScene(scene);
+            dialogStage.showAndWait();
+
+            if (controller.isConfirme()) {
+                // Le médicament a déjà été modifié via la référence
+                filtrerMedicaments(searchField.getText());
+                System.out.println("Médicament " + medicament.getCode() + " modifié !");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**

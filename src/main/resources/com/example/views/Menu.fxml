@@ -8,7 +8,7 @@
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.example.controllers.MenuController"
       fx:id="menuRoot"
-      prefWidth="220"
+      prefWidth="250"
       spacing="25"
       alignment="TOP_CENTER"
       styleClass="side-menu">

@@ -94,19 +94,19 @@ public class GestionUtilisateursController implements Initializable {
      */
     private void filtrerUtilisateurs(String critere) {
         if (critere == null || critere.trim().isEmpty()) {
-            // Si le champ est vide, afficher tous les clients
+            // Si le champ est vide, afficher tous les utilisateurs
             utilisateursFiltres = new ArrayList<>(utilisateurs);
         } else {
             // Filtrer selon le nom, prénom ou code (insensible à la casse)
             String critereLower = critere.toLowerCase().trim();
-            utilisateurs = utilisateurs.stream()
-                    .filter(client ->
-                            client.getCode().toLowerCase().contains(critereLower) ||
-                                    client.getNom().toLowerCase().contains(critereLower)
+            utilisateursFiltres = utilisateurs.stream()
+                    .filter(utilisateur ->
+                            utilisateur.getCode().toLowerCase().contains(critereLower) ||
+                                    utilisateur.getNom().toLowerCase().contains(critereLower)
                     )
                     .collect(Collectors.toList());
         }
-        // Réafficher les clients filtrés
+        // Réafficher les utilisateurs filtrés
         afficherUtilisateurs();
     }
 
@@ -249,12 +249,35 @@ public class GestionUtilisateursController implements Initializable {
     }
 
     /**
-     * Action pour modifier un client
-     * @param utilisateur Le client à modifier
+     * Action pour modifier un utilisateur
+     * @param utilisateur L'utilisateur à modifier
      */
     private void modifierUtilisateur(Utilisateur utilisateur) {
-        // TODO: Ouvrir une fenêtre/dialogue pour modifier l'utilisateur
-        System.out.println("Action: Modifier l'utilisateur " + utilisateur.getCode());
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/views/AjouterUtilisateur.fxml"));
+            Parent root = loader.load();
+
+            AjouterUtilisateurController controller = loader.getController();
+            controller.preparerModification(utilisateur);
+
+            Stage dialogStage = new Stage();
+            dialogStage.initModality(Modality.APPLICATION_MODAL);
+            dialogStage.setResizable(false);
+            dialogStage.setTitle("Modifier un utilisateur");
+            Scene scene = new Scene(root);
+            scene.getStylesheets().add(getClass().getResource("/styles/GestionUtilisateurs.css").toExternalForm());
+            dialogStage.setScene(scene);
+            dialogStage.showAndWait();
+
+            if (controller.isConfirme()) {
+                // L'utilisateur a déjà été modifié via la référence
+                filtrerUtilisateurs(searchField.getText());
+                System.out.println("Utilisateur " + utilisateur.getCode() + " modifié !");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**

@@ -233,7 +233,7 @@
     -fx-padding: 30 40;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 10, 0, 0, 4);
     -fx-min-width: 400;
-    -fx-max-width: 450;
+    -fx-max-width: 800;
 }
 
 .dialog-title {
@@ -257,6 +257,19 @@
 .dialog-client-info {
     -fx-font-size: 13px;
     -fx-text-fill: #666666;
+}
+
+/* Styles pour la fenêtre QR Code */
+.qr-label {
+    -fx-font-size: 13px;
+    -fx-text-fill: #666666;
+    -fx-font-style: italic;
+}
+
+.info-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #001910;
 }
 
 /* Boutons */

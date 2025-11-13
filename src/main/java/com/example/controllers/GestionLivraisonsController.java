@@ -370,8 +370,25 @@ public class GestionLivraisonsController implements Initializable {
      * @param livraison La livraison dont on veut voir le QR code
      */
     private void voirQRCode(Livraison livraison) {
-        // TODO: Afficher le QR code de la livraison
-        System.out.println("Action: Voir QR code de la livraison " + livraison.getNumero());
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/views/AfficherQRCode.fxml"));
+            Parent root = loader.load();
+
+            AfficherQRCodeController controller = loader.getController();
+            controller.setLivraison(livraison);
+
+            Stage dialogStage = new Stage();
+            dialogStage.initModality(Modality.APPLICATION_MODAL);
+            dialogStage.setResizable(false);
+            dialogStage.setTitle("QR Code - " + livraison.getNumero());
+            Scene scene = new Scene(root);
+            scene.getStylesheets().add(getClass().getResource("/styles/GestionLivraisons.css").toExternalForm());
+            dialogStage.setScene(scene);
+            dialogStage.showAndWait();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -379,8 +396,31 @@ public class GestionLivraisonsController implements Initializable {
      * @param livraison La livraison à modifier
      */
     private void modifierLivraison(Livraison livraison) {
-        // TODO: Ouvrir une fenêtre/dialogue pour modifier la livraison
-        System.out.println("Action: Modifier la livraison " + livraison.getNumero());
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/views/AjouterLivraison.fxml"));
+            Parent root = loader.load();
+
+            AjouterLivraisonController controller = loader.getController();
+            controller.preparerModification(livraison);
+
+            Stage dialogStage = new Stage();
+            dialogStage.initModality(Modality.APPLICATION_MODAL);
+            dialogStage.setResizable(false);
+            dialogStage.setTitle("Modifier une livraison");
+            Scene scene = new Scene(root);
+            scene.getStylesheets().add(getClass().getResource("/styles/GestionLivraisons.css").toExternalForm());
+            dialogStage.setScene(scene);
+            dialogStage.showAndWait();
+
+            if (controller.isConfirme()) {
+                // La livraison a déjà été modifiée via la référence
+                appliquerFiltres();
+                System.out.println("Livraison " + livraison.getNumero() + " modifiée !");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -481,6 +521,7 @@ public class GestionLivraisonsController implements Initializable {
         public void setStatut(String statut) { this.statut = statut; }
         public void setType(String type) { this.type = type; }
         public void setUrgent(boolean urgent) { this.urgent = urgent; }
+        public void setMedicament(String medicament) { this.medicament = medicament; }
     }
 
 

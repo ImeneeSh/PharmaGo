@@ -5,9 +5,9 @@
     -fx-background-radius: 20px; /* Coins arrondis */
     -fx-padding: 40 0 0 0;
     -fx-alignment: TOP_CENTER;
-    -fx-min-width: 220px;
-    -fx-pref-width: 220px; /* Largeur fixe pour le menu */
-    -fx-max-width: 220px; /* Largeur fixe pour le menu */
+    -fx-min-width: 250px;
+    -fx-pref-width: 250px; /* Largeur augmentée pour afficher les noms complets */
+    -fx-max-width: 250px; /* Largeur augmentée pour afficher les noms complets */
     -fx-min-height: -1; /* Permet au menu de prendre toute la hauteur disponible */
     -fx-font-family: "Open Sans";
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 5); /* Ombre portée pour créer l'effet de profondeur et la séparation */
@@ -31,10 +31,12 @@
     -fx-padding: 8 15;
     -fx-alignment: CENTER_LEFT;
     -fx-graphic-text-gap: 10;
-    -fx-pref-width: 180px;
+    -fx-pref-width: 210px;
+    -fx-min-width: 210px;
+    -fx-max-width: 210px;
     -fx-text-alignment: LEFT;
     -fx-content-display: LEFT;
-    -fx-wrap-text: true;
+    -fx-wrap-text: false;
     -fx-font-weight: 700;
     -fx-line-spacing: 2px;
 }

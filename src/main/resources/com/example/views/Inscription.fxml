@@ -33,7 +33,7 @@
 
             <!-- Ligne 2 : Email -->
             <HBox spacing="10" alignment="CENTER">
-                <TextField fx:id="emailField" promptText="Adresse mail" maxWidth="390" prefWidth="390"/>
+                <TextField fx:id="emailField" promptText="Adresse mail" prefWidth="390" minWidth="390" maxWidth="390"/>
             </HBox>
 
             <!-- Ligne 3 : Mot de passe + Confirmer mot de passe -->

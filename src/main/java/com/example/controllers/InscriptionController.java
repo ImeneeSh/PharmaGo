@@ -62,17 +62,37 @@ public class InscriptionController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/views/TableauBord.fxml"));
             Parent root = loader.load();
 
-            Scene scene = new Scene(root);
+            // Récupérer la scène actuelle et le stage
+            Scene currentScene = btnInscrire.getScene();
+            Stage currentStage = (Stage) currentScene.getWindow();
+            
+            // Récupérer les dimensions avec valeurs par défaut si nécessaire
+            double width = currentScene.getWidth() > 0 ? currentScene.getWidth() : 1024;
+            double height = currentScene.getHeight() > 0 ? currentScene.getHeight() : 768;
+            
+            // Si les dimensions de la scène sont 0, utiliser celles du stage
+            if (width == 0 || height == 0) {
+                width = currentStage.getWidth() > 0 ? currentStage.getWidth() : 1024;
+                height = currentStage.getHeight() > 0 ? currentStage.getHeight() : 768;
+            }
+
+            Scene scene = new Scene(root, width, height);
 
             // Appliquer les CSS du tableau de bord et menu
             String tableauCss = getClass().getResource("/styles/tableauBord.css").toExternalForm();
             String menuCss = getClass().getResource("/styles/menu.css").toExternalForm();
             scene.getStylesheets().addAll(tableauCss, menuCss);
 
-            Stage stage = (Stage) btnInscrire.getScene().getWindow();
-            stage.setScene(scene);
-            stage.setTitle("Tableau de bord");
-            stage.show();
+            // Appliquer la police par défaut
+            scene.getRoot().setStyle("-fx-font-family: 'Segoe UI', 'Arial', sans-serif;");
+
+            // Définir la nouvelle scène
+            currentStage.setScene(scene);
+            currentStage.setTitle("Tableau de bord");
+            
+            // S'assurer que la fenêtre conserve ses dimensions minimales
+            currentStage.setMinWidth(1024);
+            currentStage.setMinHeight(720);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -84,17 +104,28 @@ public class InscriptionController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/views/Authentification.fxml"));
             Parent root = loader.load();
 
-            Scene scene = new Scene(root);
+            // Récupérer la scène actuelle et le stage
+            Scene currentScene = linkConnexion.getScene();
+            Stage currentStage = (Stage) currentScene.getWindow();
+            
+            // Récupérer les dimensions avec valeurs par défaut si nécessaire
+            double width = currentScene.getWidth() > 0 ? currentScene.getWidth() : 1024;
+            double height = currentScene.getHeight() > 0 ? currentScene.getHeight() : 768;
+            
+            // Si les dimensions de la scène sont 0, utiliser celles du stage
+            if (width == 0 || height == 0) {
+                width = currentStage.getWidth() > 0 ? currentStage.getWidth() : 1024;
+                height = currentStage.getHeight() > 0 ? currentStage.getHeight() : 768;
+            }
+
+            Scene scene = new Scene(root, width, height);
 
             // Charger CSS login
             String loginCss = getClass().getResource("/styles/Authentification.css").toExternalForm();
             scene.getStylesheets().add(loginCss);
 
-            Stage stage = (Stage) linkConnexion.getScene().getWindow();
-
-            stage.setScene(scene);
-            stage.setTitle("Connexion");
-            stage.show();
+            currentStage.setScene(scene);
+            currentStage.setTitle("Connexion");
 
         } catch (IOException e) {
             e.printStackTrace();
