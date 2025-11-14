@@ -1,18 +1,21 @@
 package com.example.controllers;
 
+import com.example.bdd.DatabaseConnection;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Hyperlink;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class AuthentificationController {
 
@@ -33,91 +36,75 @@ public class AuthentificationController {
 
     @FXML
     public void initialize() {
-        // Charger le logo
         logoImage.setImage(new Image(getClass().getResourceAsStream("/assets/logo.png")));
-
-        // Action bouton login
         btnLogin.setOnAction(event -> seConnecter());
-
-        // Action lien inscription
         linkInscrire.setOnAction(event -> ouvrirInscription());
     }
 
     private void seConnecter() {
-        String email = emailField.getText();
+
+        String email = emailField.getText().trim();
         String password = passwordField.getText();
 
-        System.out.println("Email: " + email + ", Mot de passe: " + password);
+        // Champs vides
+        if (email.isEmpty() || password.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Champs manquants",
+                    "Veuillez remplir tous les champs.");
+            return;
+        }
 
-        try {
-            // Charger le FXML du tableau de bord
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/views/TableauBord.fxml"));
-            Parent root = loader.load();
+        // Format email
+        if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
+            showAlert(Alert.AlertType.ERROR, "Email invalide",
+                    "Veuillez entrer une adresse email valide.");
+            return;
+        }
 
-            // Récupérer la scène actuelle et le stage
-            Scene currentScene = btnLogin.getScene();
-            Stage stage = (Stage) currentScene.getWindow();
-            
-            // Récupérer les dimensions avec valeurs par défaut si nécessaire
-            double width = currentScene.getWidth() > 0 ? currentScene.getWidth() : 1024;
-            double height = currentScene.getHeight() > 0 ? currentScene.getHeight() : 768;
-            
-            // Si les dimensions de la scène sont 0, utiliser celles du stage
-            if (width == 0 || height == 0) {
-                width = stage.getWidth() > 0 ? stage.getWidth() : 1024;
-                height = stage.getHeight() > 0 ? stage.getHeight() : 768;
+        String sql = "SELECT mdp FROM utilisateur WHERE mail = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, email);
+            ResultSet rs = stmt.executeQuery();
+
+            // Email n'existe pas
+            if (!rs.next()) {
+                showAlert(Alert.AlertType.ERROR, "Identifiants incorrects",
+                        "Adresse email incorrecte ou inexistante.");
+                return;
             }
 
-            // Créer la scène avec les bonnes dimensions
-            Scene scene = new Scene(root, width, height);
+            String hashedPassword = rs.getString("mdp");
 
-            // 🔹 Charger et appliquer les fichiers CSS
-            String tableauCss = getClass().getResource("/styles/tableauBord.css").toExternalForm();
-            String menuCss = getClass().getResource("/styles/menu.css").toExternalForm();
-            scene.getStylesheets().addAll(tableauCss, menuCss);
+            // Vérification du mot de passe
+            if (!BCrypt.checkpw(password, hashedPassword)) {
+                showAlert(Alert.AlertType.ERROR, "Mot de passe incorrect",
+                        "Le mot de passe que vous avez saisi est incorrect.");
+                return;
+            }
 
-            // Appliquer la police par défaut
-            scene.getRoot().setStyle("-fx-font-family: 'Segoe UI', 'Arial', sans-serif;");
+            // Succès
+            showAlert(Alert.AlertType.INFORMATION, "Connexion réussie",
+                    "Bienvenue !");
+            ouvrirTableauBord();
 
-            // Changer la scène dans la fenêtre actuelle
-            stage.setScene(scene);
-            stage.setTitle("Tableau de bord");
-            
-            // S'assurer que la fenêtre conserve ses dimensions minimales
-            stage.setMinWidth(1024);
-            stage.setMinHeight(720);
-
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (SQLException e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur SQL",
+                    "Une erreur est survenue : " + e.getMessage());
         }
     }
-
-
 
     private void ouvrirInscription() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/views/Inscription.fxml"));
             Parent root = loader.load();
 
-            // Récupérer la scène actuelle et le stage
             Scene currentScene = linkInscrire.getScene();
             Stage stage = (Stage) currentScene.getWindow();
-            
-            // Récupérer les dimensions avec valeurs par défaut si nécessaire
-            double width = currentScene.getWidth() > 0 ? currentScene.getWidth() : 1024;
-            double height = currentScene.getHeight() > 0 ? currentScene.getHeight() : 768;
-            
-            // Si les dimensions de la scène sont 0, utiliser celles du stage
-            if (width == 0 || height == 0) {
-                width = stage.getWidth() > 0 ? stage.getWidth() : 1024;
-                height = stage.getHeight() > 0 ? stage.getHeight() : 768;
-            }
 
-            Scene scene = new Scene(root, width, height);
-
-            // Charger CSS login (ou tableauBord si tu veux garder le même style)
-            String loginCss = getClass().getResource("/styles/Authentification.css").toExternalForm();
-            scene.getStylesheets().add(loginCss);
+            Scene scene = new Scene(root, currentScene.getWidth(), currentScene.getHeight());
+            scene.getStylesheets().add(getClass().getResource("/styles/Authentification.css").toExternalForm());
 
             stage.setScene(scene);
             stage.setTitle("Inscription");
@@ -127,4 +114,33 @@ public class AuthentificationController {
         }
     }
 
+    private void ouvrirTableauBord() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/views/TableauBord.fxml"));
+            Parent root = loader.load();
+
+            Scene currentScene = btnLogin.getScene();
+            Stage stage = (Stage) currentScene.getWindow();
+
+            Scene scene = new Scene(root, currentScene.getWidth(), currentScene.getHeight());
+            scene.getStylesheets().addAll(
+                    getClass().getResource("/styles/tableauBord.css").toExternalForm(),
+                    getClass().getResource("/styles/menu.css").toExternalForm()
+            );
+
+            stage.setScene(scene);
+            stage.setTitle("Tableau de bord");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void showAlert(Alert.AlertType type, String title, String message) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
 }
