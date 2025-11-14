@@ -41,8 +41,8 @@
                             </ImageView>
                         </HBox>
                         <Label text="Total clients" styleClass="card-title"/>
-                        <Label text="350" styleClass="card-number"/>
-                        <Label text="+2 clients ce mois-ci" styleClass="card-subtext"/>
+                        <Label fx:id="lblTotalClients" text="350" styleClass="card-number"/>
+                        <Label fx:id="lblNouveauxClients" text="+2 clients ce mois-ci" styleClass="card-subtext"/>
                     </VBox>
 
                     <!-- Carte Médicaments -->
@@ -53,8 +53,8 @@
                             </ImageView>
                         </HBox>
                         <Label text="Total médicaments" styleClass="card-title"/>
-                        <Label text="150" styleClass="card-number"/>
-                        <Label text="+5 médicaments ce mois-ci" styleClass="card-subtext"/>
+                        <Label fx:id="lblTotalMedicaments" text="150" styleClass="card-number"/>
+                        <Label fx:id="lblNouveauxMedicaments" text="+5 médicaments ce mois-ci" styleClass="card-subtext"/>
                     </VBox>
 
                     <!-- Carte Livraisons -->
@@ -65,8 +65,8 @@
                             </ImageView>
                         </HBox>
                         <Label text="Total livraisons" styleClass="card-title"/>
-                        <Label text="167" styleClass="card-number"/>
-                        <Label text="+70 livraisons ce mois-ci" styleClass="card-subtext"/>
+                        <Label fx:id="lblTotalLivraisons" text="167" styleClass="card-number"/>
+                        <Label fx:id="lblNouvellesLivraisons" text="+2 livraisons ce mois-ci" styleClass="card-subtext"/>
                     </VBox>
 
                     <!-- Carte Livraisons en attente -->
@@ -77,14 +77,14 @@
                             </ImageView>
                         </HBox>
                         <Label text="Livraisons en attente" styleClass="card-title"/>
-                        <Label text="10" styleClass="card-number"/>
+                        <Label fx:id="lblLivraisonsAttente" text="10" styleClass="card-number"/>
                     </VBox>
                 </GridPane>
 
                 <!-- Section Livraisons récentes -->
                 <VBox style="-fx-padding: 0 50 0 50;">
                     <Label text="Livraisons récentes" styleClass="section-title"/>
-                    <VBox spacing="10">
+                    <VBox fx:id="boxLivraisonsRecentes" spacing="10">
                         <HBox styleClass="recent-item" spacing="10">
                             <VBox HBox.hgrow="ALWAYS">
                                 <Label text="L0001" styleClass="recent-code"/>
@@ -115,7 +115,7 @@
                 <!-- Section Médicaments à surveiller -->
                 <VBox id="med-section" style="-fx-padding: 0 50 50 50;">
                     <Label text="Médicaments à surveiller" styleClass="section-title"/>
-                    <VBox spacing="10">
+                    <VBox fx:id="boxMedicamentsSurveiller" spacing="10">
                         <HBox styleClass="recent-item" spacing="10">
                             <VBox HBox.hgrow="ALWAYS">
                                 <Label text="Insuline Rapide" styleClass="recent-code"/>

@@ -149,4 +149,33 @@
     -fx-effect: dropshadow(gaussian, rgba(198,40,40,0.25), 6, 0, 0, 3);
 }
 
+/* Livraisons récentes avec couleurs selon statut */
+.status-pending {
+    -fx-background-color: rgba(255, 193, 7, 0.25); /* jaune/orange doux */
+    -fx-text-fill: #FFA000;
+    -fx-padding: 5 12;
+    -fx-background-radius: 10;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.status-cancelled {
+    -fx-background-color: rgba(229, 115, 115, 0.25); /* rouge doux */
+    -fx-text-fill: #C62828;
+    -fx-padding: 5 12;
+    -fx-background-radius: 10;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.status-inprogress {
+    -fx-background-color: rgba(30, 136, 229, 0.25); /* bleu doux */
+    -fx-text-fill: #1976D2;
+    -fx-padding: 5 12;
+    -fx-background-radius: 10;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+
 
