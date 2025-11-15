@@ -1,6 +1,7 @@
 package com.example.controllers;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
@@ -25,12 +26,12 @@ public class ConfirmerSuppressionController {
 
     // Partie livraison
     @FXML private Label quantiteLivraison;
-    @FXML private Label taxe ;
-    @FXML private Label coutTotal ;
-    @FXML private VBox blocLivraison ;
+    @FXML private Label taxe;
+    @FXML private Label coutTotal;
+    @FXML private VBox blocLivraison;
 
     // Partie utilisateur
-    @FXML private VBox blocUtilisateur ;
+    @FXML private VBox blocUtilisateur;
 
     // 🔹 Boutons
     @FXML private Button btnAnnuler;
@@ -42,12 +43,16 @@ public class ConfirmerSuppressionController {
     @FXML
     public void initialize() {
         btnAnnuler.setOnAction(e -> fermer(false));
-        btnConfirmer.setOnAction(e -> fermer(true));
+        btnConfirmer.setOnAction(e -> {
+            fermer(true);
+            showSuccessAlert();
+        });
 
-        // Par défaut : cacher les blocs spécifiques
+        // Par défaut : cacher tous les blocs spécifiques
         if (blocClient != null) blocClient.setVisible(false);
         if (blocMedicament != null) blocMedicament.setVisible(false);
-        if(blocLivraison != null) blocLivraison.setVisible(false);
+        if (blocLivraison != null) blocLivraison.setVisible(false);
+        if (blocUtilisateur != null) blocUtilisateur.setVisible(false);
     }
 
     // ============================================================
@@ -62,6 +67,8 @@ public class ConfirmerSuppressionController {
 
         blocClient.setVisible(true);
         blocMedicament.setVisible(false);
+        blocLivraison.setVisible(false);
+        blocUtilisateur.setVisible(false);
     }
 
     // ============================================================
@@ -76,10 +83,12 @@ public class ConfirmerSuppressionController {
 
         blocClient.setVisible(false);
         blocMedicament.setVisible(true);
+        blocLivraison.setVisible(false);
+        blocUtilisateur.setVisible(false);
     }
 
     // ============================================================
-    // Cas livraison
+    // Cas Livraison
     // ============================================================
     public void setLivraison(GestionLivraisonsController.Livraison livraison) {
         titreLabel.setText("Supprimer cette livraison ?");
@@ -89,20 +98,23 @@ public class ConfirmerSuppressionController {
         taxe.setText(String.format("Taxe : %d DA", livraison.getTaxe()));
         coutTotal.setText(String.format("Cout total : %.2f DA", livraison.getCout()));
 
-
-        blocLivraison.setVisible(false);
+        blocClient.setVisible(false);
+        blocMedicament.setVisible(false);
         blocLivraison.setVisible(true);
+        blocUtilisateur.setVisible(false);
     }
 
     // ============================================================
-    // Cas utilisateur
+    // Cas Utilisateur
     // ============================================================
     public void setUtilisateur(GestionUtilisateursController.Utilisateur utilisateur) {
         titreLabel.setText("Supprimer cet utilisateur ?");
-        codeLabel.setText("Code : " + utilisateur.getCode());
-        nomLabel.setText("Nom de l'utilisateur: " + utilisateur.getNom());
+        codeLabel.setText("Code : U" + String.format("%03d", utilisateur.getIdUser()));
+        nomLabel.setText("Nom : " + utilisateur.getNom());
 
-        blocUtilisateur.setVisible(false);
+        blocClient.setVisible(false);
+        blocMedicament.setVisible(false);
+        blocLivraison.setVisible(false);
         blocUtilisateur.setVisible(true);
     }
 
@@ -110,12 +122,23 @@ public class ConfirmerSuppressionController {
     // ⚙️ Gestion fermeture
     // ============================================================
     private void fermer(boolean confirme) {
-        confirmation = confirme;
+        this.confirmation = confirme;
         Stage stage = (Stage) btnAnnuler.getScene().getWindow();
         stage.close();
     }
 
     public boolean isConfirmation() {
         return confirmation;
+    }
+
+    /**
+     * Affiche une alerte de succès après suppression
+     */
+    private void showSuccessAlert() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Suppression réussie");
+        alert.setHeaderText(null);
+        alert.setContentText("L'élément a été supprimé avec succès !");
+        alert.showAndWait();
     }
 }

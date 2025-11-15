@@ -6,6 +6,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import org.mindrot.jbcrypt.BCrypt;
+
+import java.util.regex.Pattern;
 
 public class AjouterUtilisateurController {
 
@@ -23,6 +26,10 @@ public class AjouterUtilisateurController {
     private boolean confirme = false;
     private boolean modeModification = false;
 
+    // Regex pour validation
+    private static final Pattern NAME_PATTERN = Pattern.compile("^[A-Za-zÀ-ÖØ-öø-ÿ]+(?:[-' ][A-Za-zÀ-ÖØ-öø-ÿ]+)*$");
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
+
     @FXML
     public void initialize() {
         btnAnnuler.setOnAction(e -> fermer(false));
@@ -30,68 +37,79 @@ public class AjouterUtilisateurController {
     }
 
     /**
-     * Prépare le contrôleur pour la modification d'un utilisateur existant
-     * @param utilisateur L'utilisateur à modifier
+     * Prépare le formulaire pour modifier un utilisateur existant
      */
     public void preparerModification(GestionUtilisateursController.Utilisateur utilisateur) {
         this.utilisateurAModifier = utilisateur;
         this.modeModification = true;
-        
-        // Séparer le nom complet en nom et prénom
-        String[] nomParts = utilisateur.getNom().split(" ", 2);
-        if (nomParts.length > 0) {
-            nomField.setText(nomParts[0]);
-            if (nomParts.length > 1) {
-                prenomField.setText(nomParts[1]);
-            }
-        }
-        
-        emailField.setText(utilisateur.getEmail());
-        // Ne pas préremplir les mots de passe pour des raisons de sécurité
+
+        // Séparer le nom complet en nom et prénom si nécessaire
+        nomField.setText(utilisateur.getNom());
+        prenomField.setText(utilisateur.getPrenom());
+        emailField.setText(utilisateur.getMail());
+
+        // Ne pas préremplir les mots de passe pour la sécurité
         motDePasseField.clear();
         confirmerMotDePasseField.clear();
     }
 
+    /**
+     * Valide les champs et crée ou met à jour l'utilisateur
+     */
     private void valider() {
-        String nomComplet = nomField.getText() + " " + prenomField.getText();
-        String email = emailField.getText();
-        String motDePasse = motDePasseField.getText();
-        String confirmerMotDePasse = confirmerMotDePasseField.getText();
+        String nom = nomField.getText() != null ? nomField.getText().trim() : "";
+        String prenom = prenomField.getText() != null ? prenomField.getText().trim() : "";
+        String email = emailField.getText() != null ? emailField.getText().trim().toLowerCase() : "";
+        String motDePasse = motDePasseField.getText() != null ? motDePasseField.getText() : "";
+        String confirmerMotDePasse = confirmerMotDePasseField.getText() != null ? confirmerMotDePasseField.getText() : "";
 
-        // En mode modification, si les champs de mot de passe sont vides, on garde l'ancien
-        if (modeModification && utilisateurAModifier != null) {
-            if (motDePasse.isEmpty() && confirmerMotDePasse.isEmpty()) {
-                // Garder l'ancien mot de passe
-                motDePasse = utilisateurAModifier.getMotDePasse();
-                confirmerMotDePasse = utilisateurAModifier.getMotDePasse();
-            } else if (!motDePasse.equals(confirmerMotDePasse)) {
-                Alert alert = new Alert(Alert.AlertType.ERROR, "Les mots de passe ne correspondent pas !");
-                alert.showAndWait();
+        // Champs obligatoires : toujours nom, prénom, email
+        if (nom.isEmpty() || prenom.isEmpty() || email.isEmpty()) {
+            showAlert(Alert.AlertType.ERROR, "Champs manquants", "Veuillez remplir tous les champs obligatoires.");
+            return;
+        }
+
+        // Validation nom/prénom/email
+        if (!NAME_PATTERN.matcher(nom).matches()) {
+            showAlert(Alert.AlertType.ERROR, "Nom invalide", "Le nom ne doit contenir que des lettres.");
+            return;
+        }
+        if (!NAME_PATTERN.matcher(prenom).matches()) {
+            showAlert(Alert.AlertType.ERROR, "Prénom invalide", "Le prénom ne doit contenir que des lettres.");
+            return;
+        }
+        if (!EMAIL_PATTERN.matcher(email).matches()) {
+            showAlert(Alert.AlertType.ERROR, "Email invalide", "Veuillez saisir une adresse email valide.");
+            return;
+        }
+
+        // Mot de passe : obligatoire uniquement si ajout, ou s’il est rempli en modification
+        if (!modeModification || (!motDePasse.isEmpty() || !confirmerMotDePasse.isEmpty())) {
+            if (!motDePasse.equals(confirmerMotDePasse)) {
+                showAlert(Alert.AlertType.ERROR, "Erreur mot de passe", "Les mots de passe ne correspondent pas.");
                 return;
             }
-            
-            // Mode modification : mettre à jour l'utilisateur existant
-            utilisateurAModifier.setNom(nomComplet);
-            utilisateurAModifier.setEmail(email);
-            utilisateurAModifier.setMotDePasse(motDePasse);
+            if (motDePasse.length() < 10) {
+                showAlert(Alert.AlertType.ERROR, "Mot de passe trop court", "Le mot de passe doit contenir au minimum 10 caractères.");
+                return;
+            }
+        }
+
+        // Mise à jour ou création
+        if (modeModification && utilisateurAModifier != null) {
+            utilisateurAModifier.setNom(nom);
+            utilisateurAModifier.setPrenom(prenom);
+            utilisateurAModifier.setMail(email);
+            if (!motDePasse.isEmpty()) utilisateurAModifier.setMotDePasse(motDePasse);
             nouvelUtilisateur = utilisateurAModifier;
         } else {
-            // Mode ajout : vérifier que les mots de passe correspondent
-            if (!motDePasse.equals(confirmerMotDePasse)) {
-                Alert alert = new Alert(Alert.AlertType.ERROR, "Les mots de passe ne correspondent pas !");
-                alert.showAndWait();
-                return;
-            }
-            
-            nouvelUtilisateur = new GestionUtilisateursController.Utilisateur(
-                    "U" + (int)(Math.random() * 1000),
-                    nomComplet,
-                    email,
-                    motDePasse
-            );
+            nouvelUtilisateur = new GestionUtilisateursController.Utilisateur(-1, nom, prenom, email);
+            nouvelUtilisateur.setMotDePasse(motDePasse);
         }
+
         fermer(true);
     }
+
 
     private void fermer(boolean confirmer) {
         this.confirme = confirmer;
@@ -105,5 +123,13 @@ public class AjouterUtilisateurController {
 
     public GestionUtilisateursController.Utilisateur getNouvelUtilisateur() {
         return nouvelUtilisateur;
+    }
+
+    private void showAlert(Alert.AlertType type, String titre, String message) {
+        Alert alert = new Alert(type);
+        alert.setTitle(titre);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }
