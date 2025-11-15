@@ -60,7 +60,7 @@ public class AuthentificationController {
             return;
         }
 
-        String sql = "SELECT mdp FROM utilisateur WHERE mail = ?";
+        String sql = "SELECT mdp, role FROM utilisateur WHERE mail = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -76,6 +76,7 @@ public class AuthentificationController {
             }
 
             String hashedPassword = rs.getString("mdp");
+            String role = rs.getString("role");
 
             // Vérification du mot de passe
             if (!BCrypt.checkpw(password, hashedPassword)) {
@@ -83,6 +84,8 @@ public class AuthentificationController {
                         "Le mot de passe que vous avez saisi est incorrect.");
                 return;
             }
+
+            com.example.utils.Session.setRole(role);
 
             // Succès
             showAlert(Alert.AlertType.INFORMATION, "Connexion réussie",

@@ -18,7 +18,7 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class MenuController implements Initializable {
-    private static String currentPage = "TableauBord"; // ou n'importe quelle valeur par défaut
+    private static String currentPage = "TableauBord";
 
 
     @FXML private ToggleButton btnDashboard;
@@ -51,6 +51,12 @@ public class MenuController implements Initializable {
         btnMedicaments.setToggleGroup(menuGroup);
         btnLivraisons.setToggleGroup(menuGroup);
         btnUtilisateurs.setToggleGroup(menuGroup);
+
+        if (!com.example.utils.Session.isAdmin()) {
+            btnUtilisateurs.setVisible(false);
+        } else {
+            btnUtilisateurs.setVisible(true);
+        }
 
         // Désactiver les effets visuels par défaut pour tous les boutons
         disableDefaultButtonEffects(btnDashboard);
