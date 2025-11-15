@@ -1,16 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- Imports nécessaires pour les layouts et les contrôles JavaFX -->
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.image.Image?>
-<?import javafx.geometry.Insets?>
 
-<!-- ==========================================================
-     PAGE CONSULTATION GLOBALE
-     Vue principale affichant les statistiques et sections dynamiques
-     ========================================================== -->
 <BorderPane xmlns="http://javafx.com/javafx/21"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.example.controllers.ConsultationGlobaleController"
@@ -22,10 +16,8 @@
     </left>
 
     <!-- ==================== CONTENU CENTRAL DÉFILABLE ==================== -->
-    <!-- HBox pour créer l'espacement entre le menu et le contenu -->
     <center>
         <HBox spacing="0">
-            <!-- Region invisible pour créer l'espacement de 3mm (≈12px) entre le menu et le contenu -->
             <Region prefWidth="12" style="-fx-background-color: #F9FAFB;" />
 
             <ScrollPane fitToWidth="true" fitToHeight="true" hbarPolicy="NEVER" style="-fx-background-color:transparent;" HBox.hgrow="ALWAYS">
@@ -50,8 +42,8 @@
                                 <Image url="/assets/liste-des-utilisateurs.png"/>
                             </ImageView>
                         </HBox>
-                        <Label text="350" styleClass="metric-card-number"/>
-                        <Label text="+ 2 clients ce mois-ci" styleClass="metric-card-subtext"/>
+                        <Label fx:id="lblTotalClients" text="350" styleClass="metric-card-number"/>
+                        <Label fx:id="lblNouveauxClients" text="+ 2 clients ce mois-ci" styleClass="metric-card-subtext"/>
                     </VBox>
 
                     <!-- Carte 2: Total médicaments -->
@@ -60,8 +52,8 @@
                         <HBox alignment="CENTER" spacing="10">
                             <Label text="Total médicaments" styleClass="metric-card-title"/>
                         </HBox>
-                        <Label text="150" styleClass="metric-card-number"/>
-                        <Label text="+ 5 médicaments ce mois-ci" styleClass="metric-card-subtext"/>
+                        <Label fx:id="lblTotalMedicaments" text="150" styleClass="metric-card-number"/>
+                        <Label fx:id="lblNouveauxMedicaments" text="+ 5 médicaments ce mois-ci" styleClass="metric-card-subtext"/>
                     </VBox>
 
                     <!-- Carte 3: Total livraisons -->
@@ -73,16 +65,12 @@
                                 <Image url="/assets/livraison (1).png"/>
                             </ImageView>
                         </HBox>
-                        <Label text="167" styleClass="metric-card-number"/>
-                        <Label text="+ 70 livraisons ce mois-ci" styleClass="metric-card-subtext"/>
+                        <Label fx:id="lblTotalLivraisons" text="167" styleClass="metric-card-number"/>
+                        <Label fx:id="lblNouvellesLivraisons" text="+ 2 livraisons ce mois-ci" styleClass="metric-card-subtext"/>
                     </VBox>
                 </HBox>
 
 
-
-                <!-- ==========================================================
-     SECTION : LIVRAISONS PAR TYPE (INTERACTIVE)
-     ========================================================== -->
                 <VBox styleClass="section-container">
                     <Label text="Livraisons par type" styleClass="section-title"/>
 
@@ -123,9 +111,6 @@
                 </VBox>
 
 
-                <!-- ==========================================================
-     SECTION : CLIENTS LES PLUS ACTIFS
-     ========================================================== -->
                 <VBox styleClass="section-container">
                     <Label text="Clients les plus actifs" styleClass="section-title"/>
 
@@ -161,10 +146,7 @@
                 </VBox>
 
 
-                <!-- ==========================================================
-     SECTION : MÉDICAMENTS LES PLUS LIVRÉS
-     ========================================================== -->
-                <VBox styleClass="section-container">
+                <VBox fx:id="medicationsContainer" styleClass="section-container">
                     <Label text="Médicaments les plus livrés" styleClass="section-title"/>
 
                     <!-- Panneau blanc interne -->
