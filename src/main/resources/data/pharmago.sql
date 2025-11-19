@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1
+-- version 5.2.0
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3306
--- Généré le : sam. 15 nov. 2025 à 19:51
--- Version du serveur : 9.1.0
--- Version de PHP : 8.3.14
+-- Généré le : mer. 19 nov. 2025 à 21:45
+-- Version du serveur : 8.0.31
+-- Version de PHP : 8.2.0
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS `client` (
   `adresse` varchar(30) DEFAULT NULL,
   `numTel` char(10) DEFAULT NULL,
   PRIMARY KEY (`codeClt`)
-) ;
+) ENGINE=MyISAM AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Déchargement des données de la table `client`
@@ -43,9 +43,7 @@ CREATE TABLE IF NOT EXISTS `client` (
 
 INSERT INTO `client` (`codeClt`, `nom`, `prenom`, `adresse`, `numTel`) VALUES
 (3, 'Sahi', 'Imene', 'Sidi Ahmed', '0793714172'),
-(4, 'Salmi', 'Amina', 'Cartier Sghir', '0786545445'),
 (5, 'Tabet', 'Bilal', 'Tala Hamza', '0786545444'),
-(6, 'Maouche', 'Lina', 'Cité Aouchiche', '0784453246'),
 (7, 'Saidi', 'Fateh', 'Edimco', '0567345340');
 
 -- --------------------------------------------------------
@@ -91,7 +89,7 @@ CREATE TABLE IF NOT EXISTS `livraison` (
   `cout` float DEFAULT NULL,
   PRIMARY KEY (`numLiv`),
   KEY `codeClt` (`codeClt`)
-) ;
+) ENGINE=MyISAM AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Déchargement des données de la table `livraison`
@@ -102,7 +100,8 @@ INSERT INTO `livraison` (`numLiv`, `codeClt`, `dateLiv`, `priorite`, `statut`, `
 (8, 4, '2025-11-01', 'normal', 'annulée', 'sous_chaine_du_froid', 650, 1500),
 (10, 5, '2026-01-04', 'urgent', 'en_attente', 'dangereuse', 200, 1750),
 (12, 6, '2026-01-12', 'urgent', 'en_cours', 'normale', 450, 3330),
-(14, 7, '2026-02-08', 'normal', 'livrée', 'sous_congélation', 150, 240);
+(14, 7, '2026-02-08', 'normal', 'annulée', 'sous_congélation', 150, 240),
+(16, 3, '2025-11-19', 'normal', 'en_cours', 'normale', 10, 310);
 
 -- --------------------------------------------------------
 
@@ -118,7 +117,7 @@ CREATE TABLE IF NOT EXISTS `medicament` (
   `nbrBoite` int DEFAULT NULL,
   `prixMed` int DEFAULT NULL,
   PRIMARY KEY (`idMed`)
-) ;
+) ENGINE=MyISAM AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Déchargement des données de la table `medicament`

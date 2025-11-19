@@ -1,5 +1,6 @@
 package com.example.controllers;
 
+import com.example.bdd.DatabaseConnection;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -15,9 +16,14 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -36,11 +42,15 @@ public class GestionClientsController implements Initializable {
     @FXML
     private GridPane clientsGrid; // Grille pour afficher les cartes clients
 
-    // Liste des clients (sera remplacée par une vraie source de données)
+    // Liste des clients
     private List<Client> clients = new ArrayList<>();
     
     // Liste filtrée des clients selon la recherche
     private List<Client> clientsFiltres = new ArrayList<>();
+
+    // Regex pour validation
+    private static final Pattern NAME_PATTERN = Pattern.compile("^[A-Za-zÀ-ÖØ-öø-ÿ]+(?:[-' ][A-Za-zÀ-ÖØ-öø-ÿ]+)*$");
+    private static final Pattern TELEPHONE_PATTERN = Pattern.compile("^[0-9]{10}$");
 
     /**
      * Initialisation du contrôleur
@@ -48,32 +58,45 @@ public class GestionClientsController implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Initialisation des données de test
-        initialiserDonneesTest();
-        
-        // Configuration de la recherche en temps réel
+        chargerClients();
         configurerRecherche();
-        
-        // Configuration du bouton ajouter
         configurerBoutonAjouter();
-        
-        // Affichage initial des clients
-        afficherClients();
+        searchField.sceneProperty().addListener((obs, oldScene, newScene) -> {
+            if (newScene != null) {
+                newScene.getStylesheets().add(
+                        getClass().getResource("/styles/GestionClients.css").toExternalForm()
+                );
+            }
+        });
     }
 
     /**
-     * Initialise des données de test pour la démonstration
-     * À remplacer par un appel à la base de données ou service
+     * Charge les clients depuis la base de données
      */
-    private void initialiserDonneesTest() {
-        clients.add(new Client("C001", "Djammel Debbag", "Rue de la liberté, Bejaia", "+213 7778879767"));
-        clients.add(new Client("C002", "Amina Berrabah", "Avenue des Martyrs, Alger", "+213 555123456"));
-        clients.add(new Client("C003", "Karim Benali", "Boulevard Mohamed V, Oran", "+213 666789012"));
-        clients.add(new Client("C004", "Fatima Zohra", "Rue Didouche Mourad, Constantine", "+213 777345678"));
-        clients.add(new Client("C005", "Mohamed Amine", "Place Emir Abdelkader, Tlemcen", "+213 555901234"));
-        clients.add(new Client("C006", "Sara Bouzid", "Avenue Larbi Ben M'hidi, Annaba", "+213 666567890"));
-        
+    private void chargerClients() {
+        clients.clear();
+        String query = "SELECT codeClt, nom, prenom, adresse, numTel FROM client ORDER BY codeClt";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                int codeClt = rs.getInt("codeClt");
+                String nom = rs.getString("nom");
+                String prenom = rs.getString("prenom");
+                String adresse = rs.getString("adresse");
+                String numTel = rs.getString("numTel");
+                clients.add(new Client(codeClt, nom, prenom, adresse, numTel));
+            }
+
+        } catch (SQLException e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur DB", "Impossible de charger les clients : " + e.getMessage());
+            e.printStackTrace();
+        }
+
         clientsFiltres = new ArrayList<>(clients);
+        afficherClients();
     }
 
     /**
@@ -93,19 +116,18 @@ public class GestionClientsController implements Initializable {
      */
     private void filtrerClients(String critere) {
         if (critere == null || critere.trim().isEmpty()) {
-            // Si le champ est vide, afficher tous les clients
             clientsFiltres = new ArrayList<>(clients);
         } else {
-            // Filtrer selon le nom, prénom ou code (insensible à la casse)
             String critereLower = critere.toLowerCase().trim();
             clientsFiltres = clients.stream()
                     .filter(client -> 
-                        client.getCode().toLowerCase().contains(critereLower) ||
-                        client.getNom().toLowerCase().contains(critereLower)
+                        String.valueOf(client.getCodeClt()).contains(critereLower) ||
+                        client.getNom().toLowerCase().contains(critereLower) ||
+                        client.getPrenom().toLowerCase().contains(critereLower) ||
+                        (client.getNom() + " " + client.getPrenom()).toLowerCase().contains(critereLower)
                     )
                     .collect(Collectors.toList());
         }
-        // Réafficher les clients filtrés
         afficherClients();
     }
 
@@ -118,28 +140,84 @@ public class GestionClientsController implements Initializable {
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/views/AjouterClient.fxml"));
                 Parent root = loader.load();
-
                 AjouterClientController controller = loader.getController();
 
-                Stage dialogStage = new Stage();
-                dialogStage.initModality(Modality.APPLICATION_MODAL);
-                dialogStage.setResizable(false);
-                dialogStage.setTitle("Ajouter un client");
+                Stage dialog = new Stage();
+                dialog.initModality(Modality.APPLICATION_MODAL);
+                dialog.setTitle("Ajouter un client");
+                dialog.setResizable(false);
                 Scene scene = new Scene(root);
                 scene.getStylesheets().add(getClass().getResource("/styles/GestionClients.css").toExternalForm());
-                dialogStage.setScene(scene);
-                dialogStage.showAndWait();
+                dialog.setScene(scene);
+                dialog.showAndWait();
 
                 if (controller.isConfirme()) {
-                    clients.add(controller.getNouveauClient());
-                    filtrerClients(searchField.getText());
-                    System.out.println("Nouveau client ajouté !");
-                }
+                    Client nouveau = controller.getNouveauClient();
 
+                    // Validation
+                    String nom = nouveau.getNom().trim();
+                    String prenom = nouveau.getPrenom().trim();
+                    String adresse = nouveau.getAdresse() != null ? nouveau.getAdresse().trim() : "";
+                    String numTel = nouveau.getTelephone() != null ? nouveau.getTelephone().trim() : "";
+
+                    if (!validateClient(nom, prenom, adresse, numTel)) return;
+
+                    // Insertion dans la BDD
+                    String insert = "INSERT INTO client (nom, prenom, adresse, numTel) VALUES (?, ?, ?, ?)";
+                    try (Connection conn = DatabaseConnection.getConnection();
+                         PreparedStatement stmt = conn.prepareStatement(insert, PreparedStatement.RETURN_GENERATED_KEYS)) {
+                        stmt.setString(1, nom);
+                        stmt.setString(2, prenom);
+                        stmt.setString(3, adresse);
+                        stmt.setString(4, numTel);
+
+                        int affected = stmt.executeUpdate();
+                        if (affected > 0) {
+                            try (ResultSet keys = stmt.getGeneratedKeys()) {
+                                if (keys.next()) {
+                                    int id = keys.getInt(1);
+                                    clients.add(new Client(id, nom, prenom, adresse, numTel));
+                                    filtrerClients(searchField.getText());
+                                    showAlert(Alert.AlertType.INFORMATION, "Succès", "Client ajouté avec succès !");
+                                }
+                            }
+                        } else {
+                            showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible d'ajouter le client.");
+                        }
+                    }
+                }
             } catch (Exception e) {
+                showAlert(Alert.AlertType.ERROR, "Erreur", "Une erreur est survenue : " + e.getMessage());
                 e.printStackTrace();
             }
         });
+    }
+
+    /**
+     * Valide les champs d'un client
+     */
+    private boolean validateClient(String nom, String prenom, String adresse, String numTel) {
+        if (nom == null || nom.isEmpty() || prenom == null || prenom.isEmpty()) {
+            showAlert(Alert.AlertType.ERROR, "Champs manquants", "Veuillez remplir le nom et le prénom.");
+            return false;
+        }
+
+        if (!NAME_PATTERN.matcher(nom).matches()) {
+            showAlert(Alert.AlertType.ERROR, "Nom invalide", "Le nom ne doit contenir que des lettres.");
+            return false;
+        }
+
+        if (!NAME_PATTERN.matcher(prenom).matches()) {
+            showAlert(Alert.AlertType.ERROR, "Prénom invalide", "Le prénom ne doit contenir que des lettres.");
+            return false;
+        }
+
+        if (numTel != null && !numTel.isEmpty() && !TELEPHONE_PATTERN.matcher(numTel).matches()) {
+            showAlert(Alert.AlertType.ERROR, "Téléphone invalide", "Le numéro de téléphone doit contenir exactement 10 chiffres.");
+            return false;
+        }
+
+        return true;
     }
 
 
@@ -188,7 +266,7 @@ public class GestionClientsController implements Initializable {
         HBox.setHgrow(enTete, Priority.ALWAYS);
         
         // Code client (ex: C001)
-        Label codeLabel = new Label(client.getCode());
+        Label codeLabel = new Label("C" + String.format("%03d", client.getCodeClt()));
         codeLabel.getStyleClass().add("client-code");
         HBox.setHgrow(codeLabel, Priority.ALWAYS);
         
@@ -215,7 +293,7 @@ public class GestionClientsController implements Initializable {
         enTete.getChildren().addAll(codeLabel, btnModifier, btnSupprimer);
         
         // Nom du client
-        Label nomLabel = new Label(client.getNom());
+        Label nomLabel = new Label(client.getNom() + " " + client.getPrenom());
         nomLabel.getStyleClass().add("client-nom");
         
         // Informations de contact
@@ -280,12 +358,42 @@ public class GestionClientsController implements Initializable {
             dialogStage.showAndWait();
 
             if (controller.isConfirme()) {
-                // Le client a déjà été modifié via la référence
-                filtrerClients(searchField.getText());
-                System.out.println("Client " + client.getCode() + " modifié !");
+                Client modif = controller.getNouveauClient();
+
+                // Validation
+                String nom = modif.getNom().trim();
+                String prenom = modif.getPrenom().trim();
+                String adresse = modif.getAdresse() != null ? modif.getAdresse().trim() : "";
+                String numTel = modif.getTelephone() != null ? modif.getTelephone().trim() : "";
+
+                if (!validateClient(nom, prenom, adresse, numTel)) return;
+
+                // Mise à jour dans la BDD
+                String update = "UPDATE client SET nom=?, prenom=?, adresse=?, numTel=? WHERE codeClt=?";
+                try (Connection conn = DatabaseConnection.getConnection();
+                     PreparedStatement stmt = conn.prepareStatement(update)) {
+
+                    stmt.setString(1, nom);
+                    stmt.setString(2, prenom);
+                    stmt.setString(3, adresse);
+                    stmt.setString(4, numTel);
+                    stmt.setInt(5, client.getCodeClt());
+
+                    stmt.executeUpdate();
+
+                    // Mise à jour locale
+                    client.setNom(nom);
+                    client.setPrenom(prenom);
+                    client.setAdresse(adresse);
+                    client.setTelephone(numTel);
+
+                    filtrerClients(searchField.getText());
+                    showAlert(Alert.AlertType.INFORMATION, "Succès", "Client modifié avec succès !");
+                }
             }
 
         } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Une erreur est survenue : " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -312,12 +420,19 @@ public class GestionClientsController implements Initializable {
             dialogStage.showAndWait();
 
             if (controller.isConfirmation()) {
-                clients.remove(client);
-                filtrerClients(searchField.getText());
-                System.out.println("Client " + client.getCode() + " supprimé");
+                String delete = "DELETE FROM client WHERE codeClt=?";
+                try (Connection conn = DatabaseConnection.getConnection();
+                     PreparedStatement stmt = conn.prepareStatement(delete)) {
+                    stmt.setInt(1, client.getCodeClt());
+                    stmt.executeUpdate();
+                    clients.remove(client);
+                    filtrerClients(searchField.getText());
+                    showAlert(Alert.AlertType.INFORMATION, "Succès", "Client supprimé avec succès !");
+                }
             }
 
         } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Une erreur est survenue : " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -329,35 +444,46 @@ public class GestionClientsController implements Initializable {
      */
     private void voirLivraisons(Client client) {
         // TODO: Naviguer vers la vue des livraisons du client
-        System.out.println("Action: Voir les livraisons du client " + client.getCode());
+        System.out.println("Action: Voir les livraisons du client C" + String.format("%03d", client.getCodeClt()));
+    }
+
+    private void showAlert(Alert.AlertType type, String titre, String message) {
+        Alert alert = new Alert(type);
+        alert.setTitle(titre);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 
     /**
      * Classe interne représentant un client
-     * À remplacer par une vraie classe de modèle
      */
     public static class Client {
-        private String code;
+        private int codeClt;
         private String nom;
+        private String prenom;
         private String adresse;
         private String telephone;
 
-        public Client(String code, String nom, String adresse, String telephone) {
-            this.code = code;
+        public Client(int codeClt, String nom, String prenom, String adresse, String telephone) {
+            this.codeClt = codeClt;
             this.nom = nom;
+            this.prenom = prenom;
             this.adresse = adresse;
             this.telephone = telephone;
         }
 
         // Getters
-        public String getCode() { return code; }
+        public int getCodeClt() { return codeClt; }
         public String getNom() { return nom; }
+        public String getPrenom() { return prenom; }
         public String getAdresse() { return adresse; }
         public String getTelephone() { return telephone; }
 
-        // Setters (si nécessaire)
-        public void setCode(String code) { this.code = code; }
+        // Setters
+        public void setCodeClt(int codeClt) { this.codeClt = codeClt; }
         public void setNom(String nom) { this.nom = nom; }
+        public void setPrenom(String prenom) { this.prenom = prenom; }
         public void setAdresse(String adresse) { this.adresse = adresse; }
         public void setTelephone(String telephone) { this.telephone = telephone; }
     }

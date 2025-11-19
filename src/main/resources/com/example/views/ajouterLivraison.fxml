@@ -24,26 +24,34 @@
                 <RowConstraints vgrow="NEVER" />
                 <RowConstraints vgrow="NEVER" />
                 <RowConstraints vgrow="NEVER" />
+                <RowConstraints vgrow="NEVER" />
+                <RowConstraints vgrow="NEVER" />
             </rowConstraints>
 
             <!-- Ligne 0 -->
-            <TextField fx:id="nomField" promptText="Nom" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-            <TextField fx:id="prenomField" promptText="Prénom" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+            <ComboBox fx:id="clientComboBox" promptText="Sélectionner un client"
+                      GridPane.columnSpan="2" GridPane.rowIndex="0" GridPane.columnIndex="0" prefWidth="350"/>
 
             <!-- Ligne 1 -->
-            <DatePicker fx:id="dateLivField" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-            <TextField fx:id="medicamentField" promptText="Nom médicament" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+            <DatePicker fx:id="dateLivField" promptText="Date de livraison"
+                        GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+            <Spinner fx:id="qttField" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
 
             <!-- Ligne 2 -->
-            <Spinner fx:id="qttField" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-            <TextField fx:id="taxeField" promptText="Taxe" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+            <TextField fx:id="taxeField" promptText="Taxe (DA)" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+            <TextField fx:id="coutField" promptText="Coût total (DA)" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
 
             <!-- Ligne 3 -->
-            <TextField fx:id="coutField" promptText="Coût total" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
-            <ComboBox fx:id="statutField" promptText="Statut" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+            <ComboBox fx:id="statutField" promptText="Statut" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+            <ComboBox fx:id="typeField" promptText="Type" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
 
-            <!-- Ligne 4 -->
-            <ComboBox fx:id="typeField" promptText="Type" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+            <!-- Ligne 4 — NOUVEAU : Sélection du médicament -->
+            <ComboBox fx:id="medicamentComboBox" promptText="Sélectionner un médicament"
+                      GridPane.rowIndex="4" GridPane.columnIndex="0" GridPane.columnSpan="2" prefWidth="350"/>
+
+            <!-- Ligne 5 -->
+            <CheckBox fx:id="urgentCheckBox" text="Priorité urgente"
+                      GridPane.rowIndex="5" GridPane.columnIndex="0"/>
         </GridPane>
 
         <!-- Boutons -->

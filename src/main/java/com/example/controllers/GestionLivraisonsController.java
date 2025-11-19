@@ -1,5 +1,6 @@
 package com.example.controllers;
 
+import com.example.bdd.DatabaseConnection;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -15,11 +16,16 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.text.Normalizer;
 
@@ -47,7 +53,7 @@ public class GestionLivraisonsController implements Initializable {
 
     private String medicament;
 
-    // Liste des livraisons (sera remplacée par une vraie source de données)
+    // Liste des livraisons
     private List<Livraison> livraisons = new ArrayList<>();
     
     // Liste filtrée des livraisons selon la recherche et les filtres
@@ -59,45 +65,124 @@ public class GestionLivraisonsController implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Initialisation des données de test
-        initialiserDonneesTest();
-        
-        // Configuration des filtres
+        chargerLivraisons();
         configurerFiltres();
-        
-        // Configuration de la recherche en temps réel
         configurerRecherche();
-        
-        // Configuration du bouton nouvelle livraison
         configurerBoutonNouvelleLivraison();
-        
-        // Affichage initial des livraisons
+        searchField.sceneProperty().addListener((obs, oldScene, newScene) -> {
+            if (newScene != null) {
+                newScene.getStylesheets().add(
+                        getClass().getResource("/styles/GestionLivraisons.css").toExternalForm()
+                );
+            }
+        });
+    }
+
+    /**
+     * Charge les livraisons depuis la base de données avec les informations du client
+     */
+    private void chargerLivraisons() {
+        livraisons.clear();
+        String query = """
+            SELECT L.numLiv, L.codeClt, L.dateLiv, L.priorite, L.statut, L.type_liv, L.taxe, L.cout,
+                   C.nom, C.prenom,
+                   (SELECT COUNT(*) FROM inclure I WHERE I.numLiv = L.numLiv) AS nombreMedicaments
+            FROM livraison L
+            LEFT JOIN client C ON L.codeClt = C.codeClt
+            ORDER BY L.numLiv DESC
+            """;
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                int numLiv = rs.getInt("numLiv");
+                int codeClt = rs.getInt("codeClt");
+                LocalDate dateLiv = rs.getDate("dateLiv") != null ? rs.getDate("dateLiv").toLocalDate() : null;
+                String priorite = rs.getString("priorite");
+                String statut = rs.getString("statut");
+                String type_liv = rs.getString("type_liv");
+                float taxe = rs.getFloat("taxe");
+                float cout = rs.getFloat("cout");
+                String nomClient = rs.getString("nom");
+                String prenomClient = rs.getString("prenom");
+                int nombreMedicaments = rs.getInt("nombreMedicaments");
+
+                boolean urgent = "urgent".equals(priorite);
+                String clientNom = (nomClient != null && prenomClient != null) ? nomClient + " " + prenomClient : "";
+
+                // Conversion des noms pour l'affichage
+                String statutDisplay = convertirStatut(statut);
+                String typeDisplay = convertirType(type_liv);
+
+                livraisons.add(new Livraison(numLiv, codeClt, clientNom, dateLiv, nombreMedicaments,
+                        (int) taxe, cout, statutDisplay, typeDisplay, urgent, ""));
+            }
+
+        } catch (SQLException e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur DB", "Impossible de charger les livraisons : " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        livraisonsFiltres = new ArrayList<>(livraisons);
         afficherLivraisons();
     }
 
     /**
-     * Initialise des données de test pour la démonstration
-     * À remplacer par un appel à la base de données ou service
+     * Convertit le statut de la BDD vers l'affichage
      */
-    private void initialiserDonneesTest() {
-        // Livraison avec plusieurs tags (livrée, sous chaine du froid, urgent)
-        livraisons.add(new Livraison("L0001", "Djammel Debbag", LocalDate.of(2025, 12, 31), 2, 250,
-                2250 ,"livrée", "sous chaine du froid", true, "Paracetamol"));
+    private String convertirStatut(String statut) {
+        if (statut == null) return "";
+        switch (statut) {
+            case "en_attente": return "en attente";
+            case "livrée": return "livrée";
+            case "annulée": return "annulée";
+            case "en_cours": return "en cours";
+            default: return statut;
+        }
+    }
 
-        livraisons.add(new Livraison("L0002", "Amina Berrabah", LocalDate.of(2025, 11, 15), 3, 350,
-                2250 ,"en cours", "sous congélation", false, "Ibuprofen"));
-        livraisons.add(new Livraison("L0001", "Djammel Debbag", LocalDate.of(2025, 12, 31), 2, 250,
-                2250 ,"livrée", "sous chaine du froid", true, "Paracetamol"));
+    /**
+     * Convertit le type de la BDD vers l'affichage
+     */
+    private String convertirType(String type) {
+        if (type == null) return "";
+        switch (type) {
+            case "sous_chaine_du_froid": return "sous chaine du froid";
+            case "sous_congélation": return "sous congélation";
+            case "dangereuse": return "dangereuses";
+            case "normale": return "normale";
+            default: return type;
+        }
+    }
 
-        livraisons.add(new Livraison("L0002", "Amina Berrabah", LocalDate.of(2025, 11, 15), 3, 350,
-                2250 ,"en cours", "sous congélation", false, "Ibuprofen"));
-        livraisons.add(new Livraison("L0001", "Djammel Debbag", LocalDate.of(2025, 12, 31), 2, 250,
-                2250 ,"livrée", "sous chaine du froid", true, "Paracetamol"));
+    /**
+     * Convertit le statut d'affichage vers la BDD
+     */
+    private String convertirStatutVersBDD(String statut) {
+        if (statut == null) return "";
+        switch (statut) {
+            case "en attente": return "en_attente";
+            case "livrée": return "livrée";
+            case "annulée": return "annulée";
+            case "en cours": return "en_cours";
+            default: return statut;
+        }
+    }
 
-        livraisons.add(new Livraison("L0002", "Amina Berrabah", LocalDate.of(2025, 11, 15), 3, 350,
-                2250 ,"en cours", "sous congélation", false, "Ibuprofen"));
-        
-        livraisonsFiltres = new ArrayList<>(livraisons);
+    /**
+     * Convertit le type d'affichage vers la BDD
+     */
+    private String convertirTypeVersBDD(String type) {
+        if (type == null) return "";
+        switch (type) {
+            case "sous chaine du froid": return "sous_chaine_du_froid";
+            case "sous congélation": return "sous_congélation";
+            case "dangereuses": return "dangereuse";
+            case "normale": return "normale";
+            default: return type;
+        }
     }
 
     /**
@@ -145,7 +230,7 @@ public class GestionLivraisonsController implements Initializable {
                     boolean matchRecherche = true;
                     if (critereRecherche != null && !critereRecherche.trim().isEmpty()) {
                         String critereLower = critereRecherche.toLowerCase().trim();
-                        matchRecherche = livraison.getNumero().toLowerCase().contains(critereLower) ||
+                        matchRecherche = String.valueOf(livraison.getNumLiv()).contains(critereLower) ||
                                        livraison.getClient().toLowerCase().contains(critereLower);
                     }
                     
@@ -191,15 +276,77 @@ public class GestionLivraisonsController implements Initializable {
                 dialogStage.showAndWait();
 
                 if (controller.isConfirme()) {
-                    livraisons.add(controller.getNouvelleLivraison());
-                    appliquerFiltres();
-                    System.out.println("Nouvelle livraison ajouté !");
-                }
+                    Livraison nouvelle = controller.getNouvelleLivraison();
 
+                    // Validation
+                    int codeClt = nouvelle.getCodeClt();
+                    LocalDate dateLiv = nouvelle.getDate();
+                    String priorite = nouvelle.isUrgent() ? "urgent" : "normal";
+                    String statut = convertirStatutVersBDD(nouvelle.getStatut());
+                    String type_liv = convertirTypeVersBDD(nouvelle.getType());
+                    float taxe = nouvelle.getTaxe();
+                    float cout = nouvelle.getCout();
+
+                    if (!validateLivraison(codeClt, dateLiv, statut, type_liv)) return;
+
+                    // Insertion dans la BDD
+                    String insert = "INSERT INTO livraison (codeClt, dateLiv, priorite, statut, type_liv, taxe, cout) VALUES (?, ?, ?, ?, ?, ?, ?)";
+                    try (Connection conn = DatabaseConnection.getConnection();
+                         PreparedStatement stmt = conn.prepareStatement(insert, PreparedStatement.RETURN_GENERATED_KEYS)) {
+                        stmt.setInt(1, codeClt);
+                        stmt.setDate(2, java.sql.Date.valueOf(dateLiv));
+                        stmt.setString(3, priorite);
+                        stmt.setString(4, statut);
+                        stmt.setString(5, type_liv);
+                        stmt.setFloat(6, taxe);
+                        stmt.setFloat(7, cout);
+
+                        int affected = stmt.executeUpdate();
+                        if (affected > 0) {
+                            try (ResultSet keys = stmt.getGeneratedKeys()) {
+                                if (keys.next()) {
+                                    int id = keys.getInt(1);
+                                    chargerLivraisons(); // Recharger pour avoir les bonnes infos
+                                    showAlert(Alert.AlertType.INFORMATION, "Succès", "Livraison ajoutée avec succès !");
+                                }
+                            }
+                        } else {
+                            showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible d'ajouter la livraison.");
+                        }
+                    }
+                }
             } catch (Exception e) {
+                showAlert(Alert.AlertType.ERROR, "Erreur", "Une erreur est survenue : " + e.getMessage());
                 e.printStackTrace();
             }
         });
+    }
+
+    /**
+     * Valide les champs d'une livraison
+     */
+    private boolean validateLivraison(int codeClt, LocalDate dateLiv, String statut, String type_liv) {
+        if (codeClt <= 0) {
+            showAlert(Alert.AlertType.ERROR, "Client invalide", "Veuillez sélectionner un client valide.");
+            return false;
+        }
+
+        if (dateLiv == null) {
+            showAlert(Alert.AlertType.ERROR, "Date invalide", "Veuillez entrer une date de livraison valide.");
+            return false;
+        }
+
+        if (statut == null || statut.isEmpty()) {
+            showAlert(Alert.AlertType.ERROR, "Statut invalide", "Veuillez sélectionner un statut.");
+            return false;
+        }
+
+        if (type_liv == null || type_liv.isEmpty()) {
+            showAlert(Alert.AlertType.ERROR, "Type invalide", "Veuillez sélectionner un type de livraison.");
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -247,7 +394,7 @@ public class GestionLivraisonsController implements Initializable {
         HBox.setHgrow(enTete, Priority.ALWAYS);
         
         // Numéro livraison (ex: L0001)
-        Label numeroLabel = new Label(livraison.getNumero());
+        Label numeroLabel = new Label("L" + String.format("%04d", livraison.getNumLiv()));
         numeroLabel.getStyleClass().add("livraison-numero");
         HBox.setHgrow(numeroLabel, Priority.ALWAYS);
         
@@ -380,7 +527,7 @@ public class GestionLivraisonsController implements Initializable {
             Stage dialogStage = new Stage();
             dialogStage.initModality(Modality.APPLICATION_MODAL);
             dialogStage.setResizable(false);
-            dialogStage.setTitle("QR Code - " + livraison.getNumero());
+            dialogStage.setTitle("QR Code - L" + String.format("%04d", livraison.getNumLiv()));
             Scene scene = new Scene(root);
             scene.getStylesheets().add(getClass().getResource("/styles/GestionLivraisons.css").toExternalForm());
             dialogStage.setScene(scene);
@@ -413,12 +560,42 @@ public class GestionLivraisonsController implements Initializable {
             dialogStage.showAndWait();
 
             if (controller.isConfirme()) {
-                // La livraison a déjà été modifiée via la référence
-                appliquerFiltres();
-                System.out.println("Livraison " + livraison.getNumero() + " modifiée !");
+                Livraison modif = controller.getNouvelleLivraison();
+
+                // Validation
+                int codeClt = modif.getCodeClt();
+                LocalDate dateLiv = modif.getDate();
+                String priorite = modif.isUrgent() ? "urgent" : "normal";
+                String statut = convertirStatutVersBDD(modif.getStatut());
+                String type_liv = convertirTypeVersBDD(modif.getType());
+                float taxe = modif.getTaxe();
+                float cout = modif.getCout();
+
+                if (!validateLivraison(codeClt, dateLiv, statut, type_liv)) return;
+
+                // Mise à jour dans la BDD
+                String update = "UPDATE livraison SET codeClt=?, dateLiv=?, priorite=?, statut=?, type_liv=?, taxe=?, cout=? WHERE numLiv=?";
+                try (Connection conn = DatabaseConnection.getConnection();
+                     PreparedStatement stmt = conn.prepareStatement(update)) {
+
+                    stmt.setInt(1, codeClt);
+                    stmt.setDate(2, java.sql.Date.valueOf(dateLiv));
+                    stmt.setString(3, priorite);
+                    stmt.setString(4, statut);
+                    stmt.setString(5, type_liv);
+                    stmt.setFloat(6, taxe);
+                    stmt.setFloat(7, cout);
+                    stmt.setInt(8, livraison.getNumLiv());
+
+                    stmt.executeUpdate();
+
+                    chargerLivraisons(); // Recharger pour avoir les bonnes infos
+                    showAlert(Alert.AlertType.INFORMATION, "Succès", "Livraison modifiée avec succès !");
+                }
             }
 
         } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Une erreur est survenue : " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -445,22 +622,41 @@ public class GestionLivraisonsController implements Initializable {
             dialogStage.showAndWait();
 
             if (controller.isConfirmation()) {
-                livraisons.remove(livraison);
-                appliquerFiltres();
-                System.out.println("Livraison " + livraison.getNumero() + " supprimé");
+                // Supprimer d'abord les entrées dans inclure (clé étrangère)
+                String deleteInclure = "DELETE FROM inclure WHERE numLiv=?";
+                String deleteLivraison = "DELETE FROM livraison WHERE numLiv=?";
+                try (Connection conn = DatabaseConnection.getConnection();
+                     PreparedStatement stmt1 = conn.prepareStatement(deleteInclure);
+                     PreparedStatement stmt2 = conn.prepareStatement(deleteLivraison)) {
+                    stmt1.setInt(1, livraison.getNumLiv());
+                    stmt1.executeUpdate();
+                    stmt2.setInt(1, livraison.getNumLiv());
+                    stmt2.executeUpdate();
+                    chargerLivraisons(); // Recharger
+                    showAlert(Alert.AlertType.INFORMATION, "Succès", "Livraison supprimée avec succès !");
+                }
             }
 
         } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Une erreur est survenue : " + e.getMessage());
             e.printStackTrace();
         }
     }
 
+    private void showAlert(Alert.AlertType type, String titre, String message) {
+        Alert alert = new Alert(type);
+        alert.setTitle(titre);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
     /**
      * Classe interne représentant une livraison
-     * À remplacer par une vraie classe de modèle
      */
     public static class Livraison {
-        private String numero;
+        private int numLiv;
+        private int codeClt;
         private String client;
         private LocalDate date;
         private int nombreMedicaments;
@@ -471,10 +667,11 @@ public class GestionLivraisonsController implements Initializable {
         private boolean urgent;
         private String medicament;
 
-        public Livraison(String numero, String client, LocalDate date, int nombreMedicaments,
+        public Livraison(int numLiv, int codeClt, String client, LocalDate date, int nombreMedicaments,
                          int taxe, float cout, String statut, String type, boolean urgent,
                          String medicament) {
-            this.numero = numero;
+            this.numLiv = numLiv;
+            this.codeClt = codeClt;
             this.client = client;
             this.date = date;
             this.nombreMedicaments = nombreMedicaments;
@@ -486,9 +683,9 @@ public class GestionLivraisonsController implements Initializable {
             this.medicament = medicament;
         }
 
-
         // Getters
-        public String getNumero() { return numero; }
+        public int getNumLiv() { return numLiv; }
+        public int getCodeClt() { return codeClt; }
         public String getClient() { return client; }
         public LocalDate getDate() { return date; }
         public int getNombreMedicaments() { return nombreMedicaments; }
@@ -499,20 +696,21 @@ public class GestionLivraisonsController implements Initializable {
         public boolean isUrgent() { return urgent; }
         public String getMedicament() { return medicament; }
 
-
         /**
          * Retourne la date formatée (dd/MM/yyyy)
          * @return La date formatée
          */
         public String getDateFormatee() {
+            if (date == null) return "";
             return String.format("%02d/%02d/%04d", 
                 date.getDayOfMonth(),
                 date.getMonthValue(),
                 date.getYear());
         }
 
-        // Setters (si nécessaire)
-        public void setNumero(String numero) { this.numero = numero; }
+        // Setters
+        public void setNumLiv(int numLiv) { this.numLiv = numLiv; }
+        public void setCodeClt(int codeClt) { this.codeClt = codeClt; }
         public void setClient(String client) { this.client = client; }
         public void setDate(LocalDate date) { this.date = date; }
         public void setNombreMedicaments(int nombreMedicaments) { this.nombreMedicaments = nombreMedicaments; }

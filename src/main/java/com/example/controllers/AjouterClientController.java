@@ -1,6 +1,7 @@
 package com.example.controllers;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -33,39 +34,46 @@ public class AjouterClientController {
         this.clientAModifier = client;
         this.modeModification = true;
         
-        // Séparer le nom complet en nom et prénom
-        String[] nomParts = client.getNom().split(" ", 2);
-        if (nomParts.length > 0) {
-            nomField.setText(nomParts[0]);
-            if (nomParts.length > 1) {
-                prenomField.setText(nomParts[1]);
-            }
-        }
-        
-        adresseField.setText(client.getAdresse());
-        telephoneField.setText(client.getTelephone());
+        nomField.setText(client.getNom());
+        prenomField.setText(client.getPrenom());
+        adresseField.setText(client.getAdresse() != null ? client.getAdresse() : "");
+        telephoneField.setText(client.getTelephone() != null ? client.getTelephone() : "");
     }
 
     private void valider() {
-        String nomComplet = nomField.getText() + " " + prenomField.getText();
-        
+        String nom = nomField.getText() != null ? nomField.getText().trim() : "";
+        String prenom = prenomField.getText() != null ? prenomField.getText().trim() : "";
+        String adresse = adresseField.getText() != null ? adresseField.getText().trim() : "";
+        String telephone = telephoneField.getText() != null ? telephoneField.getText().trim() : "";
+
+        // 🔥 Nouvelle contrainte : tous les champs doivent être remplis
+        if (nom.isEmpty() || prenom.isEmpty() || adresse.isEmpty() || telephone.isEmpty()) {
+            showAlert(Alert.AlertType.ERROR, "Champs manquants", "Tous les champs doivent être remplis pour ajouter le client.");
+            return; // empêche la création si un champ est vide
+        }
+
         if (modeModification && clientAModifier != null) {
             // Mode modification : mettre à jour le client existant
-            clientAModifier.setNom(nomComplet);
-            clientAModifier.setAdresse(adresseField.getText());
-            clientAModifier.setTelephone(telephoneField.getText());
+            clientAModifier.setNom(nom);
+            clientAModifier.setPrenom(prenom);
+            clientAModifier.setAdresse(adresse);
+            clientAModifier.setTelephone(telephone);
             nouveauClient = clientAModifier;
         } else {
-            // Mode ajout : créer un nouveau client
-            nouveauClient = new GestionClientsController.Client(
-                    "C" + (int)(Math.random() * 1000), // Génération temporaire d'un code
-                    nomComplet,
-                    adresseField.getText(),
-                    telephoneField.getText()
-            );
+            // Mode ajout : créer un nouveau client (codeClt sera généré par la BDD)
+            nouveauClient = new GestionClientsController.Client(-1, nom, prenom, adresse, telephone);
         }
         fermer(true);
     }
+
+    private void showAlert(Alert.AlertType type, String titre, String message) {
+        Alert alert = new Alert(type);
+        alert.setTitle(titre);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
 
     private void fermer(boolean confirmer) {
         this.confirme = confirmer;

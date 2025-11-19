@@ -47,7 +47,7 @@ public class AfficherQRCodeController {
         this.livraison = livraison;
         
         // Afficher les informations de la livraison
-        numeroLabel.setText(livraison.getNumero());
+        numeroLabel.setText(String.valueOf(livraison.getNumLiv()));
         clientLabel.setText(livraison.getClient());
         dateLabel.setText(livraison.getDateFormatee());
         medicamentLabel.setText(livraison.getMedicament());
@@ -69,7 +69,7 @@ public class AfficherQRCodeController {
             // Créer le texte à encoder dans le QR code
             String qrText = String.format(
                 "Livraison: %s\nClient: %s\nDate: %s\nMédicament: %s\nQuantité: %d\nStatut: %s\nType: %s",
-                livraison.getNumero(),
+                livraison.getNumLiv(),
                 livraison.getClient(),
                 livraison.getDateFormatee(),
                 livraison.getMedicament(),

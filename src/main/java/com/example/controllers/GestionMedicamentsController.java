@@ -1,5 +1,6 @@
 package com.example.controllers;
 
+import com.example.bdd.DatabaseConnection;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -15,11 +16,17 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -38,7 +45,7 @@ public class GestionMedicamentsController implements Initializable {
     @FXML
     private GridPane medicamentsGrid; // Grille pour afficher les cartes médicaments
 
-    // Liste des médicaments (sera remplacée par une vraie source de données)
+    // Liste des médicaments
     private List<Medicament> medicaments = new ArrayList<>();
     
     // Liste filtrée des médicaments selon la recherche
@@ -50,37 +57,45 @@ public class GestionMedicamentsController implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Initialisation des données de test
-        initialiserDonneesTest();
-        
-        // Configuration de la recherche en temps réel
+        chargerMedicaments();
         configurerRecherche();
-        
-        // Configuration du bouton ajouter
         configurerBoutonAjouter();
-        
-        // Affichage initial des médicaments
-        afficherMedicaments();
+        searchField.sceneProperty().addListener((obs, oldScene, newScene) -> {
+            if (newScene != null) {
+                newScene.getStylesheets().add(
+                        getClass().getResource("/styles/GestionMedicaments.css").toExternalForm()
+                );
+            }
+        });
     }
 
     /**
-     * Initialise des données de test pour la démonstration
-     * À remplacer par un appel à la base de données ou service
+     * Charge les médicaments depuis la base de données
      */
-    private void initialiserDonneesTest() {
-        // Médicament valide (non périmé)
-        medicaments.add(new Medicament("M001", "Paracétamol 500mg", LocalDate.of(2025, 12, 31), 5 , 250));
-        
-        // Médicaments périmés
-        medicaments.add(new Medicament("M002", "Ibuprofène 200mg", LocalDate.of(2024, 5, 15), 0 , 250)); // Périmé il y a ~246 jours
-        medicaments.add(new Medicament("M003", "Aspirine 500mg", LocalDate.of(2024, 5, 20) , 5 , 250)); // Périmé il y a ~241 jours
-        
-        // Autres médicaments valides
-        medicaments.add(new Medicament("M004", "Doliprane 1000mg", LocalDate.of(2026, 1, 10), 5 , 250));
-        medicaments.add(new Medicament("M005", "Dafalgan 500mg", LocalDate.of(2025, 11, 15), 0 , 250));
-        medicaments.add(new Medicament("M006", "Efferalgan 1000mg", LocalDate.of(2026, 3, 20), 5 , 250));
-        
+    private void chargerMedicaments() {
+        medicaments.clear();
+        String query = "SELECT idMed, nomMed, datePer, nbrBoite, prixMed FROM medicament ORDER BY idMed";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                int idMed = rs.getInt("idMed");
+                String nomMed = rs.getString("nomMed");
+                LocalDate datePer = rs.getDate("datePer").toLocalDate();
+                int nbrBoite = rs.getInt("nbrBoite");
+                int prixMed = rs.getInt("prixMed");
+                medicaments.add(new Medicament(idMed, nomMed, datePer, nbrBoite, prixMed));
+            }
+
+        } catch (SQLException e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur DB", "Impossible de charger les médicaments : " + e.getMessage());
+            e.printStackTrace();
+        }
+
         medicamentsFiltres = new ArrayList<>(medicaments);
+        afficherMedicaments();
     }
 
     /**
@@ -100,19 +115,16 @@ public class GestionMedicamentsController implements Initializable {
      */
     private void filtrerMedicaments(String critere) {
         if (critere == null || critere.trim().isEmpty()) {
-            // Si le champ est vide, afficher tous les médicaments
             medicamentsFiltres = new ArrayList<>(medicaments);
         } else {
-            // Filtrer selon le nom ou le code (insensible à la casse)
             String critereLower = critere.toLowerCase().trim();
             medicamentsFiltres = medicaments.stream()
                     .filter(medicament -> 
-                        medicament.getCode().toLowerCase().contains(critereLower) ||
+                        String.valueOf(medicament.getIdMed()).contains(critereLower) ||
                         medicament.getNom().toLowerCase().contains(critereLower)
                     )
                     .collect(Collectors.toList());
         }
-        // Réafficher les médicaments filtrés
         afficherMedicaments();
     }
 
@@ -125,28 +137,84 @@ public class GestionMedicamentsController implements Initializable {
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/views/AjouterMedicament.fxml"));
                 Parent root = loader.load();
-
                 AjouterMedicamentController controller = loader.getController();
 
-                Stage dialogStage = new Stage();
-                dialogStage.initModality(Modality.APPLICATION_MODAL);
-                dialogStage.setResizable(false);
-                dialogStage.setTitle("Ajouter un médicament");
+                Stage dialog = new Stage();
+                dialog.initModality(Modality.APPLICATION_MODAL);
+                dialog.setTitle("Ajouter un médicament");
+                dialog.setResizable(false);
                 Scene scene = new Scene(root);
                 scene.getStylesheets().add(getClass().getResource("/styles/GestionMedicaments.css").toExternalForm());
-                dialogStage.setScene(scene);
-                dialogStage.showAndWait();
+                dialog.setScene(scene);
+                dialog.showAndWait();
 
                 if (controller.isConfirme()) {
-                    medicaments.add(controller.getNouveauMedicament());
-                    filtrerMedicaments(searchField.getText());
-                    System.out.println("Nouveau médicament ajouté !");
-                }
+                    Medicament nouveau = controller.getNouveauMedicament();
 
+                    // Validation
+                    String nomMed = nouveau.getNom().trim();
+                    LocalDate datePer = nouveau.getDatePeremption();
+                    int nbrBoite = nouveau.getQuantité();
+                    int prixMed = (int) nouveau.getPrix();
+
+                    if (!validateMedicament(nomMed, datePer, nbrBoite, prixMed)) return;
+
+                    // Insertion dans la BDD
+                    String insert = "INSERT INTO medicament (nomMed, datePer, nbrBoite, prixMed) VALUES (?, ?, ?, ?)";
+                    try (Connection conn = DatabaseConnection.getConnection();
+                         PreparedStatement stmt = conn.prepareStatement(insert, PreparedStatement.RETURN_GENERATED_KEYS)) {
+                        stmt.setString(1, nomMed);
+                        stmt.setDate(2, java.sql.Date.valueOf(datePer));
+                        stmt.setInt(3, nbrBoite);
+                        stmt.setInt(4, prixMed);
+
+                        int affected = stmt.executeUpdate();
+                        if (affected > 0) {
+                            try (ResultSet keys = stmt.getGeneratedKeys()) {
+                                if (keys.next()) {
+                                    int id = keys.getInt(1);
+                                    medicaments.add(new Medicament(id, nomMed, datePer, nbrBoite, prixMed));
+                                    filtrerMedicaments(searchField.getText());
+                                    showAlert(Alert.AlertType.INFORMATION, "Succès", "Médicament ajouté avec succès !");
+                                }
+                            }
+                        } else {
+                            showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible d'ajouter le médicament.");
+                        }
+                    }
+                }
             } catch (Exception e) {
+                showAlert(Alert.AlertType.ERROR, "Erreur", "Une erreur est survenue : " + e.getMessage());
                 e.printStackTrace();
             }
         });
+    }
+
+    /**
+     * Valide les champs d'un médicament
+     */
+    private boolean validateMedicament(String nomMed, LocalDate datePer, int nbrBoite, int prixMed) {
+        if (nomMed == null || nomMed.isEmpty()) {
+            showAlert(Alert.AlertType.ERROR, "Champs manquants", "Veuillez remplir le nom du médicament.");
+            return false;
+        }
+
+        if (datePer == null) {
+            showAlert(Alert.AlertType.ERROR, "Date invalide", "Veuillez entrer une date de péremption valide.");
+            return false;
+        }
+
+        if (nbrBoite < 0) {
+            showAlert(Alert.AlertType.ERROR, "Quantité invalide", "La quantité ne peut pas être négative.");
+            return false;
+        }
+
+        if (prixMed < 0) {
+            showAlert(Alert.AlertType.ERROR, "Prix invalide", "Le prix ne peut pas être négatif.");
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -195,7 +263,7 @@ public class GestionMedicamentsController implements Initializable {
         // --- EN-TETE ---
         HBox enTete = new HBox(10);
         enTete.setAlignment(Pos.CENTER_LEFT);
-        Label codeLabel = new Label(medicament.getCode());
+        Label codeLabel = new Label("M" + String.format("%03d", medicament.getIdMed()));
         codeLabel.getStyleClass().add("medicament-code");
 
         Button btnModifier = new Button();
@@ -338,12 +406,42 @@ public class GestionMedicamentsController implements Initializable {
             dialogStage.showAndWait();
 
             if (controller.isConfirme()) {
-                // Le médicament a déjà été modifié via la référence
-                filtrerMedicaments(searchField.getText());
-                System.out.println("Médicament " + medicament.getCode() + " modifié !");
+                Medicament modif = controller.getNouveauMedicament();
+
+                // Validation
+                String nomMed = modif.getNom().trim();
+                LocalDate datePer = modif.getDatePeremption();
+                int nbrBoite = modif.getQuantité();
+                int prixMed = (int) modif.getPrix();
+
+                if (!validateMedicament(nomMed, datePer, nbrBoite, prixMed)) return;
+
+                // Mise à jour dans la BDD
+                String update = "UPDATE medicament SET nomMed=?, datePer=?, nbrBoite=?, prixMed=? WHERE idMed=?";
+                try (Connection conn = DatabaseConnection.getConnection();
+                     PreparedStatement stmt = conn.prepareStatement(update)) {
+
+                    stmt.setString(1, nomMed);
+                    stmt.setDate(2, java.sql.Date.valueOf(datePer));
+                    stmt.setInt(3, nbrBoite);
+                    stmt.setInt(4, prixMed);
+                    stmt.setInt(5, medicament.getIdMed());
+
+                    stmt.executeUpdate();
+
+                    // Mise à jour locale
+                    medicament.setNom(nomMed);
+                    medicament.setDatePeremption(datePer);
+                    medicament.setQuantité(nbrBoite);
+                    medicament.setPrix(prixMed);
+
+                    filtrerMedicaments(searchField.getText());
+                    showAlert(Alert.AlertType.INFORMATION, "Succès", "Médicament modifié avec succès !");
+                }
             }
 
         } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Une erreur est survenue : " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -370,29 +468,43 @@ public class GestionMedicamentsController implements Initializable {
             dialogStage.showAndWait();
 
             if (controller.isConfirmation()) {
-                medicaments.remove(medicament);
-                filtrerMedicaments(searchField.getText());
-                System.out.println("Médicament " + medicament.getCode() + " supprimé");
+                String delete = "DELETE FROM medicament WHERE idMed=?";
+                try (Connection conn = DatabaseConnection.getConnection();
+                     PreparedStatement stmt = conn.prepareStatement(delete)) {
+                    stmt.setInt(1, medicament.getIdMed());
+                    stmt.executeUpdate();
+                    medicaments.remove(medicament);
+                    filtrerMedicaments(searchField.getText());
+                    showAlert(Alert.AlertType.INFORMATION, "Succès", "Médicament supprimé avec succès !");
+                }
             }
 
         } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Une erreur est survenue : " + e.getMessage());
             e.printStackTrace();
         }
     }
 
+    private void showAlert(Alert.AlertType type, String titre, String message) {
+        Alert alert = new Alert(type);
+        alert.setTitle(titre);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
     /**
      * Classe interne représentant un médicament
-     * À remplacer par une vraie classe de modèle
      */
     public static class Medicament {
-        private String code;
+        private int idMed;
         private String nom;
         private LocalDate datePeremption;
         private int quantité ;
         private float prix ;
 
-        public Medicament(String code, String nom, LocalDate datePeremption , int quantité , float prix ) {
-            this.code = code;
+        public Medicament(int idMed, String nom, LocalDate datePeremption , int quantité , float prix ) {
+            this.idMed = idMed;
             this.nom = nom;
             this.datePeremption = datePeremption;
             this.quantité= quantité ;
@@ -400,7 +512,7 @@ public class GestionMedicamentsController implements Initializable {
         }
 
         // Getters
-        public String getCode() { return code; }
+        public int getIdMed() { return idMed; }
         public String getNom() { return nom; }
         public LocalDate getDatePeremption() { return datePeremption; }
         public int getQuantité() {return quantité ;}
@@ -436,8 +548,8 @@ public class GestionMedicamentsController implements Initializable {
             return 0;
         }
 
-        // Setters (si nécessaire)
-        public void setCode(String code) { this.code = code; }
+        // Setters
+        public void setIdMed(int idMed) { this.idMed = idMed; }
         public void setNom(String nom) { this.nom = nom; }
         public void setDatePeremption(LocalDate datePeremption) { this.datePeremption = datePeremption; }
         public void setQuantité(int quantité){ this.quantité= quantité ;}

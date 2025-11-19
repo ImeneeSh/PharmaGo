@@ -60,10 +60,10 @@ public class ConfirmerSuppressionController {
     // ============================================================
     public void setClient(GestionClientsController.Client client) {
         titreLabel.setText("Supprimer ce client ?");
-        codeLabel.setText("Code : " + client.getCode());
-        nomLabel.setText("Nom : " + client.getNom());
-        adresseLabel.setText("Adresse : " + client.getAdresse());
-        telephoneLabel.setText("Téléphone : " + client.getTelephone());
+        codeLabel.setText("Code : C" + String.format("%03d", client.getCodeClt()));
+        nomLabel.setText("Nom : " + client.getNom() + " " + client.getPrenom());
+        adresseLabel.setText("Adresse : " + (client.getAdresse() != null ? client.getAdresse() : ""));
+        telephoneLabel.setText("Téléphone : " + (client.getTelephone() != null ? client.getTelephone() : ""));
 
         blocClient.setVisible(true);
         blocMedicament.setVisible(false);
@@ -76,7 +76,7 @@ public class ConfirmerSuppressionController {
     // ============================================================
     public void setMedicament(GestionMedicamentsController.Medicament medicament) {
         titreLabel.setText("Supprimer ce médicament ?");
-        codeLabel.setText("Code : " + medicament.getCode());
+        codeLabel.setText("Code : M" + String.format("%03d", medicament.getIdMed()));
         nomLabel.setText("Nom : " + medicament.getNom());
         quantite.setText("Quantité : " + medicament.getQuantité());
         prix.setText(String.format("Prix : %.2f DA", medicament.getPrix()));
@@ -92,7 +92,7 @@ public class ConfirmerSuppressionController {
     // ============================================================
     public void setLivraison(GestionLivraisonsController.Livraison livraison) {
         titreLabel.setText("Supprimer cette livraison ?");
-        codeLabel.setText("Code : " + livraison.getNumero());
+        codeLabel.setText("Code : L" + String.format("%04d", livraison.getNumLiv()));
         nomLabel.setText("Nom du client : " + livraison.getClient());
         quantiteLivraison.setText("Quantité : " + livraison.getNombreMedicaments());
         taxe.setText(String.format("Taxe : %d DA", livraison.getTaxe()));

@@ -1,22 +1,28 @@
 package com.example.controllers;
 
+import com.example.bdd.DatabaseConnection;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 
 public class AjouterLivraisonController {
 
-    @FXML private TextField nomField;
-    @FXML private TextField prenomField;
-    @FXML private DatePicker dateLivField;           // Changement TextField -> DatePicker
-    @FXML private Spinner<Integer> qttField;         // Changement TextField -> Spinner
+    @FXML private ComboBox<ClientItem> clientComboBox;
+    @FXML private DatePicker dateLivField;
+    @FXML private Spinner<Integer> qttField;
     @FXML private TextField taxeField;
     @FXML private TextField coutField;
-    @FXML private ComboBox<String> statutField;      // Changement TextField -> ComboBox
-    @FXML private ComboBox<String> typeField;        // Changement TextField -> ComboBox
-    @FXML private TextField medicamentField;
+    @FXML private ComboBox<String> statutField;
+    @FXML private ComboBox<String> typeField;
+    @FXML private CheckBox urgentCheckBox;
+    @FXML private ComboBox<MedicamentItem> medicamentComboBox;
+
 
 
     @FXML private Button btnAnnuler;
@@ -27,8 +33,58 @@ public class AjouterLivraisonController {
     private boolean confirme = false;
     private boolean modeModification = false;
 
+    // Classe interne pour représenter un client dans le ComboBox
+    public static class ClientItem {
+        private int codeClt;
+        private String nom;
+        private String prenom;
+
+        public ClientItem(int codeClt, String nom, String prenom) {
+            this.codeClt = codeClt;
+            this.nom = nom;
+            this.prenom = prenom;
+        }
+
+        public int getCodeClt() { return codeClt; }
+        public String getNom() { return nom; }
+        public String getPrenom() { return prenom; }
+
+        @Override
+        public String toString() {
+            return nom + " " + prenom + " (C" + String.format("%03d", codeClt) + ")";
+        }
+    }
+
+    public static class MedicamentItem {
+        private int idMed;
+        private String nom;
+        private float prix;
+
+        public MedicamentItem(int idMed, String nomMed, float prixMed) {
+            this.idMed = idMed;
+            this.nom= nomMed;
+            this.prix = prixMed;
+        }
+
+        public int getIdMed() { return idMed; }
+        public String getNom() { return nom; }
+        public float getPrix() { return prix; }
+
+        @Override
+        public String toString() {
+            return nom + " - " + prix + " DA";
+        }
+    }
+
+
     @FXML
     public void initialize() {
+
+        chargerMedicaments();
+
+        // Charger les clients depuis la BDD
+        chargerClients();
+
         // Initialisation Spinner pour qttField
         qttField.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 1000, 1));
 
@@ -41,6 +97,92 @@ public class AjouterLivraisonController {
         // Actions des boutons
         btnAnnuler.setOnAction(e -> fermer(false));
         btnConfirmer.setOnAction(e -> valider());
+
+        //empêche visuellement l’utilisateur de cliquer sur les dates passées.
+        dateLivField.setDayCellFactory(picker -> new DateCell() {
+            @Override
+            public void updateItem(LocalDate date, boolean empty) {
+                super.updateItem(date, empty);
+                if (date.isBefore(LocalDate.now())) {
+                    setDisable(true);
+                    setStyle("-fx-background-color: #ffc0c0;"); // rouge clair
+                }
+            }
+        });
+
+        medicamentComboBox.valueProperty().addListener((obs, oldVal, newVal) -> calculerCoutTotal());
+        qttField.valueProperty().addListener((obs, oldVal, newVal) -> calculerCoutTotal());
+        taxeField.textProperty().addListener((obs, oldVal, newVal) -> calculerCoutTotal());
+
+        coutField.setEditable(false); // le coût est automatique
+
+    }
+    //pour le calcul auto du cout
+    private void calculerCoutTotal() {
+        try {
+            MedicamentItem med = medicamentComboBox.getValue();
+            if (med == null) {
+                coutField.setText("");
+                return;
+            }
+
+            int quantite = qttField.getValue();
+            int taxe = Integer.parseInt(taxeField.getText());
+
+            float cout = (med.getPrix() * quantite) + taxe;
+            coutField.setText(String.valueOf(cout));
+
+        } catch (Exception e) {
+            coutField.setText("");
+        }
+    }
+
+
+    private void chargerMedicaments() {
+        String query = "SELECT idMed, nomMed, prixMed FROM medicament ORDER BY nomMed";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                medicamentComboBox.getItems().add(
+                        new MedicamentItem(
+                                rs.getInt("idMed"),
+                                rs.getString("nomMed"),
+                                rs.getFloat("prixMed")
+                        )
+                );
+            }
+
+        } catch (SQLException e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur DB", "Impossible de charger les médicaments : " + e.getMessage());
+        }
+    }
+
+
+
+    /**
+     * Charge les clients depuis la base de données dans le ComboBox
+     */
+    private void chargerClients() {
+        String query = "SELECT codeClt, nom, prenom FROM client ORDER BY nom, prenom";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                int codeClt = rs.getInt("codeClt");
+                String nom = rs.getString("nom");
+                String prenom = rs.getString("prenom");
+                clientComboBox.getItems().add(new ClientItem(codeClt, nom, prenom));
+            }
+
+        } catch (SQLException e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur DB", "Impossible de charger les clients : " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -51,12 +193,11 @@ public class AjouterLivraisonController {
         this.livraisonAModifier = livraison;
         this.modeModification = true;
         
-        // Séparer le nom complet en nom et prénom
-        String[] nomParts = livraison.getClient().split(" ", 2);
-        if (nomParts.length > 0) {
-            nomField.setText(nomParts[0]);
-            if (nomParts.length > 1) {
-                prenomField.setText(nomParts[1]);
+        // Trouver le client dans le ComboBox
+        for (ClientItem item : clientComboBox.getItems()) {
+            if (item.getCodeClt() == livraison.getCodeClt()) {
+                clientComboBox.setValue(item);
+                break;
             }
         }
         
@@ -66,38 +207,75 @@ public class AjouterLivraisonController {
         coutField.setText(String.valueOf(livraison.getCout()));
         statutField.setValue(livraison.getStatut());
         typeField.setValue(livraison.getType());
-        medicamentField.setText(livraison.getMedicament());
+        urgentCheckBox.setSelected(livraison.isUrgent());
     }
 
     private void valider() {
         try {
-            String nomComplet = nomField.getText() + " " + prenomField.getText();
-            LocalDate dateLiv = dateLivField.getValue(); // DatePicker fournit LocalDate
-            int quantite = qttField.getValue();
-            int taxe = Integer.parseInt(taxeField.getText());
-            float cout = Float.parseFloat(coutField.getText());
+            // Validation
+            ClientItem clientSelected = clientComboBox.getValue();
+            if (clientSelected == null) {
+                showAlert(Alert.AlertType.ERROR, "Client manquant", "Veuillez sélectionner un client.");
+                return;
+            }
+
+            LocalDate dateLiv = dateLivField.getValue();
+            if (dateLiv == null) {
+                showAlert(Alert.AlertType.ERROR, "Date manquante", "Veuillez sélectionner une date de livraison.");
+                return;
+            }
+
             String statut = statutField.getValue();
+            if (statut == null || statut.isEmpty()) {
+                showAlert(Alert.AlertType.ERROR, "Statut manquant", "Veuillez sélectionner un statut.");
+                return;
+            }
+
             String type = typeField.getValue();
-            boolean urgent = false; // Par défaut, ou ajouter un Checkbox
-            String nomMedicament = medicamentField.getText();
+            if (type == null || type.isEmpty()) {
+                showAlert(Alert.AlertType.ERROR, "Type manquant", "Veuillez sélectionner un type de livraison.");
+                return;
+            }
+
+            int quantite = qttField.getValue();
+            int taxe;
+
+
+            try {
+                taxe = Integer.parseInt(taxeField.getText());
+                if (taxe < 0) {
+                    showAlert(Alert.AlertType.ERROR, "Taxe invalide", "La taxe ne peut pas être négative.");
+                    return;
+                }
+            } catch (NumberFormatException e) {
+                showAlert(Alert.AlertType.ERROR, "Taxe invalide", "Veuillez entrer un nombre valide pour la taxe.");
+                return;
+            }
+
+            float cout = (medicamentComboBox.getValue().getPrix() * quantite) + taxe;
+
+
+            boolean urgent = urgentCheckBox.isSelected();
+            String clientNom = clientSelected.getNom() + " " + clientSelected.getPrenom();
 
             if (modeModification && livraisonAModifier != null) {
                 // Mode modification : mettre à jour la livraison existante
-                livraisonAModifier.setClient(nomComplet);
+                livraisonAModifier.setCodeClt(clientSelected.getCodeClt());
+                livraisonAModifier.setClient(clientNom);
                 livraisonAModifier.setDate(dateLiv);
                 livraisonAModifier.setNombreMedicaments(quantite);
                 livraisonAModifier.setTaxe(taxe);
                 livraisonAModifier.setCout(cout);
                 livraisonAModifier.setStatut(statut);
                 livraisonAModifier.setType(type);
-                livraisonAModifier.setMedicament(nomMedicament);
+                livraisonAModifier.setUrgent(urgent);
                 nouvelleLivraison = livraisonAModifier;
             } else {
-                // Mode ajout : créer une nouvelle livraison
-                String numero = "L" + (int)(Math.random() * 10000);
+                // Mode ajout : créer une nouvelle livraison (numLiv sera généré par la BDD)
                 nouvelleLivraison = new GestionLivraisonsController.Livraison(
-                        numero,
-                        nomComplet,
+                        -1,
+                        clientSelected.getCodeClt(),
+                        clientNom,
                         dateLiv,
                         quantite,
                         taxe,
@@ -105,14 +283,27 @@ public class AjouterLivraisonController {
                         statut,
                         type,
                         urgent,
-                        nomMedicament
+                        ""
                 );
             }
 
             fermer(true);
         } catch (Exception e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "Veuillez remplir correctement tous les champs !");
-            alert.showAndWait();
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Une erreur est survenue : " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        LocalDate dateLiv = dateLivField.getValue();
+        if (dateLiv == null) {
+            showAlert(Alert.AlertType.ERROR, "Date manquante", "Veuillez sélectionner une date de livraison.");
+            return;
+        }
+
+// 🔥 Nouvelle contrainte : la date doit être >= aujourd'hui
+        if (dateLiv.isBefore(LocalDate.now())) {
+            showAlert(Alert.AlertType.ERROR, "Date invalide",
+                    "La date de livraison ne peut pas être antérieure à la date actuelle.");
+            return;
         }
     }
 
@@ -130,5 +321,11 @@ public class AjouterLivraisonController {
         return nouvelleLivraison;
     }
 
-
+    private void showAlert(Alert.AlertType type, String titre, String message) {
+        Alert alert = new Alert(type);
+        alert.setTitle(titre);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
 }
