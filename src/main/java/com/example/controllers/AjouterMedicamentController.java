@@ -1,19 +1,19 @@
 package com.example.controllers;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import javafx.util.StringConverter;
 
 public class AjouterMedicamentController {
 
     @FXML private TextField nomField;
-    @FXML private TextField DatePerField;
+    @FXML private DatePicker datePerField; // ✔ DatePicker
+
     @FXML private TextField quantiteField;
     @FXML private TextField prixField;
     @FXML private Button btnAnnuler;
@@ -24,85 +24,101 @@ public class AjouterMedicamentController {
     private boolean confirme = false;
     private boolean modeModification = false;
 
+    private final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+
     @FXML
     public void initialize() {
+
+        // ✔ Convertisseur format dd-MM-yyyy
+        datePerField.setConverter(new StringConverter<LocalDate>() {
+            @Override
+            public String toString(LocalDate date) {
+                return (date != null) ? date.format(DATE_FORMAT) : "";
+            }
+
+            @Override
+            public LocalDate fromString(String string) {
+                if (string == null || string.isEmpty()) return null;
+                try {
+                    return LocalDate.parse(string, DATE_FORMAT);
+                } catch (Exception e) {
+                    return null;
+                }
+            }
+        });
+
+        // ❌ SUPPRESSION de la contrainte empêchant les dates passées
+        // (ne rien mettre ici pour DayCellFactory)
+
         btnAnnuler.setOnAction(e -> fermer(false));
         btnConfirmer.setOnAction(e -> valider());
     }
 
+
     /**
-     * Prépare le contrôleur pour la modification d'un médicament existant
-     * @param medicament Le médicament à modifier
+     * Mode modification
      */
     public void preparerModification(GestionMedicamentsController.Medicament medicament) {
         this.medicamentAModifier = medicament;
         this.modeModification = true;
-        
+
         nomField.setText(medicament.getNom());
-        // Formater la date au format yyyy-MM-dd pour le TextField
-        DatePerField.setText(medicament.getDatePeremption().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        datePerField.setValue(medicament.getDatePeremption()); // ✔ on met directement LocalDate
         quantiteField.setText(String.valueOf(medicament.getQuantité()));
         prixField.setText(String.valueOf((int) medicament.getPrix()));
     }
 
     private void valider() {
         try {
-            String nom = nomField.getText() != null ? nomField.getText().trim() : "";
-            String dateStr = DatePerField.getText() != null ? DatePerField.getText().trim() : "";
-            String qteStr = quantiteField.getText() != null ? quantiteField.getText().trim() : "";
-            String prixStr = prixField.getText() != null ? prixField.getText().trim() : "";
+            // Récupération des champs
+            String nom = nomField.getText().trim();
+            String qteStr = quantiteField.getText().trim();
+            String prixStr = prixField.getText().trim();
+            LocalDate datePer = datePerField.getValue(); // ✔ pas de texte !
 
-            // Validation
-            if (nom.isEmpty() || dateStr.isEmpty() || qteStr.isEmpty() || prixStr.isEmpty()) {
+            // --- VALIDATIONS ---
+
+            if (nom.isEmpty() || qteStr.isEmpty() || prixStr.isEmpty() || datePer == null) {
                 showAlert(Alert.AlertType.ERROR, "Champs manquants", "Veuillez remplir tous les champs.");
                 return;
             }
 
-            LocalDate datePer;
-            try {
-                datePer = LocalDate.parse(dateStr); // Format ISO yyyy-MM-dd
-            } catch (DateTimeParseException e) {
-                showAlert(Alert.AlertType.ERROR, "Date invalide", "Veuillez entrer une date au format yyyy-MM-dd.");
-                return;
-            }
+
 
             int qte;
             try {
                 qte = Integer.parseInt(qteStr);
-                if (qte < 0) {
-                    showAlert(Alert.AlertType.ERROR, "Quantité invalide", "La quantité ne peut pas être négative.");
-                    return;
-                }
+                if (qte < 0) throw new NumberFormatException();
             } catch (NumberFormatException e) {
-                showAlert(Alert.AlertType.ERROR, "Quantité invalide", "Veuillez entrer un nombre valide pour la quantité.");
+                showAlert(Alert.AlertType.ERROR, "Quantité invalide", "Veuillez entrer une quantité valide.");
                 return;
             }
 
             float prix;
             try {
                 prix = Float.parseFloat(prixStr);
-                if (prix < 0) {
-                    showAlert(Alert.AlertType.ERROR, "Prix invalide", "Le prix ne peut pas être négatif.");
-                    return;
-                }
+                if (prix < 0) throw new NumberFormatException();
             } catch (NumberFormatException e) {
-                showAlert(Alert.AlertType.ERROR, "Prix invalide", "Veuillez entrer un nombre valide pour le prix.");
+                showAlert(Alert.AlertType.ERROR, "Prix invalide", "Veuillez entrer un prix valide.");
                 return;
             }
 
+            // --- AJOUT OU MODIFICATION ---
+
             if (modeModification && medicamentAModifier != null) {
-                // Mode modification : mettre à jour le médicament existant
                 medicamentAModifier.setNom(nom);
                 medicamentAModifier.setDatePeremption(datePer);
                 medicamentAModifier.setQuantité(qte);
                 medicamentAModifier.setPrix(prix);
                 nouveauMedicament = medicamentAModifier;
             } else {
-                // Mode ajout : créer un nouveau médicament (idMed sera généré par la BDD)
-                nouveauMedicament = new GestionMedicamentsController.Medicament(-1, nom, datePer, qte, prix);
+                nouveauMedicament = new GestionMedicamentsController.Medicament(
+                        -1, nom, datePer, qte, prix
+                );
             }
 
             fermer(true);
+
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Erreur", "Une erreur est survenue : " + e.getMessage());
             e.printStackTrace();
@@ -111,13 +127,11 @@ public class AjouterMedicamentController {
 
     private void fermer(boolean confirmer) {
         this.confirme = confirmer;
-        Stage stage = (Stage) btnAnnuler.getScene().getWindow();
-        stage.close();
+        Stage s = (Stage) btnAnnuler.getScene().getWindow();
+        s.close();
     }
 
-    public boolean isConfirme() {
-        return confirme;
-    }
+    public boolean isConfirme() { return confirme; }
 
     public GestionMedicamentsController.Medicament getNouveauMedicament() {
         return nouveauMedicament;

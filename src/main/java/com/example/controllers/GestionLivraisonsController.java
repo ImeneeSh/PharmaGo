@@ -63,6 +63,31 @@ public class GestionLivraisonsController implements Initializable {
      * Initialisation du contrôleur
      * Charge les données et configure les événements
      */
+    // Ajoute ceci parmi tes attributs privés
+    private Integer clientFiltre = null; // null = toutes les livraisons
+    /**
+     * Permet de filtrer les livraisons par code client
+     * @param codeClt Code du client
+     */
+    public void setClientFiltre(int codeClt) {
+        this.clientFiltre = codeClt;
+        appliquerFiltreClient(); // recharge les livraisons filtrées
+    }
+
+    /**
+     * Applique le filtre client sur la liste des livraisons
+     */
+    private void appliquerFiltreClient() {
+        if (clientFiltre != null) {
+            livraisonsFiltres = livraisons.stream()
+                    .filter(l -> l.getCodeClt() == clientFiltre)
+                    .collect(Collectors.toList());
+        } else {
+            livraisonsFiltres = new ArrayList<>(livraisons);
+        }
+        afficherLivraisons();
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         chargerLivraisons();

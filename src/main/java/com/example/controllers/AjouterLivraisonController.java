@@ -22,9 +22,6 @@ public class AjouterLivraisonController {
     @FXML private ComboBox<String> typeField;
     @FXML private CheckBox urgentCheckBox;
     @FXML private ComboBox<MedicamentItem> medicamentComboBox;
-
-
-
     @FXML private Button btnAnnuler;
     @FXML private Button btnConfirmer;
 
@@ -192,7 +189,7 @@ public class AjouterLivraisonController {
     public void preparerModification(GestionLivraisonsController.Livraison livraison) {
         this.livraisonAModifier = livraison;
         this.modeModification = true;
-        
+
         // Trouver le client dans le ComboBox
         for (ClientItem item : clientComboBox.getItems()) {
             if (item.getCodeClt() == livraison.getCodeClt()) {
@@ -200,7 +197,7 @@ public class AjouterLivraisonController {
                 break;
             }
         }
-        
+
         dateLivField.setValue(livraison.getDate());
         qttField.getValueFactory().setValue(livraison.getNombreMedicaments());
         taxeField.setText(String.valueOf(livraison.getTaxe()));
@@ -212,7 +209,7 @@ public class AjouterLivraisonController {
 
     private void valider() {
         try {
-            // Validation
+            // Récupération et validations basiques
             ClientItem clientSelected = clientComboBox.getValue();
             if (clientSelected == null) {
                 showAlert(Alert.AlertType.ERROR, "Client manquant", "Veuillez sélectionner un client.");
@@ -237,10 +234,16 @@ public class AjouterLivraisonController {
                 return;
             }
 
+            // Attention : s'assurer qu'un médicament est sélectionné (évite NPE)
+            MedicamentItem medSelectionne = medicamentComboBox.getValue();
+            if (medSelectionne == null) {
+                showAlert(Alert.AlertType.ERROR, "Médicament manquant", "Veuillez sélectionner un médicament.");
+                return;
+            }
+
             int quantite = qttField.getValue();
+
             int taxe;
-
-
             try {
                 taxe = Integer.parseInt(taxeField.getText());
                 if (taxe < 0) {
@@ -252,14 +255,23 @@ public class AjouterLivraisonController {
                 return;
             }
 
-            float cout = (medicamentComboBox.getValue().getPrix() * quantite) + taxe;
-
+            // Calcul du coût en toute sécurité (medSelectionne non null)
+            float cout = (medSelectionne.getPrix() * quantite) + taxe;
 
             boolean urgent = urgentCheckBox.isSelected();
             String clientNom = clientSelected.getNom() + " " + clientSelected.getPrenom();
 
+            // --- Déplacement de la contrainte de date (si tu veux l'autoriser, supprime ce bloc) ---
+            // Si tu veux autoriser les dates antérieures (ex : livraisons historiques), supprime ce contrôle.
+            if (dateLiv.isBefore(LocalDate.now())) {
+                // si tu ne veux pas bloquer, commente/retire ce bloc
+                showAlert(Alert.AlertType.ERROR, "Date invalide",
+                        "La date de livraison ne peut pas être antérieure à la date actuelle.");
+                return;
+            }
+
+            // Construire / mettre à jour l'objet avant de fermer la fenêtre
             if (modeModification && livraisonAModifier != null) {
-                // Mode modification : mettre à jour la livraison existante
                 livraisonAModifier.setCodeClt(clientSelected.getCodeClt());
                 livraisonAModifier.setClient(clientNom);
                 livraisonAModifier.setDate(dateLiv);
@@ -271,7 +283,6 @@ public class AjouterLivraisonController {
                 livraisonAModifier.setUrgent(urgent);
                 nouvelleLivraison = livraisonAModifier;
             } else {
-                // Mode ajout : créer une nouvelle livraison (numLiv sera généré par la BDD)
                 nouvelleLivraison = new GestionLivraisonsController.Livraison(
                         -1,
                         clientSelected.getCodeClt(),
@@ -287,25 +298,15 @@ public class AjouterLivraisonController {
                 );
             }
 
+            // Tout est OK -> fermer en confirmant
             fermer(true);
+
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Erreur", "Une erreur est survenue : " + e.getMessage());
             e.printStackTrace();
         }
-
-        LocalDate dateLiv = dateLivField.getValue();
-        if (dateLiv == null) {
-            showAlert(Alert.AlertType.ERROR, "Date manquante", "Veuillez sélectionner une date de livraison.");
-            return;
-        }
-
-// 🔥 Nouvelle contrainte : la date doit être >= aujourd'hui
-        if (dateLiv.isBefore(LocalDate.now())) {
-            showAlert(Alert.AlertType.ERROR, "Date invalide",
-                    "La date de livraison ne peut pas être antérieure à la date actuelle.");
-            return;
-        }
     }
+
 
     private void fermer(boolean confirmer) {
         this.confirme = confirmer;
@@ -328,4 +329,6 @@ public class AjouterLivraisonController {
         alert.setContentText(message);
         alert.showAndWait();
     }
+
+
 }

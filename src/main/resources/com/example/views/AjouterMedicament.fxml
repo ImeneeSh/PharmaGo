@@ -26,7 +26,8 @@
             </rowConstraints>
 
             <TextField fx:id="nomField" promptText="nom" />
-            <TextField fx:id="DatePerField" promptText="Date de péremption" GridPane.columnIndex="1"/>
+            <DatePicker fx:id="datePerField" promptText="Date de péremption" GridPane.columnIndex="1"/>
+
 
             <TextField fx:id="quantiteField" promptText="quantité" GridPane.rowIndex="1"/>
             <TextField fx:id="prixField" promptText="prix" GridPane.columnIndex="1" GridPane.rowIndex="1"/>

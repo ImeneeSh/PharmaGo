@@ -443,9 +443,26 @@ public class GestionClientsController implements Initializable {
      * @param client Le client dont on veut voir les livraisons
      */
     private void voirLivraisons(Client client) {
-        // TODO: Naviguer vers la vue des livraisons du client
-        System.out.println("Action: Voir les livraisons du client C" + String.format("%03d", client.getCodeClt()));
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/views/GestionLivraisons.fxml"));
+            Parent root = loader.load();
+
+            GestionLivraisonsController controller = loader.getController();
+
+            // Filtrer par le client sélectionné
+            controller.setClientFiltre(client.getCodeClt());
+
+            Stage stage = new Stage();
+            stage.setTitle("Livraisons du client " + client.getNom() + " " + client.getPrenom());
+            stage.setScene(new Scene(root));
+            stage.show();
+
+        } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible d'ouvrir les livraisons : " + e.getMessage());
+            e.printStackTrace();
+        }
     }
+
 
     private void showAlert(Alert.AlertType type, String titre, String message) {
         Alert alert = new Alert(type);
@@ -488,3 +505,4 @@ public class GestionClientsController implements Initializable {
         public void setTelephone(String telephone) { this.telephone = telephone; }
     }
 }
+
