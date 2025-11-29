@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="org.pharmago.controllers.InscriptionController"
+           styleClass="root-pane">
+
+    <!-- Conteneur principal centré -->
+    <VBox alignment="CENTER" spacing="30" styleClass="card" VBox.vgrow="ALWAYS">
+
+        <!-- Logo -->
+        <StackPane alignment="CENTER">
+            <ImageView fx:id="logoImage"
+                       fitWidth="140"
+                       fitHeight="140"
+                       preserveRatio="true"/>
+        </StackPane>
+
+        <!-- Formulaire avec 2 champs par ligne -->
+        <VBox spacing="15" alignment="CENTER" styleClass="login-form">
+
+            <!-- Ligne 1 : Nom + Prénom -->
+            <HBox spacing="10" alignment="CENTER">
+                <TextField fx:id="nomField" promptText="Nom" maxWidth="190"/>
+                <TextField fx:id="prenomField" promptText="Prénom" maxWidth="190"/>
+            </HBox>
+
+            <!-- Ligne 2 : Email -->
+            <HBox spacing="10" alignment="CENTER">
+                <TextField fx:id="emailField" promptText="Adresse mail" prefWidth="390" minWidth="390" maxWidth="390"/>
+            </HBox>
+
+            <!-- Ligne 3 : Mot de passe + Confirmer mot de passe -->
+            <HBox spacing="10" alignment="CENTER">
+                <PasswordField fx:id="passwordField" promptText="Mot de passe" maxWidth="190"/>
+                <PasswordField fx:id="confirmPasswordField" promptText="Confirmer mot de passe" maxWidth="190"/>
+            </HBox>
+
+            <!-- Bouton inscription -->
+            <Button fx:id="btnInscrire" text="S'inscrire" styleClass="btn-login"/>
+
+        </VBox>
+
+        <!-- Lien connexion -->
+        <HBox alignment="CENTER" spacing="5">
+            <Label text="Vous possédez déjà un compte ?" styleClass="inscription-text"/>
+            <Hyperlink fx:id="linkConnexion" text="Se connecter"/>
+        </HBox>
+
+    </VBox>
+</StackPane>

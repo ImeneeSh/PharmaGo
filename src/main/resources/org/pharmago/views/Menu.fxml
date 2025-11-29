@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.pharmago.controllers.MenuController"
+      fx:id="menuRoot"
+      prefWidth="250"
+      spacing="25"
+      alignment="TOP_CENTER"
+      styleClass="side-menu">
+
+    <!-- Logo -->
+    <ImageView fitHeight="130" preserveRatio="true">
+        <Image url="/assets/logo.png"/>
+    </ImageView>
+
+    <!-- Boutons du menu -->
+    <VBox alignment="TOP_LEFT" spacing="10" style="-fx-padding: 20 0 0 30;">
+        <Label text="MENU" styleClass="menu-title" />
+
+        <ToggleButton fx:id="btnDashboard" text="Tableau de bord" styleClass="menu-item-active">
+            <graphic>
+                <ImageView fx:id="iconDashboard" fitHeight="18" fitWidth="18" />
+            </graphic>
+        </ToggleButton>
+
+        <ToggleButton fx:id="btnConsultation" text="Consultation globale" styleClass="menu-item">
+            <graphic>
+                <ImageView fx:id="iconConsultation" fitHeight="18" fitWidth="18" />
+            </graphic>
+        </ToggleButton>
+
+        <ToggleButton fx:id="btnClients" text="Gestion des clients" styleClass="menu-item">
+            <graphic>
+                <ImageView fx:id="iconClients" fitHeight="18" fitWidth="18" />
+            </graphic>
+        </ToggleButton>
+
+        <ToggleButton fx:id="btnMedicaments" text="Gestion des médicaments" styleClass="menu-item">
+            <graphic>
+                <ImageView fx:id="iconMedicaments" fitHeight="18" fitWidth="18" />
+            </graphic>
+        </ToggleButton>
+
+        <ToggleButton fx:id="btnLivraisons" text="Gestion des livraisons" styleClass="menu-item">
+            <graphic>
+                <ImageView fx:id="iconLivraisons" fitHeight="18" fitWidth="18" />
+            </graphic>
+        </ToggleButton>
+
+        <ToggleButton fx:id="btnUtilisateurs" text="Gestion des utilisateurs" styleClass="menu-item">
+            <graphic>
+                <ImageView fx:id="iconUtilisateurs" fitHeight="18" fitWidth="18" />
+            </graphic>
+        </ToggleButton>
+    </VBox>
+</VBox>

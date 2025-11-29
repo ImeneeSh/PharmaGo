@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+
+<!-- 
+    Interface de gestion des livraisons
+    Cette vue permet de visualiser, rechercher, filtrer et gérer toutes les livraisons
+-->
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.pharmago.controllers.GestionLivraisonsController"
+            styleClass="root-gestion-livraisons">
+
+    <!-- MENU VERTICAL FIXE À GAUCHE -->
+    <!-- Marge à droite pour créer l'espacement visuel entre le menu et le contenu -->
+    <left>
+        <fx:include source="Menu.fxml" />
+    </left>
+
+    <!-- CONTENU CENTRAL DÉFILABLE -->
+    <!-- HBox pour créer l'espacement entre le menu et le contenu -->
+    <center>
+        <HBox spacing="0">
+            <!-- Region invisible pour créer l'espacement de 3mm (≈12px) entre le menu et le contenu -->
+            <Region prefWidth="12" />
+            <ScrollPane fitToWidth="true" fitToHeight="true" hbarPolicy="NEVER" style="-fx-background-color:transparent;" HBox.hgrow="ALWAYS">
+                <VBox alignment="TOP_CENTER" spacing="40" styleClass="gestion-livraisons-content" VBox.vgrow="ALWAYS">
+
+                <!-- SECTION EN-TÊTE : Titre et sous-titre -->
+                <VBox style="-fx-padding: 30 50 0 50;" spacing="8">
+                    <!-- Titre principal "Gestion des livraisons" en vert foncé -->
+                    <Label text="Gestion des livraisons" styleClass="gestion-title" />
+                    <!-- Sous-titre en vert clair -->
+                    <Label text="Suivez et gérez toutes vos livraisons" styleClass="gestion-subtitle" />
+                </VBox>
+
+                <!-- SECTION RECHERCHE ET BOUTON NOUVELLE LIVRAISON -->
+                <HBox spacing="15" alignment="CENTER_LEFT" style="-fx-padding: 0 50 0 50;">
+                    <!-- Barre de recherche avec icône de loupe -->
+                    <HBox styleClass="search-container" HBox.hgrow="ALWAYS">
+                        <ImageView fitWidth="20" fitHeight="20" preserveRatio="true" style="-fx-opacity: 0.6;">
+                            <Image url="/assets/loupe.png"/>
+                        </ImageView>
+                        <TextField fx:id="searchField" 
+                                   promptText="Rechercher par numéro ou client..." 
+                                   styleClass="search-field" 
+                                   HBox.hgrow="ALWAYS"/>
+                    </HBox>
+                    
+                    <!-- Bouton pour créer une nouvelle livraison -->
+                    <Button fx:id="btnNouvelleLivraison" text="Nouvelle livraison" styleClass="btn-nouvelle-livraison">
+                        <graphic>
+                            <ImageView fitWidth="18" fitHeight="18" preserveRatio="true">
+                                <Image url="/assets/icone-plus.png"/>
+                            </ImageView>
+                        </graphic>
+                    </Button>
+                </HBox>
+
+                <!-- SECTION FILTRES : Dropdowns pour statuts et types -->
+                <HBox spacing="15" alignment="CENTER_LEFT" style="-fx-padding: 0 50 0 50;">
+                    <!-- Dropdown pour filtrer par statut -->
+                    <ComboBox fx:id="filterStatut" 
+                              promptText="Tous les statuts" 
+                              styleClass="filter-dropdown"
+                              prefWidth="200">
+                        <!-- Les options seront ajoutées dynamiquement dans le contrôleur -->
+                    </ComboBox>
+                    
+                    <!-- Dropdown pour filtrer par type -->
+                    <ComboBox fx:id="filterType" 
+                              promptText="Tous les types" 
+                              styleClass="filter-dropdown"
+                              prefWidth="200">
+                        <!-- Les options seront ajoutées dynamiquement dans le contrôleur -->
+                    </ComboBox>
+                </HBox>
+
+                <!-- SECTION GRILLE DE CARTES LIVRAISONS -->
+                <VBox style="-fx-padding: 0 50 50 50;" spacing="20">
+                    <!-- Grille pour afficher les cartes livraisons (3 colonnes) -->
+                    <GridPane fx:id="livraisonsGrid" 
+                              hgap="20" 
+                              vgap="20" 
+                              alignment="TOP_LEFT">
+                        <!-- Les cartes livraisons seront ajoutées dynamiquement ici -->
+                    </GridPane>
+                </VBox>
+
+                </VBox>
+            </ScrollPane>
+        </HBox>
+    </center>
+</BorderPane>
+

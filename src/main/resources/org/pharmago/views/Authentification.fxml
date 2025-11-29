@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="org.pharmago.controllers.AuthentificationController"
+           styleClass="root-pane">
+
+    <!-- Conteneur principal centré -->
+    <VBox alignment="CENTER" spacing="40" styleClass="card" VBox.vgrow="ALWAYS">
+
+        <!-- ✅ Logo bien centré avec StackPane -->
+        <StackPane alignment="CENTER">
+            <ImageView fx:id="logoImage"
+                       fitWidth="140"
+                       fitHeight="140"
+                       preserveRatio="true" />
+        </StackPane>
+
+        <!-- Formulaire -->
+        <VBox spacing="20" alignment="CENTER" styleClass="login-form">
+            <TextField fx:id="emailField" promptText="adresse mail" maxWidth="290" />
+            <PasswordField fx:id="passwordField" promptText="mot de passe" maxWidth="290" />
+            <Button fx:id="btnLogin" text="Se connecter" styleClass="btn-login"/>
+        </VBox>
+
+        <!-- Lien d'inscription -->
+        <HBox alignment="CENTER" spacing="5">
+            <Label text="Vous n'avez pas de compte ?" styleClass="inscription-text"/>
+            <Hyperlink fx:id="linkInscrire" text="s'inscrire"/>
+        </HBox>
+
+    </VBox>
+</StackPane>
