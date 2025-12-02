@@ -1,10 +1,8 @@
-/* ====== FOND PRINCIPAL ====== */
 .root-pane {
     -fx-background-color: linear-gradient(to bottom right, #0A2918, #3D5742);
     -fx-font-family: "Open Sans";
 }
 
-/* ====== CARTE CENTRALE ====== */
 .card {
     -fx-background-color: #FFFFFF;
     -fx-padding: 80 140;
@@ -13,16 +11,15 @@
     -fx-max-width: 800;
     -fx-max-height: 550;
     -fx-alignment: CENTER;
-    -fx-transition: none; /* ✅ empêche toute animation implicite */
+    -fx-transition: none;
 }
 
-/* ✅ Empêche tout mouvement ou effet sur hover */
 .card:hover {
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 25, 0, 0, 0);
     -fx-translate-y: 0;
 }
 
-/* ====== FORMULAIRE ====== */
+
 .login-form {
     -fx-spacing: 20;
     -fx-alignment: center;
@@ -38,10 +35,10 @@
     -fx-border-width: 1;
     -fx-padding: 10;
     -fx-font-size: 14px;
-    -fx-pref-width: 190; /* ✅ champs un peu plus étroits */
+    -fx-pref-width: 190;
 }
 
-/* ====== BOUTON ====== */
+
 .btn-login {
     -fx-background-color: #6E8268;
     -fx-text-fill: #FFFFFF;
@@ -50,14 +47,13 @@
     -fx-background-radius: 10;
     -fx-padding: 10 40;
     -fx-pref-width: 180;
-    -fx-margin-bottom: 30px; /* ✅ ajoute un espace propre avant le texte d'inscription */
+    -fx-margin-bottom: 30px;
 }
 
 .btn-login:hover {
     -fx-background-color: #3B533B;
 }
 
-/* ====== TEXTE & LIEN ====== */
 .inscription-text {
     -fx-text-fill: #000000;
     -fx-font-size: 12px;
