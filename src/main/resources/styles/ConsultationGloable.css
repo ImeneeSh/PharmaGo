@@ -1,36 +1,24 @@
-/* ============================================
-   STYLES POUR LA PAGE CONSULTATION GLOBALE
-   Même dynamique et fluidité que Tableau de bord
-   ============================================ */
-
-/* === RACINE DE LA PAGE === */
-/* Fond blanc pour la fenêtre principale */
 .root-consultation {
-    -fx-background-color: #FFFFFF; /* Fond blanc pour la fenêtre principale */
+    -fx-background-color: #FFFFFF;
     -fx-font-family: "Open Sans", "Segoe UI", sans-serif;
-    -fx-padding: 20; /* Espacement uniforme de 20px avec les bords de la fenêtre */
+    -fx-padding: 20;
 }
 
-/* === CONTENU PRINCIPAL === */
-/* Panneau de contenu avec fond gris, coins arrondis et ombre portée */
 .consultation-content {
-    -fx-background-color: #F5F5F5; /* Fond gris pour le panneau de contenu */
-    -fx-background-radius: 20; /* Coins arrondis de 20px pour le panneau */
+    -fx-background-color: #F5F5F5;
+    -fx-background-radius: 20;
     -fx-padding: 40 0 60 0;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 5); /* Ombre portée pour créer l'effet de profondeur */
-    -fx-min-height: -1; /* Permet au contenu de prendre toute la hauteur disponible */
-    -fx-clip-shape: null; /* Permet aux coins arrondis d'être visibles même dans le ScrollPane */
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 5);
+    -fx-min-height: -1;
+    -fx-clip-shape: null;
 }
 
-/* === TITRES DE LA PAGE === */
-/* Titre principal "Consultation global" */
 .consultation-title {
     -fx-font-size: 32px;
     -fx-font-weight: bold;
     -fx-text-fill: #001910;
 }
 
-/* Sous-titre "Statistiques et analyses détaillées..." */
 .consultation-subtitle {
     -fx-text-fill: #6E8268;
     -fx-font-size: 15px;
@@ -38,9 +26,6 @@
     -fx-padding: 10 0 0 0;
 }
 
-/* === CARTES DES MÉTRIQUES PRINCIPALES === */
-/* Style pour les cartes de métriques (Total clients, Total médicaments, Total livraisons) */
-/* Les cartes s'ajustent maintenant avec la taille de la fenêtre */
 .metric-card {
     -fx-background-color: #FFFFFF;
     -fx-background-radius: 20;
@@ -54,20 +39,18 @@
     -fx-transition: all 0.3s ease;
 }
 
-/* Ajustement du conteneur pour gérer l'espacement */
+
 .metric-grid {
-    -fx-hgap: 30; /* espace horizontal entre les cartes */
-    -fx-vgap: 30; /* espace vertical si jamais ça wrappe */
-    -fx-alignment: CENTER; /* centre les cartes */
+    -fx-hgap: 30;
+    -fx-vgap: 30;
+    -fx-alignment: CENTER;
 }
 
-/* Conteneur HBox des cartes métriques - s'ajuste avec la largeur de la fenêtre */
 .consultation-content > HBox {
-    -fx-pref-width: -1; /* -1 signifie utiliser toute la largeur disponible */
-    -fx-max-width: Infinity; /* Permet au conteneur de s'étendre */
+    -fx-pref-width: -1;
+    -fx-max-width: Infinity;
 }
 
-/* Titre de la carte (ex: Clients actifs) */
 .metric-card-title {
     -fx-text-fill: #3B533B;
     -fx-font-size: 17px;
@@ -76,7 +59,6 @@
     -fx-text-alignment: LEFT;
 }
 
-/* Nombre principal (ex: 350, 150, 167) */
 .metric-card-number {
     -fx-text-fill: #00551D;
     -fx-font-size: 46px;
@@ -84,7 +66,6 @@
     -fx-alignment: CENTER_LEFT;
 }
 
-/* Texte secondaire (ex: +2 clients ce mois-ci) */
 .metric-card-subtext {
     -fx-text-fill: #4CAF50;
     -fx-font-size: 14px;
@@ -96,26 +77,21 @@
     -fx-translate-y: 5;
 }
 
-/* === SECTIONS === */
-/* Conteneur de section (pour les différentes sections de la page) */
-/* Padding uniforme : 30px en haut/bas, 40px à gauche/droite */
 .section-container {
     -fx-background-color: #FFFFFF;
     -fx-background-radius: 15;
-    -fx-padding: 30 40 30 40; /* haut droite bas gauche - uniforme */
+    -fx-padding: 30 40 30 40;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 6, 0, 0, 2);
 }
 
-/* Titre de section (Livraisons par type, Clients les plus actifs, etc.) */
+
 .section-title {
     -fx-font-size: 20px;
     -fx-font-weight: bold;
     -fx-text-fill: #3B533B;
     -fx-padding: 10 0 10 0;
 }
-/* === BARRES DE PROGRESSION (Livraisons par type) === */
-/* === PANEL BLANC (contenant les barres de progression : Livraisons par type) === */
-/* Padding uniforme : même espacement que le conteneur parent */
+
 .delivery-progress-panel {
     -fx-background-color: transparent;
     -fx-background-radius: 0;
@@ -123,56 +99,48 @@
     -fx-effect: null;
 }
 
-
-
-/* Étiquette de la barre de progression */
 .progress-label {
     -fx-text-fill: #3B533B;
     -fx-font-size: 15px;
     -fx-font-weight: 1000;
 }
 
-/* Valeur à droite de la barre (ex: 5 livraison(s)) */
 .progress-value {
     -fx-text-fill: #4CAF50;
     -fx-font-size: 14px;
     -fx-font-weight: 600;
 }
 
-/* Barre de progression principale */
 .delivery-progress-bar {
     -fx-min-height: 10px;
     -fx-pref-height: 10px;
     -fx-max-height: 10px;
 }
 
-/* Barre interne remplie */
 .delivery-progress-bar > .bar {
     -fx-background-color: #596B59;
     -fx-background-radius: 15px;
     -fx-background-insets: 0;
 }
 
-/* Fond (track) de la barre */
 .delivery-progress-bar > .track {
     -fx-background-color: #E0E0E0;
     -fx-background-radius: 15px;
     -fx-background-insets: 0;
 }
 
-/* === CLIENTS LES PLUS ACTIFS === */
 .client-item {
     -fx-background-color: #CFCFCF;
     -fx-border-color: #DBDBDB;
     -fx-border-width: 1;
     -fx-background-radius: 12;
     -fx-border-radius: 12;
-    -fx-padding: 18 25;          /* légèrement réduit */
+    -fx-padding: 18 25;
     -fx-alignment: CENTER_LEFT;
-    -fx-spacing: 16;             /* espace intérieur légèrement réduit */
+    -fx-spacing: 16;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 5, 0, 0, 2);
-    -fx-pref-width: 700;         /* largeur légèrement réduite */
-    -fx-pref-height: 85;         /* hauteur légèrement réduite */
+    -fx-pref-width: 700;
+    -fx-pref-height: 85;
     -fx-cursor: hand;
 }
 
@@ -194,7 +162,6 @@
     -fx-wrap-text: true;
 }
 
-/* Badge circulaire pour le rang (1, 2, 3) */
 .rank-badge {
     -fx-background-color: #596B59;
     -fx-background-radius: 50%;
@@ -203,45 +170,37 @@
     -fx-alignment: CENTER;
 }
 
-/* Numéro dans le badge de rang */
 .rank-number {
     -fx-text-fill: #FFFFFF;
     -fx-font-size: 16px;
     -fx-font-weight: bold;
 }
 
-/* Code du client */
 .client-code {
     -fx-font-weight: bold;
     -fx-text-fill: #001910;
     -fx-font-size: 15px;
 }
 
-/* Nom du client */
 .client-name {
     -fx-text-fill: #000000;
     -fx-font-size: 14px;
 }
 
-/* Valeur numérique à droite (nombre de livraisons) */
 .client-value {
     -fx-font-weight: bold;
     -fx-text-fill: #333333;
     -fx-font-size: 18px;
 }
 
-/* === CLIENTS LES PLUS ACTIFS === */
-/* === Panneau interne blanc pour les médicaments livrés === */
-/* Padding uniforme : même espacement que le conteneur parent */
 .medication-panel {
     -fx-background-color: #FFFFFF;
     -fx-background-radius: 20;
-    -fx-padding: 30 40 30 40; /* haut droite bas gauche - uniforme avec section-container */
+    -fx-padding: 30 40 30 40;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 15, 0, 0, 5);
 }
 
 
-/* Trait vertical séparateur */
 .vertical-separator {
     -fx-pref-width: 2px;
     -fx-background-color: #000000;
@@ -249,7 +208,7 @@
     -fx-max-height: 260px;
 }
 
-/* Carte médicament */
+
 .medication-card {
     -fx-background-color: #CFCFCF;
     -fx-background-radius: 15;
@@ -259,7 +218,6 @@
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 6, 0, 0, 2);
 }
 
-/* Espacement réduit entre code et nom */
 .medication-code {
     -fx-font-weight: bold;
     -fx-font-size: 16px;
@@ -273,14 +231,13 @@
     -fx-padding: 0;
 }
 
-/* Péremption */
+
 .medication-expiry {
     -fx-font-size: 12px;
     -fx-text-fill: #555;
     -fx-padding: 4 0 0 0;
 }
 
-/* Badge du rang */
 .medication-rank-badge {
     -fx-background-color: #AAB8A6;
     -fx-background-radius: 50%;
@@ -294,15 +251,12 @@
     -fx-font-weight: bold;
 }
 
-/* === Effet au survol réactif === */
 .metric-card:hover {
     -fx-translate-y: -6;
     -fx-effect: dropshadow(gaussian, rgba(0,85,29,0.3), 14, 0, 0, 6);
     -fx-cursor: hand;
 }
 
-/* === PANEL BLANC (contenant les clients les plus actifs) === */
-/* Padding uniforme : même espacement que le conteneur parent */
 .active-clients-panel {
     -fx-background-color: transparent;
     -fx-background-radius: 0;
