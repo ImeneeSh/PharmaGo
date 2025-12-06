@@ -1,23 +1,18 @@
-/* === CONTENEUR PRINCIPAL === */
-/* Fond blanc pour la fenêtre principale */
 .root-dashboard {
-    -fx-background-color: #FFFFFF; /* Fond blanc pour la fenêtre principale */
+    -fx-background-color: #FFFFFF;
     -fx-font-family: "Open Sans", "Segoe UI", sans-serif;
-    -fx-padding: 20; /* Espacement uniforme de 20px avec les bords de la fenêtre */
+    -fx-padding: 20;
 }
 
-/* === CONTENU PRINCIPAL === */
-/* Panneau de contenu avec fond gris, coins arrondis et ombre portée */
 .dashboard-content {
-    -fx-background-color: #F5F5F5; /* Fond gris pour le panneau de contenu */
-    -fx-background-radius: 20; /* Coins arrondis de 20px pour le panneau */
+    -fx-background-color: #F5F5F5;
+    -fx-background-radius: 20;
     -fx-padding: 40 0 60 0;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 5); /* Ombre portée pour créer l'effet de profondeur */
-    -fx-min-height: -1; /* Permet au contenu de prendre toute la hauteur disponible */
-    -fx-clip-shape: null; /* Permet aux coins arrondis d'être visibles même dans le ScrollPane */
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 5);
+    -fx-min-height: -1;
+    -fx-clip-shape: null;
 }
 
-/* === TITRES === */
 .dashboard-title {
     -fx-font-size: 30px;
     -fx-font-weight: bold;
@@ -31,14 +26,14 @@
     -fx-padding: 10 0 0 0;
 }
 
-/* === CARTES === */
+
 .card {
     -fx-background-color: #FFFFFF;
     -fx-background-radius: 20;
     -fx-padding: 30 45;
     -fx-spacing: 12;
-    -fx-pref-width: 380;   /* plus large */
-    -fx-pref-height: 190;  /* plus grande */
+    -fx-pref-width: 380;
+    -fx-pref-height: 190;
     -fx-alignment: CENTER_LEFT;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0, 0, 4);
     -fx-cursor: hand;
@@ -50,7 +45,7 @@
     -fx-effect: dropshadow(gaussian, rgba(0,85,29,0.3), 14, 0, 0, 6);
 }
 
-/* === TEXTE DANS LES CARTES === */
+
 .card-title {
     -fx-text-fill: #3B533B;
     -fx-font-size: 17px;
@@ -73,7 +68,7 @@
     -fx-translate-y: 5;
 }
 
-/* === SECTIONS === */
+
 .section-title {
     -fx-font-size: 20px;
     -fx-font-weight: bold;
@@ -81,7 +76,6 @@
     -fx-padding: 10 0 10 0;
 }
 
-/* === LIVRAISONS ET ALERTES (cartes de liste) === */
 .recent-item {
     -fx-background-color: #FFFFFF;
     -fx-border-color: #DBDBDB;
@@ -104,7 +98,7 @@
     -fx-wrap-text: true;
 }
 
-/* === LIVRAISONS RÉCENTES === */
+
 .recent-code {
     -fx-font-weight: bold;
     -fx-text-fill: #001910;
@@ -116,9 +110,8 @@
     -fx-font-size: 13px;
 }
 
-/* === STATUTS === */
 .status-delivered {
-    -fx-background-color: rgba(76, 175, 80, 0.25); /* vert doux, transparent */
+    -fx-background-color: rgba(76, 175, 80, 0.25);
     -fx-text-fill: #2E7D32;
     -fx-padding: 5 12;
     -fx-background-radius: 10;
@@ -127,7 +120,7 @@
 }
 
 .status-alert {
-    -fx-background-color: rgba(229, 115, 115, 0.25); /* rouge doux, transparent */
+    -fx-background-color: rgba(229, 115, 115, 0.25);
     -fx-text-fill: #C62828;
     -fx-padding: 5 12;
     -fx-background-radius: 10;
@@ -149,9 +142,8 @@
     -fx-effect: dropshadow(gaussian, rgba(198,40,40,0.25), 6, 0, 0, 3);
 }
 
-/* Livraisons récentes avec couleurs selon statut */
 .status-pending {
-    -fx-background-color: rgba(255, 193, 7, 0.25); /* jaune/orange doux */
+    -fx-background-color: rgba(255, 193, 7, 0.25);
     -fx-text-fill: #FFA000;
     -fx-padding: 5 12;
     -fx-background-radius: 10;
@@ -160,7 +152,7 @@
 }
 
 .status-cancelled {
-    -fx-background-color: rgba(229, 115, 115, 0.25); /* rouge doux */
+    -fx-background-color: rgba(229, 115, 115, 0.25);
     -fx-text-fill: #C62828;
     -fx-padding: 5 12;
     -fx-background-radius: 10;
@@ -169,7 +161,7 @@
 }
 
 .status-inprogress {
-    -fx-background-color: rgba(30, 136, 229, 0.25); /* bleu doux */
+    -fx-background-color: rgba(30, 136, 229, 0.25);
     -fx-text-fill: #1976D2;
     -fx-padding: 5 12;
     -fx-background-radius: 10;
