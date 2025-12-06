@@ -108,14 +108,18 @@ public class GestionLivraisonsController implements Initializable {
      */
     private void chargerLivraisons() {
         livraisons.clear();
+        // REQUÊTE CORRIGÉE : groupe uniquement par livraison
         String query = """
-            SELECT L.numLiv, L.codeClt, L.dateLiv, L.priorite, L.statut, L.type_liv, L.taxe, L.cout,
-                   C.nom, C.prenom,
-                   (SELECT COUNT(*) FROM inclure I WHERE I.numLiv = L.numLiv) AS nombreMedicaments
-            FROM livraison L
-            LEFT JOIN client C ON L.codeClt = C.codeClt
-            ORDER BY L.numLiv DESC
-            """;
+    SELECT L.numLiv, L.codeClt, L.dateLiv, L.priorite, L.statut, L.type_liv, L.taxe, L.cout,
+           C.nom, C.prenom,
+           COALESCE(SUM(I.quantite), 0) AS totalQuantite
+    FROM livraison L
+    LEFT JOIN client C ON L.codeClt = C.codeClt
+    LEFT JOIN inclure I ON L.numLiv = I.numLiv
+    GROUP BY L.numLiv, L.codeClt, L.dateLiv, L.priorite, L.statut, 
+             L.type_liv, L.taxe, L.cout, C.nom, C.prenom
+    ORDER BY L.numLiv DESC
+    """;
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query);
@@ -132,17 +136,31 @@ public class GestionLivraisonsController implements Initializable {
                 float cout = rs.getFloat("cout");
                 String nomClient = rs.getString("nom");
                 String prenomClient = rs.getString("prenom");
-                int nombreMedicaments = rs.getInt("nombreMedicaments");
+                int totalQuantite = rs.getInt("totalQuantite");
+
+                // Récupérer le premier médicament et sa quantité (pour la modification)
+                int medicamentId = 0;
+                int quantite = 0;
+                String medicamentQuery = "SELECT idMed, quantite FROM inclure WHERE numLiv = ? LIMIT 1";
+                try (PreparedStatement medStmt = conn.prepareStatement(medicamentQuery)) {
+                    medStmt.setInt(1, numLiv);
+                    try (ResultSet medRs = medStmt.executeQuery()) {
+                        if (medRs.next()) {
+                            medicamentId = medRs.getInt("idMed");
+                            quantite = medRs.getInt("quantite");
+                        }
+                    }
+                }
 
                 boolean urgent = "urgent".equals(priorite);
                 String clientNom = (nomClient != null && prenomClient != null) ? nomClient + " " + prenomClient : "";
 
-                // Conversion des noms pour l'affichage
                 String statutDisplay = convertirStatut(statut);
                 String typeDisplay = convertirType(type_liv);
 
-                livraisons.add(new Livraison(numLiv, codeClt, clientNom, dateLiv, nombreMedicaments,
-                        (int) taxe, cout, statutDisplay, typeDisplay, urgent, ""));
+                livraisons.add(new Livraison(numLiv, codeClt, clientNom, dateLiv, totalQuantite,
+                        (int) taxe, cout, statutDisplay, typeDisplay, urgent, "",
+                        medicamentId, quantite));
             }
 
         } catch (SQLException e) {
@@ -312,31 +330,117 @@ public class GestionLivraisonsController implements Initializable {
                     float taxe = nouvelle.getTaxe();
                     float cout = nouvelle.getCout();
 
+                    // NOUVEAU : Récupérer l'ID du médicament et la quantité
+                    int medicamentId = nouvelle.getMedicamentId();
+                    int quantite = nouvelle.getQuantite();
+
                     if (!validateLivraison(codeClt, dateLiv, statut, type_liv)) return;
 
-                    // Insertion dans la BDD
-                    String insert = "INSERT INTO livraison (codeClt, dateLiv, priorite, statut, type_liv, taxe, cout) VALUES (?, ?, ?, ?, ?, ?, ?)";
-                    try (Connection conn = DatabaseConnection.getConnection();
-                         PreparedStatement stmt = conn.prepareStatement(insert, PreparedStatement.RETURN_GENERATED_KEYS)) {
-                        stmt.setInt(1, codeClt);
-                        stmt.setDate(2, java.sql.Date.valueOf(dateLiv));
-                        stmt.setString(3, priorite);
-                        stmt.setString(4, statut);
-                        stmt.setString(5, type_liv);
-                        stmt.setFloat(6, taxe);
-                        stmt.setFloat(7, cout);
+                    // NOUVEAU : Validation supplémentaire pour la quantité
+                    if (quantite <= 0) {
+                        showAlert(Alert.AlertType.ERROR, "Erreur", "La quantité doit être positive.");
+                        return;
+                    }
 
-                        int affected = stmt.executeUpdate();
-                        if (affected > 0) {
-                            try (ResultSet keys = stmt.getGeneratedKeys()) {
-                                if (keys.next()) {
-                                    int id = keys.getInt(1);
-                                    chargerLivraisons(); // Recharger pour avoir les bonnes infos
-                                    showAlert(Alert.AlertType.INFORMATION, "Succès", "Livraison ajoutée avec succès !");
+                    Connection conn = null;
+                    try {
+                        conn = DatabaseConnection.getConnection();
+                        conn.setAutoCommit(false); // Démarrer une transaction
+
+                        // 1. Vérifier la quantité disponible AVANT l'insertion
+                        String checkStock = "SELECT nbrBoite FROM medicament WHERE idMed = ?";
+                        int stockDisponible = 0;
+                        try (PreparedStatement checkStmt = conn.prepareStatement(checkStock)) {
+                            checkStmt.setInt(1, medicamentId);
+                            try (ResultSet rs = checkStmt.executeQuery()) {
+                                if (rs.next()) {
+                                    stockDisponible = rs.getInt("nbrBoite");
+                                    if (quantite > stockDisponible) {
+                                        showAlert(Alert.AlertType.ERROR, "Stock insuffisant",
+                                                "Quantité demandée: " + quantite +
+                                                        "\nStock disponible: " + stockDisponible +
+                                                        "\nVeuillez réduire la quantité.");
+                                        conn.rollback();
+                                        return;
+                                    }
+                                } else {
+                                    showAlert(Alert.AlertType.ERROR, "Erreur", "Médicament non trouvé.");
+                                    conn.rollback();
+                                    return;
                                 }
                             }
-                        } else {
+                        }
+
+                        // 2. Insérer la livraison
+                        String insertLivraison = "INSERT INTO livraison (codeClt, dateLiv, priorite, statut, type_liv, taxe, cout) VALUES (?, ?, ?, ?, ?, ?, ?)";
+                        int livraisonId = -1;
+                        try (PreparedStatement stmt = conn.prepareStatement(insertLivraison, PreparedStatement.RETURN_GENERATED_KEYS)) {
+                            stmt.setInt(1, codeClt);
+                            stmt.setDate(2, java.sql.Date.valueOf(dateLiv));
+                            stmt.setString(3, priorite);
+                            stmt.setString(4, statut);
+                            stmt.setString(5, type_liv);
+                            stmt.setFloat(6, taxe);
+                            stmt.setFloat(7, cout);
+
+                            int affected = stmt.executeUpdate();
+                            if (affected > 0) {
+                                try (ResultSet keys = stmt.getGeneratedKeys()) {
+                                    if (keys.next()) {
+                                        livraisonId = keys.getInt(1);
+                                    }
+                                }
+                            }
+                        }
+
+                        if (livraisonId == -1) {
                             showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible d'ajouter la livraison.");
+                            conn.rollback();
+                            return;
+                        }
+
+                        // 3. Insérer dans la table Inclure avec la quantité
+                        String insertInclure = "INSERT INTO inclure (numLiv, idMed, quantite) VALUES (?, ?, ?)";
+                        try (PreparedStatement stmtInclure = conn.prepareStatement(insertInclure)) {
+                            stmtInclure.setInt(1, livraisonId);
+                            stmtInclure.setInt(2, medicamentId);
+                            stmtInclure.setInt(3, quantite);
+                            stmtInclure.executeUpdate();
+                        }
+
+                        // 4. Mettre à jour le stock du médicament
+                        String updateStock = "UPDATE medicament SET nbrBoite = nbrBoite - ? WHERE idMed = ?";
+                        try (PreparedStatement stmtStock = conn.prepareStatement(updateStock)) {
+                            stmtStock.setInt(1, quantite);
+                            stmtStock.setInt(2, medicamentId);
+                            stmtStock.executeUpdate();
+                        }
+
+                        // Tout s'est bien passé, valider la transaction
+                        conn.commit();
+                        chargerLivraisons();
+                        showAlert(Alert.AlertType.INFORMATION, "Succès", "Livraison ajoutée avec succès !");
+
+                    } catch (SQLException e) {
+                        // En cas d'erreur, annuler la transaction
+                        if (conn != null) {
+                            try {
+                                conn.rollback();
+                            } catch (SQLException ex) {
+                                ex.printStackTrace();
+                            }
+                        }
+                        showAlert(Alert.AlertType.ERROR, "Erreur DB", "Erreur lors de l'ajout : " + e.getMessage());
+                        e.printStackTrace();
+                    } finally {
+                        // Restaurer l'autocommit et fermer la connexion
+                        if (conn != null) {
+                            try {
+                                conn.setAutoCommit(true);
+                                conn.close();
+                            } catch (SQLException e) {
+                                e.printStackTrace();
+                            }
                         }
                     }
                 }
@@ -483,6 +587,7 @@ public class GestionLivraisonsController implements Initializable {
         iconPilule.setPreserveRatio(true);
         iconPilule.setStyle("-fx-opacity: 0.6;");
         Label medicamentsLabel = new Label(livraison.getNombreMedicaments() + " médicament(s)");
+
         medicamentsLabel.getStyleClass().add("livraison-info");
         medicamentsBox.getChildren().addAll(iconPilule, medicamentsLabel);
         
@@ -596,26 +701,155 @@ public class GestionLivraisonsController implements Initializable {
                 float taxe = modif.getTaxe();
                 float cout = modif.getCout();
 
+                // NOUVEAU : Récupérer les nouvelles valeurs
+                int medicamentId = modif.getMedicamentId();
+                int nouvelleQuantite = modif.getQuantite();
+                int ancienneQuantite = livraison.getQuantite();
+                int ancienMedicamentId = livraison.getMedicamentId();
+
                 if (!validateLivraison(codeClt, dateLiv, statut, type_liv)) return;
 
-                // Mise à jour dans la BDD
-                String update = "UPDATE livraison SET codeClt=?, dateLiv=?, priorite=?, statut=?, type_liv=?, taxe=?, cout=? WHERE numLiv=?";
-                try (Connection conn = DatabaseConnection.getConnection();
-                     PreparedStatement stmt = conn.prepareStatement(update)) {
+                // NOUVEAU : Validation de la quantité
+                if (nouvelleQuantite <= 0) {
+                    showAlert(Alert.AlertType.ERROR, "Erreur", "La quantité doit être positive.");
+                    return;
+                }
 
-                    stmt.setInt(1, codeClt);
-                    stmt.setDate(2, java.sql.Date.valueOf(dateLiv));
-                    stmt.setString(3, priorite);
-                    stmt.setString(4, statut);
-                    stmt.setString(5, type_liv);
-                    stmt.setFloat(6, taxe);
-                    stmt.setFloat(7, cout);
-                    stmt.setInt(8, livraison.getNumLiv());
+                Connection conn = null;
+                try {
+                    conn = DatabaseConnection.getConnection();
+                    conn.setAutoCommit(false); // Transaction
 
-                    stmt.executeUpdate();
+                    // 1. Vérifier le stock pour le nouveau médicament (si changement)
+                    if (medicamentId != ancienMedicamentId) {
+                        // Vérifier le stock du nouveau médicament
+                        String checkNewStock = "SELECT nbrBoite FROM medicament WHERE idMed = ?";
+                        try (PreparedStatement checkStmt = conn.prepareStatement(checkNewStock)) {
+                            checkStmt.setInt(1, medicamentId);
+                            try (ResultSet rs = checkStmt.executeQuery()) {
+                                if (rs.next()) {
+                                    int stockDisponible = rs.getInt("nbrBoite");
+                                    if (nouvelleQuantite > stockDisponible) {
+                                        showAlert(Alert.AlertType.ERROR, "Stock insuffisant",
+                                                "Quantité demandée: " + nouvelleQuantite +
+                                                        "\nStock disponible: " + stockDisponible);
+                                        conn.rollback();
+                                        return;
+                                    }
+                                } else {
+                                    showAlert(Alert.AlertType.ERROR, "Erreur", "Nouveau médicament non trouvé.");
+                                    conn.rollback();
+                                    return;
+                                }
+                            }
+                        }
 
+                        // 2. Rembourser l'ancien médicament (remettre la quantité dans le stock)
+                        if (ancienMedicamentId > 0) {
+                            String refundOldStock = "UPDATE medicament SET nbrBoite = nbrBoite + ? WHERE idMed = ?";
+                            try (PreparedStatement refundStmt = conn.prepareStatement(refundOldStock)) {
+                                refundStmt.setInt(1, ancienneQuantite);
+                                refundStmt.setInt(2, ancienMedicamentId);
+                                refundStmt.executeUpdate();
+                            }
+                        }
+
+                        // 3. Déduire du nouveau médicament
+                        String deductNewStock = "UPDATE medicament SET nbrBoite = nbrBoite - ? WHERE idMed = ?";
+                        try (PreparedStatement deductStmt = conn.prepareStatement(deductNewStock)) {
+                            deductStmt.setInt(1, nouvelleQuantite);
+                            deductStmt.setInt(2, medicamentId);
+                            deductStmt.executeUpdate();
+                        }
+
+                        // 4. Mettre à jour la table inclure
+                        String updateInclure = "UPDATE inclure SET idMed = ?, quantite = ? WHERE numLiv = ?";
+                        try (PreparedStatement stmtInclure = conn.prepareStatement(updateInclure)) {
+                            stmtInclure.setInt(1, medicamentId);
+                            stmtInclure.setInt(2, nouvelleQuantite);
+                            stmtInclure.setInt(3, livraison.getNumLiv());
+                            stmtInclure.executeUpdate();
+                        }
+
+                    } else {
+                        // Même médicament, ajustement de quantité
+                        int difference = nouvelleQuantite - ancienneQuantite;
+
+                        if (difference > 0) {
+                            // Vérifier si on peut augmenter la quantité
+                            String checkStock = "SELECT nbrBoite FROM medicament WHERE idMed = ?";
+                            try (PreparedStatement checkStmt = conn.prepareStatement(checkStock)) {
+                                checkStmt.setInt(1, medicamentId);
+                                try (ResultSet rs = checkStmt.executeQuery()) {
+                                    if (rs.next()) {
+                                        int stockDisponible = rs.getInt("nbrBoite");
+                                        if (difference > stockDisponible) {
+                                            showAlert(Alert.AlertType.ERROR, "Stock insuffisant",
+                                                    "Augmentation demandée: " + difference +
+                                                            "\nStock disponible: " + stockDisponible);
+                                            conn.rollback();
+                                            return;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        // Mettre à jour le stock
+                        String updateStock = "UPDATE medicament SET nbrBoite = nbrBoite - ? WHERE idMed = ?";
+                        try (PreparedStatement stmtStock = conn.prepareStatement(updateStock)) {
+                            stmtStock.setInt(1, difference);
+                            stmtStock.setInt(2, medicamentId);
+                            stmtStock.executeUpdate();
+                        }
+
+                        // Mettre à jour la quantité dans inclure
+                        String updateInclure = "UPDATE inclure SET quantite = ? WHERE numLiv = ? AND idMed = ?";
+                        try (PreparedStatement stmtInclure = conn.prepareStatement(updateInclure)) {
+                            stmtInclure.setInt(1, nouvelleQuantite);
+                            stmtInclure.setInt(2, livraison.getNumLiv());
+                            stmtInclure.setInt(3, medicamentId);
+                            stmtInclure.executeUpdate();
+                        }
+                    }
+
+                    // 5. Mettre à jour la livraison
+                    String updateLivraison = "UPDATE livraison SET codeClt=?, dateLiv=?, priorite=?, statut=?, type_liv=?, taxe=?, cout=? WHERE numLiv=?";
+                    try (PreparedStatement stmt = conn.prepareStatement(updateLivraison)) {
+                        stmt.setInt(1, codeClt);
+                        stmt.setDate(2, java.sql.Date.valueOf(dateLiv));
+                        stmt.setString(3, priorite);
+                        stmt.setString(4, statut);
+                        stmt.setString(5, type_liv);
+                        stmt.setFloat(6, taxe);
+                        stmt.setFloat(7, cout);
+                        stmt.setInt(8, livraison.getNumLiv());
+                        stmt.executeUpdate();
+                    }
+
+                    conn.commit(); // Valider la transaction
                     chargerLivraisons(); // Recharger pour avoir les bonnes infos
                     showAlert(Alert.AlertType.INFORMATION, "Succès", "Livraison modifiée avec succès !");
+
+                } catch (SQLException e) {
+                    if (conn != null) {
+                        try {
+                            conn.rollback();
+                        } catch (SQLException ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                    showAlert(Alert.AlertType.ERROR, "Erreur DB", "Erreur lors de la modification : " + e.getMessage());
+                    e.printStackTrace();
+                } finally {
+                    if (conn != null) {
+                        try {
+                            conn.setAutoCommit(true);
+                            conn.close();
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
             }
 
@@ -691,10 +925,12 @@ public class GestionLivraisonsController implements Initializable {
         private String type;
         private boolean urgent;
         private String medicament;
+        private int medicamentId;
+        private int quantite;
 
         public Livraison(int numLiv, int codeClt, String client, LocalDate date, int nombreMedicaments,
                          int taxe, float cout, String statut, String type, boolean urgent,
-                         String medicament) {
+                         String medicament,int medicamentId, int quantite) {
             this.numLiv = numLiv;
             this.codeClt = codeClt;
             this.client = client;
@@ -706,6 +942,8 @@ public class GestionLivraisonsController implements Initializable {
             this.type = type;
             this.urgent = urgent;
             this.medicament = medicament;
+            this.medicamentId = medicamentId;
+            this.quantite = quantite;
         }
 
         // Getters
@@ -720,6 +958,8 @@ public class GestionLivraisonsController implements Initializable {
         public String getType() { return type; }
         public boolean isUrgent() { return urgent; }
         public String getMedicament() { return medicament; }
+        public int getMedicamentId() { return medicamentId; }
+        public void setMedicamentId(int medicamentId) { this.medicamentId = medicamentId; }
 
         /**
          * Retourne la date formatée (dd/MM/yyyy)
@@ -745,6 +985,8 @@ public class GestionLivraisonsController implements Initializable {
         public void setType(String type) { this.type = type; }
         public void setUrgent(boolean urgent) { this.urgent = urgent; }
         public void setMedicament(String medicament) { this.medicament = medicament; }
+        public int getQuantite() { return quantite; }
+        public void setQuantite(int quantite) { this.quantite = quantite; }
     }
 
 

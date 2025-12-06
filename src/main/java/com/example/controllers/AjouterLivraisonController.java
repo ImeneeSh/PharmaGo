@@ -56,20 +56,23 @@ public class AjouterLivraisonController {
         private int idMed;
         private String nom;
         private float prix;
+        private int quantiteDisponible;  // Ajoutez cet attribut
 
-        public MedicamentItem(int idMed, String nomMed, float prixMed) {
+        public MedicamentItem(int idMed, String nomMed, float prixMed, int quantiteDisponible) {
             this.idMed = idMed;
-            this.nom= nomMed;
+            this.nom = nomMed;
             this.prix = prixMed;
+            this.quantiteDisponible = quantiteDisponible;
         }
 
         public int getIdMed() { return idMed; }
         public String getNom() { return nom; }
         public float getPrix() { return prix; }
+        public int getQuantiteDisponible() { return quantiteDisponible; }  // Ajoutez ce getter
 
         @Override
         public String toString() {
-            return nom + " - " + prix + " DA";
+            return nom + " - " + prix + " DA (Dispo: " + quantiteDisponible + ")";
         }
     }
 
@@ -136,20 +139,22 @@ public class AjouterLivraisonController {
 
 
     private void chargerMedicaments() {
-        String query = "SELECT idMed, nomMed, prixMed FROM medicament ORDER BY nomMed";
+        // Modifiez la requête pour inclure nbrBoite
+        String query = "SELECT idMed, nomMed, prixMed, nbrBoite FROM medicament ORDER BY nomMed";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query);
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
-                medicamentComboBox.getItems().add(
-                        new MedicamentItem(
-                                rs.getInt("idMed"),
-                                rs.getString("nomMed"),
-                                rs.getFloat("prixMed")
-                        )
+                // Créez une classe étendue pour inclure la quantité disponible
+                MedicamentItem med = new MedicamentItem(
+                        rs.getInt("idMed"),
+                        rs.getString("nomMed"),
+                        rs.getFloat("prixMed"),
+                        rs.getInt("nbrBoite")
                 );
+                medicamentComboBox.getItems().add(med);
             }
 
         } catch (SQLException e) {
@@ -199,12 +204,20 @@ public class AjouterLivraisonController {
         }
 
         dateLivField.setValue(livraison.getDate());
-        qttField.getValueFactory().setValue(livraison.getNombreMedicaments());
+        qttField.getValueFactory().setValue(livraison.getQuantite());
         taxeField.setText(String.valueOf(livraison.getTaxe()));
         coutField.setText(String.valueOf(livraison.getCout()));
         statutField.setValue(livraison.getStatut());
         typeField.setValue(livraison.getType());
         urgentCheckBox.setSelected(livraison.isUrgent());
+
+        // Sélectionner le médicament dans le ComboBox
+        for (MedicamentItem item : medicamentComboBox.getItems()) {
+            if (item.getIdMed() == livraison.getMedicamentId()) {
+                medicamentComboBox.setValue(item);
+                break;
+            }
+        }
     }
 
     private void valider() {
@@ -243,6 +256,20 @@ public class AjouterLivraisonController {
 
             int quantite = qttField.getValue();
 
+            // VÉRIFICATION DE LA CONTRAINTE : quantité <= quantité disponible
+            if (quantite > medSelectionne.getQuantiteDisponible()) {
+                showAlert(Alert.AlertType.ERROR, "Quantité insuffisante",
+                        "Quantité demandée: " + quantite +
+                                "\nQuantité disponible: " + medSelectionne.getQuantiteDisponible() +
+                                "\nVeuillez réduire la quantité.");
+                return;
+            }
+
+            if (quantite <= 0) {
+                showAlert(Alert.AlertType.ERROR, "Quantité invalide", "La quantité doit être supérieure à 0.");
+                return;
+            }
+
             int taxe;
             try {
                 taxe = Integer.parseInt(taxeField.getText());
@@ -276,6 +303,7 @@ public class AjouterLivraisonController {
                 livraisonAModifier.setClient(clientNom);
                 livraisonAModifier.setDate(dateLiv);
                 livraisonAModifier.setNombreMedicaments(quantite);
+                livraisonAModifier.setQuantite(quantite);
                 livraisonAModifier.setTaxe(taxe);
                 livraisonAModifier.setCout(cout);
                 livraisonAModifier.setStatut(statut);
@@ -294,7 +322,9 @@ public class AjouterLivraisonController {
                         statut,
                         type,
                         urgent,
-                        ""
+                        "",
+                        medSelectionne.getIdMed(),
+                        quantite
                 );
             }
 

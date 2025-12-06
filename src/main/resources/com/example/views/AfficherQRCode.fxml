@@ -41,9 +41,6 @@
                     <Label text="Date :" GridPane.rowIndex="2" GridPane.columnIndex="0" styleClass="dialog-client-info" />
                     <Label fx:id="dateLabel" GridPane.rowIndex="2" GridPane.columnIndex="1" styleClass="dialog-client-nom" />
 
-                    <Label text="Médicament :" GridPane.rowIndex="3" GridPane.columnIndex="0" styleClass="dialog-client-info" />
-                    <Label fx:id="medicamentLabel" GridPane.rowIndex="3" GridPane.columnIndex="1" styleClass="dialog-client-nom" />
-
                     <Label text="Quantité :" GridPane.rowIndex="4" GridPane.columnIndex="0" styleClass="dialog-client-info" />
                     <Label fx:id="quantiteLabel" GridPane.rowIndex="4" GridPane.columnIndex="1" styleClass="dialog-client-nom" />
 

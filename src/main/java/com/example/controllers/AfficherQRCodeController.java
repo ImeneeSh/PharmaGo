@@ -24,7 +24,6 @@ public class AfficherQRCodeController {
     @FXML private Label numeroLabel;
     @FXML private Label clientLabel;
     @FXML private Label dateLabel;
-    @FXML private Label medicamentLabel;
     @FXML private Label quantiteLabel;
     @FXML private Label statutLabel;
     @FXML private Label typeLabel;
@@ -50,7 +49,6 @@ public class AfficherQRCodeController {
         numeroLabel.setText(String.valueOf(livraison.getNumLiv()));
         clientLabel.setText(livraison.getClient());
         dateLabel.setText(livraison.getDateFormatee());
-        medicamentLabel.setText(livraison.getMedicament());
         quantiteLabel.setText(String.valueOf(livraison.getNombreMedicaments()) + " médicament(s)");
         statutLabel.setText(livraison.getStatut());
         typeLabel.setText(livraison.getType());
@@ -66,13 +64,11 @@ public class AfficherQRCodeController {
      */
     private void genererQRCode() {
         try {
-            // Créer le texte à encoder dans le QR code
             String qrText = String.format(
-                "Livraison: %s\nClient: %s\nDate: %s\nMédicament: %s\nQuantité: %d\nStatut: %s\nType: %s",
+                "Livraison: %s\nClient: %s\nDate: %s\nQuantité: %d\nStatut: %s\nType: %s",
                 livraison.getNumLiv(),
                 livraison.getClient(),
                 livraison.getDateFormatee(),
-                livraison.getMedicament(),
                 livraison.getNombreMedicaments(),
                 livraison.getStatut(),
                 livraison.getType()
