@@ -10,31 +10,30 @@
             fx:controller="com.example.controllers.GestionUtilisateursController"
             styleClass="root-gestion-utilisateurs">
 
-    <!-- MENU VERTICAL FIXE À GAUCHE -->
+   
     <left>
         <fx:include source="Menu.fxml" />
     </left>
 
-    <!-- CONTENU CENTRAL DÉFILABLE -->
-    <!-- HBox pour créer l'espacement entre le menu et le contenu -->
+    
     <center>
         <HBox spacing="0">
-            <!-- Region invisible pour créer l'espacement de 3mm (≈12px) entre le menu et le contenu -->
+           
             <Region prefWidth="12" />
             <ScrollPane fitToWidth="true" fitToHeight="true" hbarPolicy="NEVER" style="-fx-background-color:transparent;" HBox.hgrow="ALWAYS">
                 <VBox alignment="TOP_CENTER" spacing="40" styleClass="gestion-clients-content" VBox.vgrow="ALWAYS">
 
-                    <!-- SECTION EN-TÊTE : Titre et sous-titre -->
+                   
                     <VBox style="-fx-padding: 30 50 0 50;" spacing="8">
-                        <!-- Titre principal en vert foncé -->
+                       
                         <Label text="Gestion des utilisateurs" styleClass="gestion-title" />
-                        <!-- Sous-titre en vert clair -->
+                      
                         <Label text="Gérez votre base d'utilisateurs et leurs informations" styleClass="gestion-subtitle" />
                     </VBox>
 
-                    <!-- SECTION RECHERCHE ET BOUTON AJOUTER -->
+                   
                     <HBox spacing="15" alignment="CENTER_LEFT" style="-fx-padding: 0 50 0 50;">
-                        <!-- Barre de recherche avec icône de loupe -->
+                        
                         <HBox styleClass="search-container" HBox.hgrow="ALWAYS">
                             <ImageView fitWidth="20" fitHeight="20" preserveRatio="true" style="-fx-opacity: 0.6;">
                                 <Image url="/assets/loupe.png"/>
@@ -45,7 +44,7 @@
                                        HBox.hgrow="ALWAYS"/>
                         </HBox>
 
-                        <!-- Bouton pour ajouter un nouveau client -->
+                     
                         <Button fx:id="btnAjouterUtilisateur" text="Ajouter un utilisateur" styleClass="btn-ajouter-utilisateur">
                             <graphic>
                                 <ImageView fitWidth="18" fitHeight="18" preserveRatio="true">
