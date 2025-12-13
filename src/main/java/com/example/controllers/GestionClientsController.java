@@ -26,36 +26,30 @@ import java.util.ResourceBundle;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-/**
- * Contrôleur pour l'interface de gestion des clients
- * Gère l'affichage, la recherche et les actions sur les clients
- */
+
 public class GestionClientsController implements Initializable {
 
-    // Composants de l'interface FXML
+   
     @FXML
-    private TextField searchField; // Champ de recherche
+    private TextField searchField; 
     
     @FXML
-    private Button btnAjouterClient; // Bouton pour ajouter un client
+    private Button btnAjouterClient;
     
     @FXML
-    private GridPane clientsGrid; // Grille pour afficher les cartes clients
+    private GridPane clientsGrid; 
 
-    // Liste des clients
+   
     private List<Client> clients = new ArrayList<>();
     
-    // Liste filtrée des clients selon la recherche
+   
     private List<Client> clientsFiltres = new ArrayList<>();
 
-    // Regex pour validation
+   
     private static final Pattern NAME_PATTERN = Pattern.compile("^[A-Za-zÀ-ÖØ-öø-ÿ]+(?:[-' ][A-Za-zÀ-ÖØ-öø-ÿ]+)*$");
     private static final Pattern TELEPHONE_PATTERN = Pattern.compile("^[0-9]{10}$");
 
-    /**
-     * Initialisation du contrôleur
-     * Charge les données et configure les événements
-     */
+    
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         chargerClients();
@@ -70,9 +64,7 @@ public class GestionClientsController implements Initializable {
         });
     }
 
-    /**
-     * Charge les clients depuis la base de données
-     */
+   
     private void chargerClients() {
         clients.clear();
         String query = "SELECT codeClt, nom, prenom, adresse, numTel FROM client ORDER BY codeClt";
@@ -99,21 +91,15 @@ public class GestionClientsController implements Initializable {
         afficherClients();
     }
 
-    /**
-     * Configure la fonctionnalité de recherche en temps réel
-     * Filtre les clients selon le texte saisi dans le champ de recherche
-     */
+   
     private void configurerRecherche() {
-        // Écoute des changements dans le champ de recherche
+       
         searchField.textProperty().addListener((observable, oldValue, newValue) -> {
             filtrerClients(newValue);
         });
     }
 
-    /**
-     * Filtre la liste des clients selon le critère de recherche
-     * @param critere Le texte de recherche (nom, prénom ou code)
-     */
+   
     private void filtrerClients(String critere) {
         if (critere == null || critere.trim().isEmpty()) {
             clientsFiltres = new ArrayList<>(clients);
@@ -131,10 +117,7 @@ public class GestionClientsController implements Initializable {
         afficherClients();
     }
 
-    /**
-     * Configure le bouton d'ajout de client
-     * Définit l'action à exécuter lors du clic
-     */
+    
     private void configurerBoutonAjouter() {
         btnAjouterClient.setOnAction(event -> {
             try {
@@ -154,7 +137,7 @@ public class GestionClientsController implements Initializable {
                 if (controller.isConfirme()) {
                     Client nouveau = controller.getNouveauClient();
 
-                    // Validation
+                    
                     String nom = nouveau.getNom().trim();
                     String prenom = nouveau.getPrenom().trim();
                     String adresse = nouveau.getAdresse() != null ? nouveau.getAdresse().trim() : "";
@@ -162,7 +145,7 @@ public class GestionClientsController implements Initializable {
 
                     if (!validateClient(nom, prenom, adresse, numTel)) return;
 
-                    // Insertion dans la BDD
+                   
                     String insert = "INSERT INTO client (nom, prenom, adresse, numTel) VALUES (?, ?, ?, ?)";
                     try (Connection conn = DatabaseConnection.getConnection();
                          PreparedStatement stmt = conn.prepareStatement(insert, PreparedStatement.RETURN_GENERATED_KEYS)) {
@@ -193,9 +176,7 @@ public class GestionClientsController implements Initializable {
         });
     }
 
-    /**
-     * Valide les champs d'un client
-     */
+    
     private boolean validateClient(String nom, String prenom, String adresse, String numTel) {
         if (nom == null || nom.isEmpty() || prenom == null || prenom.isEmpty()) {
             showAlert(Alert.AlertType.ERROR, "Champs manquants", "Veuillez remplir le nom et le prénom.");
@@ -221,56 +202,43 @@ public class GestionClientsController implements Initializable {
     }
 
 
-    /**
-     * Affiche les cartes clients dans la grille
-     * Crée dynamiquement les cartes pour chaque client filtré
-     */
+    
     private void afficherClients() {
-        // Vider la grille avant de la remplir
         clientsGrid.getChildren().clear();
         
-        // Calculer le nombre de colonnes (3 colonnes par ligne)
         int colonnes = 3;
         
-        // Créer une carte pour chaque client filtré
         for (int i = 0; i < clientsFiltres.size(); i++) {
             Client client = clientsFiltres.get(i);
             
-            // Calculer la position dans la grille
             int colonne = i % colonnes;
             int ligne = i / colonnes;
             
-            // Créer et ajouter la carte client
             VBox carteClient = creerCarteClient(client);
             clientsGrid.add(carteClient, colonne, ligne);
         }
     }
 
-    /**
-     * Crée une carte visuelle pour un client
-     * @param client Le client à afficher
-     * @return La carte VBox créée
-     */
+   
     private VBox creerCarteClient(Client client) {
-        // Conteneur principal de la carte
         VBox carte = new VBox(15);
         carte.getStyleClass().add("client-card");
         carte.setPadding(new Insets(25));
         carte.setPrefWidth(320);
         carte.setPrefHeight(220);
         
-        // En-tête de la carte : Code client et boutons d'action
+        
         HBox enTete = new HBox();
         enTete.setAlignment(Pos.CENTER_LEFT);
         enTete.setSpacing(10);
         HBox.setHgrow(enTete, Priority.ALWAYS);
         
-        // Code client (ex: C001)
+       
         Label codeLabel = new Label("C" + String.format("%03d", client.getCodeClt()));
         codeLabel.getStyleClass().add("client-code");
         HBox.setHgrow(codeLabel, Priority.ALWAYS);
         
-        // Bouton modifier (icône crayon)
+       
         Button btnModifier = new Button();
         btnModifier.getStyleClass().add("btn-icon");
         ImageView iconModifier = new ImageView(new Image("/assets/bouton-modifier.png"));
@@ -280,7 +248,7 @@ public class GestionClientsController implements Initializable {
         btnModifier.setGraphic(iconModifier);
         btnModifier.setOnAction(e -> modifierClient(client));
         
-        // Bouton supprimer (icône poubelle)
+        
         Button btnSupprimer = new Button();
         btnSupprimer.getStyleClass().add("btn-icon");
         ImageView iconSupprimer = new ImageView(new Image("/assets/supprimer.png"));
@@ -292,14 +260,14 @@ public class GestionClientsController implements Initializable {
         
         enTete.getChildren().addAll(codeLabel, btnModifier, btnSupprimer);
         
-        // Nom du client
+       
         Label nomLabel = new Label(client.getNom() + " " + client.getPrenom());
         nomLabel.getStyleClass().add("client-nom");
         
-        // Informations de contact
+       
         VBox infosContact = new VBox(10);
         
-        // Adresse avec icône de localisation
+       
         HBox adresseBox = new HBox(8);
         adresseBox.setAlignment(Pos.CENTER_LEFT);
         ImageView iconLocalisation = new ImageView(new Image("/assets/localisateur.png"));
@@ -311,7 +279,7 @@ public class GestionClientsController implements Initializable {
         adresseLabel.getStyleClass().add("client-info");
         adresseBox.getChildren().addAll(iconLocalisation, adresseLabel);
         
-        // Téléphone avec icône de téléphone
+       
         HBox telephoneBox = new HBox(8);
         telephoneBox.setAlignment(Pos.CENTER_LEFT);
         ImageView iconTelephone = new ImageView(new Image("/assets/telephone.png"));
@@ -325,21 +293,18 @@ public class GestionClientsController implements Initializable {
         
         infosContact.getChildren().addAll(adresseBox, telephoneBox);
         
-        // Bouton "Voir les livraisons"
+        
         Button btnLivraisons = new Button("Voir les livraisons");
         btnLivraisons.getStyleClass().add("btn-livraisons");
         btnLivraisons.setOnAction(e -> voirLivraisons(client));
         
-        // Assembler tous les éléments dans la carte
+        
         carte.getChildren().addAll(enTete, nomLabel, infosContact, btnLivraisons);
         
         return carte;
     }
 
-    /**
-     * Action pour modifier un client
-     * @param client Le client à modifier
-     */
+    
     private void modifierClient(Client client) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/views/AjouterClient.fxml"));
@@ -360,7 +325,7 @@ public class GestionClientsController implements Initializable {
             if (controller.isConfirme()) {
                 Client modif = controller.getNouveauClient();
 
-                // Validation
+               
                 String nom = modif.getNom().trim();
                 String prenom = modif.getPrenom().trim();
                 String adresse = modif.getAdresse() != null ? modif.getAdresse().trim() : "";
@@ -368,7 +333,7 @@ public class GestionClientsController implements Initializable {
 
                 if (!validateClient(nom, prenom, adresse, numTel)) return;
 
-                // Mise à jour dans la BDD
+               
                 String update = "UPDATE client SET nom=?, prenom=?, adresse=?, numTel=? WHERE codeClt=?";
                 try (Connection conn = DatabaseConnection.getConnection();
                      PreparedStatement stmt = conn.prepareStatement(update)) {
@@ -381,7 +346,7 @@ public class GestionClientsController implements Initializable {
 
                     stmt.executeUpdate();
 
-                    // Mise à jour locale
+                   
                     client.setNom(nom);
                     client.setPrenom(prenom);
                     client.setAdresse(adresse);
@@ -398,10 +363,7 @@ public class GestionClientsController implements Initializable {
         }
     }
 
-    /**
-     * Action pour supprimer un client
-     * @param client Le client à supprimer
-     */
+    
     private void supprimerClient(Client client) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/views/ConfirmerSuppression.fxml"));
@@ -438,10 +400,7 @@ public class GestionClientsController implements Initializable {
     }
 
 
-    /**
-     * Action pour voir les livraisons d'un client
-     * @param client Le client dont on veut voir les livraisons
-     */
+   
     private void voirLivraisons(Client client) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/views/GestionLivraisons.fxml"));
@@ -472,9 +431,7 @@ public class GestionClientsController implements Initializable {
         alert.showAndWait();
     }
 
-    /**
-     * Classe interne représentant un client
-     */
+   
     public static class Client {
         private int codeClt;
         private String nom;
@@ -490,14 +447,14 @@ public class GestionClientsController implements Initializable {
             this.telephone = telephone;
         }
 
-        // Getters
+       
         public int getCodeClt() { return codeClt; }
         public String getNom() { return nom; }
         public String getPrenom() { return prenom; }
         public String getAdresse() { return adresse; }
         public String getTelephone() { return telephone; }
 
-        // Setters
+       
         public void setCodeClt(int codeClt) { this.codeClt = codeClt; }
         public void setNom(String nom) { this.nom = nom; }
         public void setPrenom(String prenom) { this.prenom = prenom; }
