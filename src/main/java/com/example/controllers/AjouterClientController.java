@@ -26,10 +26,7 @@ public class AjouterClientController {
         btnConfirmer.setOnAction(e -> valider());
     }
 
-    /**
-     * Prépare le contrôleur pour la modification d'un client existant
-     * @param client Le client à modifier
-     */
+   
     public void preparerModification(GestionClientsController.Client client) {
         this.clientAModifier = client;
         this.modeModification = true;
@@ -46,21 +43,21 @@ public class AjouterClientController {
         String adresse = adresseField.getText() != null ? adresseField.getText().trim() : "";
         String telephone = telephoneField.getText() != null ? telephoneField.getText().trim() : "";
 
-        // 🔥 Nouvelle contrainte : tous les champs doivent être remplis
+       
         if (nom.isEmpty() || prenom.isEmpty() || adresse.isEmpty() || telephone.isEmpty()) {
             showAlert(Alert.AlertType.ERROR, "Champs manquants", "Tous les champs doivent être remplis pour ajouter le client.");
-            return; // empêche la création si un champ est vide
+            return; 
         }
 
         if (modeModification && clientAModifier != null) {
-            // Mode modification : mettre à jour le client existant
+            
             clientAModifier.setNom(nom);
             clientAModifier.setPrenom(prenom);
             clientAModifier.setAdresse(adresse);
             clientAModifier.setTelephone(telephone);
             nouveauClient = clientAModifier;
         } else {
-            // Mode ajout : créer un nouveau client (codeClt sera généré par la BDD)
+           
             nouveauClient = new GestionClientsController.Client(-1, nom, prenom, adresse, telephone);
         }
         fermer(true);
