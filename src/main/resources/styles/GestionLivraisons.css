@@ -1,43 +1,35 @@
-/* ============================================
-   STYLES POUR L'INTERFACE DE GESTION DES LIVRAISONS
-   ============================================ */
 
-/* === CONTENEUR PRINCIPAL === */
-/* Fond blanc pour la fenêtre principale */
 .root-gestion-livraisons {
-    -fx-background-color: #FFFFFF; /* Fond blanc pour la fenêtre principale */
+    -fx-background-color: #FFFFFF;
     -fx-font-family: "Open Sans", "Segoe UI", sans-serif;
-    -fx-padding: 20; /* Espacement uniforme de 20px avec les bords de la fenêtre */
+    -fx-padding: 20;
 }
 
-/* === CONTENU CENTRAL DÉFILABLE === */
-/* Panneau de contenu avec fond gris, coins arrondis et ombre portée */
+
 .gestion-livraisons-content {
-    -fx-background-color: #F5F5F5; /* Fond gris pour le panneau de contenu */
-    -fx-background-radius: 20; /* Coins arrondis de 20px pour le panneau */
+    -fx-background-color: #F5F5F5; 
+    -fx-background-radius: 20;
     -fx-padding: 40 0 60 0;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 5); /* Ombre portée pour créer l'effet de profondeur */
-    -fx-min-height: -1; /* Permet au contenu de prendre toute la hauteur disponible */
-    -fx-clip-shape: null; /* Permet aux coins arrondis d'être visibles même dans le ScrollPane */
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 5); 
+    -fx-min-height: -1;
+    -fx-clip-shape: null; 
 }
 
-/* === TITRES === */
-/* Titre principal "Gestion des livraisons" en vert foncé */
+
 .gestion-title {
     -fx-font-size: 32px;
     -fx-font-weight: bold;
-    -fx-text-fill: #001910; /* Vert foncé */
+    -fx-text-fill: #001910; 
 }
 
-/* Sous-titre en vert clair */
+
 .gestion-subtitle {
-    -fx-text-fill: #6E8268; /* Vert clair */
+    -fx-text-fill: #6E8268;
     -fx-font-size: 15px;
     -fx-font-weight: 600;
 }
 
-/* === BARRE DE RECHERCHE === */
-/* Conteneur de la barre de recherche */
+
 .search-container {
     -fx-background-color: #FFFFFF;
     -fx-background-radius: 10px;
@@ -47,7 +39,7 @@
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 4, 0, 0, 2);
 }
 
-/* Champ de texte de recherche */
+
 .search-field {
     -fx-background-color: transparent;
     -fx-border-color: transparent;
@@ -59,9 +51,9 @@
     -fx-border-color: transparent;
 }
 
-/* === BOUTON NOUVELLE LIVRAISON === */
+
 .btn-nouvelle-livraison {
-    -fx-background-color: #6A7560; /* Vert-gris comme dans l'image */
+    -fx-background-color: #6A7560; 
     -fx-text-fill: #FFFFFF;
     -fx-font-size: 12px;
     -fx-font-weight: bold;
@@ -74,7 +66,7 @@
 }
 
 .btn-nouvelle-livraison:hover {
-    -fx-background-color: #5A6550; /* Plus foncé au survol */
+    -fx-background-color: #5A6550;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 8, 0, 0, 4);
 }
 
@@ -82,8 +74,7 @@
     -fx-background-color: #4A5540;
 }
 
-/* === DROPDOWNS DE FILTRES === */
-/* Style pour les ComboBox de filtres */
+
 .filter-dropdown {
     -fx-background-color: #FFFFFF;
     -fx-background-radius: 10px;
@@ -102,15 +93,14 @@
     -fx-border-width: 2px;
 }
 
-/* Style pour la liste déroulante des ComboBox */
+
 .filter-dropdown .list-view {
     -fx-background-color: #FFFFFF;
     -fx-background-radius: 10px;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 8, 0, 0, 4);
 }
 
-/* === CARTE LIVRAISON === */
-/* Conteneur principal de chaque carte livraison */
+
 .livraison-card {
     -fx-background-color: #FFFFFF;
     -fx-background-radius: 15px;
@@ -119,42 +109,38 @@
     -fx-cursor: hand;
 }
 
-/* Effet au survol de la carte */
+
 .livraison-card:hover {
     -fx-effect: dropshadow(gaussian, rgba(0,85,29,0.2), 10, 0, 0, 5);
     -fx-translate-y: -3;
 }
 
-/* === ÉLÉMENTS DE LA CARTE LIVRAISON === */
-/* Numéro livraison (ex: L0001) */
+
 .livraison-numero {
     -fx-font-size: 20px;
     -fx-font-weight: bold;
-    -fx-text-fill: #001910; /* Vert foncé */
+    -fx-text-fill: #001910; 
 }
 
-/* Nom du client */
 .livraison-client {
     -fx-font-size: 16px;
     -fx-font-weight: 600;
     -fx-text-fill: #333333;
 }
 
-/* Informations de la livraison (date, médicaments) */
 .livraison-info {
     -fx-font-size: 14px;
     -fx-text-fill: #666666;
 }
 
-/* Taxe */
+
 .livraison-taxe {
     -fx-font-size: 14px;
     -fx-font-weight: 600;
     -fx-text-fill: #333333;
 }
 
-/* === BOUTONS D'ACTION DANS LA CARTE === */
-/* Boutons icônes (QR code, modifier, supprimer) */
+
 .btn-icon {
     -fx-background-color: transparent;
     -fx-border-color: transparent;
@@ -167,8 +153,7 @@
     -fx-background-radius: 5px;
 }
 
-/* === TAGS DE STATUT === */
-/* Style de base pour tous les tags */
+
 .tag {
     -fx-background-radius: 15px;
     -fx-padding: 5 12;
@@ -177,54 +162,49 @@
     -fx-alignment: CENTER;
 }
 
-/* Tag statut "livrée" - fond vert clair */
+
 .tag-statut-livree {
-    -fx-background-color: #C8E6C9; /* Vert clair */
-    -fx-text-fill: #2E7D32; /* Vert foncé */
+    -fx-background-color: #C8E6C9; 
+    -fx-text-fill: #2E7D32; 
 }
 
-/* Tag statut "en cours" - fond bleu clair */
+
 .tag-statut-en-cours {
-    -fx-background-color: #BBDEFB; /* Bleu clair */
-    -fx-text-fill: #1976D2; /* Bleu foncé */
+    -fx-background-color: #BBDEFB; 
+    -fx-text-fill: #1976D2; 
 }
 
-/* Tag statut "en attente" - fond orange clair */
+
 .tag-statut-en-attente {
-    -fx-background-color: #FFE0B2; /* Orange clair */
-    -fx-text-fill: #F57C00; /* Orange foncé */
+    -fx-background-color: #FFE0B2; 
+    -fx-text-fill: #F57C00; 
 }
 
-/* Tag statut "annulée" - fond rouge clair */
 .tag-statut-annulée {
-    -fx-background-color: #FFCDD2; /* Rouge clair */
-    -fx-text-fill: #C62828; /* Rouge foncé */
+    -fx-background-color: #FFCDD2; 
+    -fx-text-fill: #C62828; 
 }
 
-/* Tag type (sous chaine du froid, etc.) - fond gris */
+
 .tag-type {
-    -fx-background-color: #E0E0E0; /* Gris clair */
-    -fx-text-fill: #424242; /* Gris foncé */
+    -fx-background-color: #E0E0E0; 
+    -fx-text-fill: #424242;
 }
 
-/* Tag urgent - fond rouge clair */
+
 .tag-urgent {
-    -fx-background-color: #FFEBEE; /* Rouge très clair */
-    -fx-text-fill: #E53935; /* Rouge */
+    -fx-background-color: #FFEBEE;
+    -fx-text-fill: #E53935;
 }
 
-/* === GRILLE DE LIVRAISONS === */
-/* Style pour la grille contenant les cartes livraisons */
+
 .livraisons-grid {
     -fx-alignment: TOP_LEFT;
 }
 
-/* =========================================================================*/
-
-/* === DIALOG DE SUPPRESSION === */
 
 .dialog-background {
-    -fx-background-color: rgba(0, 0, 0, 0.35); /* Fond semi-transparent */
+    -fx-background-color: rgba(0, 0, 0, 0.35); 
     -fx-alignment: CENTER;
 }
 
@@ -259,7 +239,6 @@
     -fx-text-fill: #666666;
 }
 
-/* Styles pour la fenêtre QR Code */
 .qr-label {
     -fx-font-size: 13px;
     -fx-text-fill: #666666;
@@ -272,7 +251,7 @@
     -fx-text-fill: #001910;
 }
 
-/* Boutons */
+
 .btn-annuler {
     -fx-background-color: #B0B0B0;
     -fx-text-fill: white;
@@ -297,10 +276,10 @@
     -fx-background-color: #C62828;
 }
 
-/*=================================================================*/
+
 
 .btn-ajouter {
-    -fx-background-color: #6E8268; /* Vert doux */
+    -fx-background-color: #6E8268; 
     -fx-text-fill: white;
     -fx-font-weight: bold;
     -fx-background-radius: 8;
