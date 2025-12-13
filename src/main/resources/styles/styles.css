@@ -73,7 +73,7 @@
     -fx-background-color: #5c6e57;
 }
 
-/* SECTION FONCTIONNALITES */
+
 
 .carte-fonctionnalite {
     -fx-pref-width: 460px;
@@ -164,7 +164,7 @@ StackPane .label {
     -fx-padding: 0 0 80px 0;
 }
 
-/* SECTION À PROPOS */
+
 .section-apropos {
     -fx-background-color: #F4F6F3;
     -fx-padding: 80px 120px;
@@ -178,7 +178,7 @@ StackPane .label {
     -fx-wrap-text: true;
 }
 
-/* SECTION BESOIN D’AIDE */
+
 .section-aide {
     -fx-background-color: #E8EBE7;
     -fx-padding: 80px 120px;
