@@ -30,7 +30,7 @@ public class AjouterLivraisonController {
     private boolean confirme = false;
     private boolean modeModification = false;
 
-    // Classe interne pour représenter un client dans le ComboBox
+   
     public static class ClientItem {
         private int codeClt;
         private String nom;
@@ -56,7 +56,7 @@ public class AjouterLivraisonController {
         private int idMed;
         private String nom;
         private float prix;
-        private int quantiteDisponible;  // Ajoutez cet attribut
+        private int quantiteDisponible; 
 
         public MedicamentItem(int idMed, String nomMed, float prixMed, int quantiteDisponible) {
             this.idMed = idMed;
@@ -68,7 +68,7 @@ public class AjouterLivraisonController {
         public int getIdMed() { return idMed; }
         public String getNom() { return nom; }
         public float getPrix() { return prix; }
-        public int getQuantiteDisponible() { return quantiteDisponible; }  // Ajoutez ce getter
+        public int getQuantiteDisponible() { return quantiteDisponible; } 
 
         @Override
         public String toString() {
@@ -82,30 +82,28 @@ public class AjouterLivraisonController {
 
         chargerMedicaments();
 
-        // Charger les clients depuis la BDD
         chargerClients();
 
-        // Initialisation Spinner pour qttField
         qttField.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 1000, 1));
 
-        // Initialisation ComboBox pour statutField
+       
         statutField.getItems().addAll("livrée", "en cours", "en attente", "annulée");
 
-        // Initialisation ComboBox pour typeField
+       
         typeField.getItems().addAll("sous chaine du froid", "sous congélation", "dangereuses", "normale");
 
-        // Actions des boutons
+       
         btnAnnuler.setOnAction(e -> fermer(false));
         btnConfirmer.setOnAction(e -> valider());
 
-        //empêche visuellement l’utilisateur de cliquer sur les dates passées.
+        
         dateLivField.setDayCellFactory(picker -> new DateCell() {
             @Override
             public void updateItem(LocalDate date, boolean empty) {
                 super.updateItem(date, empty);
                 if (date.isBefore(LocalDate.now())) {
                     setDisable(true);
-                    setStyle("-fx-background-color: #ffc0c0;"); // rouge clair
+                    setStyle("-fx-background-color: #ffc0c0;");
                 }
             }
         });
@@ -114,10 +112,10 @@ public class AjouterLivraisonController {
         qttField.valueProperty().addListener((obs, oldVal, newVal) -> calculerCoutTotal());
         taxeField.textProperty().addListener((obs, oldVal, newVal) -> calculerCoutTotal());
 
-        coutField.setEditable(false); // le coût est automatique
+        coutField.setEditable(false); 
 
     }
-    //pour le calcul auto du cout
+   
     private void calculerCoutTotal() {
         try {
             MedicamentItem med = medicamentComboBox.getValue();
@@ -139,7 +137,7 @@ public class AjouterLivraisonController {
 
 
     private void chargerMedicaments() {
-        // Modifiez la requête pour inclure nbrBoite
+        
         String query = "SELECT idMed, nomMed, prixMed, nbrBoite FROM medicament ORDER BY nomMed";
 
         try (Connection conn = DatabaseConnection.getConnection();
@@ -147,7 +145,7 @@ public class AjouterLivraisonController {
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
-                // Créez une classe étendue pour inclure la quantité disponible
+               
                 MedicamentItem med = new MedicamentItem(
                         rs.getInt("idMed"),
                         rs.getString("nomMed"),
@@ -164,9 +162,7 @@ public class AjouterLivraisonController {
 
 
 
-    /**
-     * Charge les clients depuis la base de données dans le ComboBox
-     */
+    
     private void chargerClients() {
         String query = "SELECT codeClt, nom, prenom FROM client ORDER BY nom, prenom";
 
@@ -187,15 +183,12 @@ public class AjouterLivraisonController {
         }
     }
 
-    /**
-     * Prépare le contrôleur pour la modification d'une livraison existante
-     * @param livraison La livraison à modifier
-     */
+    
     public void preparerModification(GestionLivraisonsController.Livraison livraison) {
         this.livraisonAModifier = livraison;
         this.modeModification = true;
 
-        // Trouver le client dans le ComboBox
+       
         for (ClientItem item : clientComboBox.getItems()) {
             if (item.getCodeClt() == livraison.getCodeClt()) {
                 clientComboBox.setValue(item);
@@ -211,7 +204,7 @@ public class AjouterLivraisonController {
         typeField.setValue(livraison.getType());
         urgentCheckBox.setSelected(livraison.isUrgent());
 
-        // Sélectionner le médicament dans le ComboBox
+       
         for (MedicamentItem item : medicamentComboBox.getItems()) {
             if (item.getIdMed() == livraison.getMedicamentId()) {
                 medicamentComboBox.setValue(item);
@@ -222,7 +215,7 @@ public class AjouterLivraisonController {
 
     private void valider() {
         try {
-            // Récupération et validations basiques
+           
             ClientItem clientSelected = clientComboBox.getValue();
             if (clientSelected == null) {
                 showAlert(Alert.AlertType.ERROR, "Client manquant", "Veuillez sélectionner un client.");
@@ -247,7 +240,7 @@ public class AjouterLivraisonController {
                 return;
             }
 
-            // Attention : s'assurer qu'un médicament est sélectionné (évite NPE)
+           
             MedicamentItem medSelectionne = medicamentComboBox.getValue();
             if (medSelectionne == null) {
                 showAlert(Alert.AlertType.ERROR, "Médicament manquant", "Veuillez sélectionner un médicament.");
@@ -256,7 +249,7 @@ public class AjouterLivraisonController {
 
             int quantite = qttField.getValue();
 
-            // VÉRIFICATION DE LA CONTRAINTE : quantité <= quantité disponible
+           
             if (quantite > medSelectionne.getQuantiteDisponible()) {
                 showAlert(Alert.AlertType.ERROR, "Quantité insuffisante",
                         "Quantité demandée: " + quantite +
@@ -282,22 +275,21 @@ public class AjouterLivraisonController {
                 return;
             }
 
-            // Calcul du coût en toute sécurité (medSelectionne non null)
+           
             float cout = (medSelectionne.getPrix() * quantite) + taxe;
 
             boolean urgent = urgentCheckBox.isSelected();
             String clientNom = clientSelected.getNom() + " " + clientSelected.getPrenom();
 
-            // --- Déplacement de la contrainte de date (si tu veux l'autoriser, supprime ce bloc) ---
-            // Si tu veux autoriser les dates antérieures (ex : livraisons historiques), supprime ce contrôle.
+            
             if (dateLiv.isBefore(LocalDate.now())) {
-                // si tu ne veux pas bloquer, commente/retire ce bloc
+                
                 showAlert(Alert.AlertType.ERROR, "Date invalide",
                         "La date de livraison ne peut pas être antérieure à la date actuelle.");
                 return;
             }
 
-            // Construire / mettre à jour l'objet avant de fermer la fenêtre
+           
             if (modeModification && livraisonAModifier != null) {
                 livraisonAModifier.setCodeClt(clientSelected.getCodeClt());
                 livraisonAModifier.setClient(clientNom);
@@ -328,7 +320,7 @@ public class AjouterLivraisonController {
                 );
             }
 
-            // Tout est OK -> fermer en confirmant
+            
             fermer(true);
 
         } catch (Exception e) {
