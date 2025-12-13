@@ -29,54 +29,42 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.text.Normalizer;
 
-/**
- * Contrôleur pour l'interface de gestion des livraisons
- * Gère l'affichage, la recherche, le filtrage et les actions sur les livraisons
- */
+
 public class GestionLivraisonsController implements Initializable {
 
-    // Composants de l'interface FXML
+   
     @FXML
-    private TextField searchField; // Champ de recherche
+    private TextField searchField; 
     
     @FXML
-    private Button btnNouvelleLivraison; // Bouton pour créer une nouvelle livraison
+    private Button btnNouvelleLivraison; 
     
     @FXML
-    private ComboBox<String> filterStatut; // Dropdown pour filtrer par statut
+    private ComboBox<String> filterStatut;
     
     @FXML
-    private ComboBox<String> filterType; // Dropdown pour filtrer par type
+    private ComboBox<String> filterType; 
     
     @FXML
-    private GridPane livraisonsGrid; // Grille pour afficher les cartes livraisons
+    private GridPane livraisonsGrid;
 
     private String medicament;
 
-    // Liste des livraisons
+   
     private List<Livraison> livraisons = new ArrayList<>();
     
-    // Liste filtrée des livraisons selon la recherche et les filtres
+   
     private List<Livraison> livraisonsFiltres = new ArrayList<>();
 
-    /**
-     * Initialisation du contrôleur
-     * Charge les données et configure les événements
-     */
-    // Ajoute ceci parmi tes attributs privés
-    private Integer clientFiltre = null; // null = toutes les livraisons
-    /**
-     * Permet de filtrer les livraisons par code client
-     * @param codeClt Code du client
-     */
+   
+    private Integer clientFiltre = null; 
+   
     public void setClientFiltre(int codeClt) {
         this.clientFiltre = codeClt;
-        appliquerFiltreClient(); // recharge les livraisons filtrées
+        appliquerFiltreClient(); 
     }
 
-    /**
-     * Applique le filtre client sur la liste des livraisons
-     */
+    
     private void appliquerFiltreClient() {
         if (clientFiltre != null) {
             livraisonsFiltres = livraisons.stream()
@@ -103,12 +91,10 @@ public class GestionLivraisonsController implements Initializable {
         });
     }
 
-    /**
-     * Charge les livraisons depuis la base de données avec les informations du client
-     */
+    
     private void chargerLivraisons() {
         livraisons.clear();
-        // REQUÊTE CORRIGÉE : groupe uniquement par livraison
+       
         String query = """
     SELECT L.numLiv, L.codeClt, L.dateLiv, L.priorite, L.statut, L.type_liv, L.taxe, L.cout,
            C.nom, C.prenom,
@@ -138,7 +124,7 @@ public class GestionLivraisonsController implements Initializable {
                 String prenomClient = rs.getString("prenom");
                 int totalQuantite = rs.getInt("totalQuantite");
 
-                // Récupérer le premier médicament et sa quantité (pour la modification)
+               
                 int medicamentId = 0;
                 int quantite = 0;
                 String medicamentQuery = "SELECT idMed, quantite FROM inclure WHERE numLiv = ? LIMIT 1";
@@ -172,9 +158,7 @@ public class GestionLivraisonsController implements Initializable {
         afficherLivraisons();
     }
 
-    /**
-     * Convertit le statut de la BDD vers l'affichage
-     */
+   
     private String convertirStatut(String statut) {
         if (statut == null) return "";
         switch (statut) {
@@ -186,9 +170,7 @@ public class GestionLivraisonsController implements Initializable {
         }
     }
 
-    /**
-     * Convertit le type de la BDD vers l'affichage
-     */
+    
     private String convertirType(String type) {
         if (type == null) return "";
         switch (type) {
@@ -200,9 +182,7 @@ public class GestionLivraisonsController implements Initializable {
         }
     }
 
-    /**
-     * Convertit le statut d'affichage vers la BDD
-     */
+   
     private String convertirStatutVersBDD(String statut) {
         if (statut == null) return "";
         switch (statut) {
@@ -214,9 +194,7 @@ public class GestionLivraisonsController implements Initializable {
         }
     }
 
-    /**
-     * Convertit le type d'affichage vers la BDD
-     */
+    
     private String convertirTypeVersBDD(String type) {
         if (type == null) return "";
         switch (type) {
@@ -228,48 +206,40 @@ public class GestionLivraisonsController implements Initializable {
         }
     }
 
-    /**
-     * Configure les dropdowns de filtres (statuts et types)
-     * Initialise les options disponibles et les listeners
-     */
+   
     private void configurerFiltres() {
-        // Options pour le filtre statut
+       
         filterStatut.getItems().addAll("Tous les statuts", "livrée", "en cours", "en attente", "annulée");
         filterStatut.setValue("Tous les statuts");
         
-        // Options pour le filtre type
+        
         filterType.getItems().addAll("Tous les types", "sous chaine du froid", "sous congélation", 
             "dangereuses", "normale");
         filterType.setValue("Tous les types");
         
-        // Écouter les changements de sélection dans les filtres
+        
         filterStatut.setOnAction(e -> appliquerFiltres());
         filterType.setOnAction(e -> appliquerFiltres());
     }
 
-    /**
-     * Configure la fonctionnalité de recherche en temps réel
-     * Filtre les livraisons selon le texte saisi dans le champ de recherche
-     */
+    
     private void configurerRecherche() {
-        // Écoute des changements dans le champ de recherche
+       
         searchField.textProperty().addListener((observable, oldValue, newValue) -> {
             appliquerFiltres();
         });
     }
 
-    /**
-     * Applique tous les filtres (recherche, statut, type) et met à jour l'affichage
-     */
+   
     private void appliquerFiltres() {
         String critereRecherche = searchField.getText();
         String statutSelectionne = filterStatut.getValue();
         String typeSelectionne = filterType.getValue();
         
-        // Filtrer selon tous les critères
+       
         livraisonsFiltres = livraisons.stream()
                 .filter(livraison -> {
-                    // Filtre par recherche (numéro ou client)
+                   
                     boolean matchRecherche = true;
                     if (critereRecherche != null && !critereRecherche.trim().isEmpty()) {
                         String critereLower = critereRecherche.toLowerCase().trim();
@@ -277,13 +247,13 @@ public class GestionLivraisonsController implements Initializable {
                                        livraison.getClient().toLowerCase().contains(critereLower);
                     }
                     
-                    // Filtre par statut
+                    
                     boolean matchStatut = true;
                     if (statutSelectionne != null && !statutSelectionne.equals("Tous les statuts")) {
                         matchStatut = livraison.getStatut().equals(statutSelectionne);
                     }
                     
-                    // Filtre par type
+                   
                     boolean matchType = true;
                     if (typeSelectionne != null && !typeSelectionne.equals("Tous les types")) {
                         matchType = livraison.getType().equals(typeSelectionne);
@@ -293,14 +263,11 @@ public class GestionLivraisonsController implements Initializable {
                 })
                 .collect(Collectors.toList());
         
-        // Réafficher les livraisons filtrées
+       
         afficherLivraisons();
     }
 
-    /**
-     * Configure le bouton de création de nouvelle livraison
-     * Définit l'action à exécuter lors du clic
-     */
+   
     private void configurerBoutonNouvelleLivraison() {
         btnNouvelleLivraison.setOnAction(event -> {
             try {
@@ -321,7 +288,7 @@ public class GestionLivraisonsController implements Initializable {
                 if (controller.isConfirme()) {
                     Livraison nouvelle = controller.getNouvelleLivraison();
 
-                    // Validation
+                    
                     int codeClt = nouvelle.getCodeClt();
                     LocalDate dateLiv = nouvelle.getDate();
                     String priorite = nouvelle.isUrgent() ? "urgent" : "normal";
@@ -330,13 +297,13 @@ public class GestionLivraisonsController implements Initializable {
                     float taxe = nouvelle.getTaxe();
                     float cout = nouvelle.getCout();
 
-                    // NOUVEAU : Récupérer l'ID du médicament et la quantité
+                  
                     int medicamentId = nouvelle.getMedicamentId();
                     int quantite = nouvelle.getQuantite();
 
                     if (!validateLivraison(codeClt, dateLiv, statut, type_liv)) return;
 
-                    // NOUVEAU : Validation supplémentaire pour la quantité
+                    
                     if (quantite <= 0) {
                         showAlert(Alert.AlertType.ERROR, "Erreur", "La quantité doit être positive.");
                         return;
@@ -345,9 +312,9 @@ public class GestionLivraisonsController implements Initializable {
                     Connection conn = null;
                     try {
                         conn = DatabaseConnection.getConnection();
-                        conn.setAutoCommit(false); // Démarrer une transaction
+                        conn.setAutoCommit(false); 
 
-                        // 1. Vérifier la quantité disponible AVANT l'insertion
+                       
                         String checkStock = "SELECT nbrBoite FROM medicament WHERE idMed = ?";
                         int stockDisponible = 0;
                         try (PreparedStatement checkStmt = conn.prepareStatement(checkStock)) {
@@ -371,7 +338,7 @@ public class GestionLivraisonsController implements Initializable {
                             }
                         }
 
-                        // 2. Insérer la livraison
+                       
                         String insertLivraison = "INSERT INTO livraison (codeClt, dateLiv, priorite, statut, type_liv, taxe, cout) VALUES (?, ?, ?, ?, ?, ?, ?)";
                         int livraisonId = -1;
                         try (PreparedStatement stmt = conn.prepareStatement(insertLivraison, PreparedStatement.RETURN_GENERATED_KEYS)) {
@@ -399,7 +366,7 @@ public class GestionLivraisonsController implements Initializable {
                             return;
                         }
 
-                        // 3. Insérer dans la table Inclure avec la quantité
+                        
                         String insertInclure = "INSERT INTO inclure (numLiv, idMed, quantite) VALUES (?, ?, ?)";
                         try (PreparedStatement stmtInclure = conn.prepareStatement(insertInclure)) {
                             stmtInclure.setInt(1, livraisonId);
@@ -408,7 +375,7 @@ public class GestionLivraisonsController implements Initializable {
                             stmtInclure.executeUpdate();
                         }
 
-                        // 4. Mettre à jour le stock du médicament
+                       
                         String updateStock = "UPDATE medicament SET nbrBoite = nbrBoite - ? WHERE idMed = ?";
                         try (PreparedStatement stmtStock = conn.prepareStatement(updateStock)) {
                             stmtStock.setInt(1, quantite);
@@ -416,13 +383,13 @@ public class GestionLivraisonsController implements Initializable {
                             stmtStock.executeUpdate();
                         }
 
-                        // Tout s'est bien passé, valider la transaction
+                       
                         conn.commit();
                         chargerLivraisons();
                         showAlert(Alert.AlertType.INFORMATION, "Succès", "Livraison ajoutée avec succès !");
 
                     } catch (SQLException e) {
-                        // En cas d'erreur, annuler la transaction
+                       
                         if (conn != null) {
                             try {
                                 conn.rollback();
@@ -433,7 +400,6 @@ public class GestionLivraisonsController implements Initializable {
                         showAlert(Alert.AlertType.ERROR, "Erreur DB", "Erreur lors de l'ajout : " + e.getMessage());
                         e.printStackTrace();
                     } finally {
-                        // Restaurer l'autocommit et fermer la connexion
                         if (conn != null) {
                             try {
                                 conn.setAutoCommit(true);
@@ -451,9 +417,7 @@ public class GestionLivraisonsController implements Initializable {
         });
     }
 
-    /**
-     * Valide les champs d'une livraison
-     */
+    
     private boolean validateLivraison(int codeClt, LocalDate dateLiv, String statut, String type_liv) {
         if (codeClt <= 0) {
             showAlert(Alert.AlertType.ERROR, "Client invalide", "Veuillez sélectionner un client valide.");
@@ -478,56 +442,49 @@ public class GestionLivraisonsController implements Initializable {
         return true;
     }
 
-    /**
-     * Affiche les cartes livraisons dans la grille
-     * Crée dynamiquement les cartes pour chaque livraison filtrée
-     */
+   
     private void afficherLivraisons() {
-        // Vider la grille avant de la remplir
+       
         livraisonsGrid.getChildren().clear();
 
-        // Calculer le nombre de colonnes (3 colonnes par ligne)
+        
         int colonnes = 3;
 
-        // Créer une carte pour chaque livraison filtrée
+       
         for (int i = 0; i < livraisonsFiltres.size(); i++) {
             Livraison livraison = livraisonsFiltres.get(i);
 
-            // Calculer la position dans la grille
+            
             int colonne = i % colonnes;
             int ligne = i / colonnes;
 
-            // Créer et ajouter la carte livraison
+            
             VBox carteLivraison = creerCarteLivraison(livraison);
             livraisonsGrid.add(carteLivraison, colonne, ligne);
         }
     }
 
-    /**
-     * Crée une carte visuelle pour une livraison
-     * @param livraison La livraison à afficher
-     * @return La carte VBox créée
-     */
+    
     private VBox creerCarteLivraison(Livraison livraison) {
-        // Conteneur principal de la carte
+       
         VBox carte = new VBox(15);
         carte.getStyleClass().add("livraison-card");
         carte.setPadding(new Insets(25));
         carte.setPrefWidth(320);
         carte.setPrefHeight(280);
         
-        // En-tête de la carte : Numéro livraison et boutons d'action
+        
         HBox enTete = new HBox();
         enTete.setAlignment(Pos.CENTER_LEFT);
         enTete.setSpacing(10);
         HBox.setHgrow(enTete, Priority.ALWAYS);
         
-        // Numéro livraison (ex: L0001)
+       
         Label numeroLabel = new Label("L" + String.format("%04d", livraison.getNumLiv()));
         numeroLabel.getStyleClass().add("livraison-numero");
         HBox.setHgrow(numeroLabel, Priority.ALWAYS);
         
-        // Bouton QR code
+        
         Button btnQR = new Button();
         btnQR.getStyleClass().add("btn-icon");
         ImageView iconQR = new ImageView(new Image("/assets/qr.png"));
@@ -537,7 +494,7 @@ public class GestionLivraisonsController implements Initializable {
         btnQR.setGraphic(iconQR);
         btnQR.setOnAction(e -> voirQRCode(livraison));
         
-        // Bouton modifier (icône crayon)
+        
         Button btnModifier = new Button();
         btnModifier.getStyleClass().add("btn-icon");
         ImageView iconModifier = new ImageView(new Image("/assets/bouton-modifier.png"));
@@ -547,7 +504,7 @@ public class GestionLivraisonsController implements Initializable {
         btnModifier.setGraphic(iconModifier);
         btnModifier.setOnAction(e -> modifierLivraison(livraison));
         
-        // Bouton supprimer (icône poubelle)
+       
         Button btnSupprimer = new Button();
         btnSupprimer.getStyleClass().add("btn-icon");
         ImageView iconSupprimer = new ImageView(new Image("/assets/supprimer.png"));
@@ -559,14 +516,14 @@ public class GestionLivraisonsController implements Initializable {
         
         enTete.getChildren().addAll(numeroLabel, btnQR, btnModifier, btnSupprimer);
         
-        // Nom du client
+       
         Label clientLabel = new Label(livraison.getClient());
         clientLabel.getStyleClass().add("livraison-client");
         
-        // Informations de la livraison
+       
         VBox infosLivraison = new VBox(10);
         
-        // Date avec icône calendrier
+        
         HBox dateBox = new HBox(8);
         dateBox.setAlignment(Pos.CENTER_LEFT);
         ImageView iconCalendrier = new ImageView(new Image("/assets/calendrier.png"));
@@ -578,7 +535,7 @@ public class GestionLivraisonsController implements Initializable {
         dateLabel.getStyleClass().add("livraison-info");
         dateBox.getChildren().addAll(iconCalendrier, dateLabel);
         
-        // Nombre de médicaments avec icône pilule
+        
         HBox medicamentsBox = new HBox(8);
         medicamentsBox.setAlignment(Pos.CENTER_LEFT);
         ImageView iconPilule = new ImageView(new Image("/assets/pilule.png"));
@@ -591,19 +548,19 @@ public class GestionLivraisonsController implements Initializable {
         medicamentsLabel.getStyleClass().add("livraison-info");
         medicamentsBox.getChildren().addAll(iconPilule, medicamentsLabel);
         
-        // Taxe
+       
         Label taxeLabel = new Label("Taxe : " + livraison.getTaxe() + " DA");
         taxeLabel.getStyleClass().add("livraison-taxe");
 
         infosLivraison.getChildren().addAll(dateBox, medicamentsBox, taxeLabel);
 
-        // Coût total
+       
         Label coutLabel = new Label("Coût total : " + livraison.getCout() + " DA");
         coutLabel.getStyleClass().add("livraison-taxe");
         infosLivraison.getChildren().add(coutLabel);
 
 
-        // Tags de statut en bas de la carte
+       
         HBox tagsBox = new HBox(8);
         tagsBox.setAlignment(Pos.CENTER_LEFT);
         tagsBox.setSpacing(8);
@@ -613,20 +570,20 @@ public class GestionLivraisonsController implements Initializable {
         tagStatut.getStyleClass().add("tag-statut-" + normaliserClasseCSS(livraison.getStatut()));
         tagsBox.getChildren().add(tagStatut);
         
-        // Tag type (sous chaine du froid, etc.)
+       
         Label tagType = new Label(livraison.getType());
         tagType.getStyleClass().add("tag");
         tagType.getStyleClass().add("tag-type");
         tagsBox.getChildren().add(tagType);
         
-        // Tag urgent si applicable
+       
         if (livraison.isUrgent()) {
             HBox tagUrgentBox = new HBox(4);
             tagUrgentBox.setAlignment(Pos.CENTER);
             tagUrgentBox.getStyleClass().add("tag");
             tagUrgentBox.getStyleClass().add("tag-urgent");
             
-            // Triangle d'alerte (utiliser un Label avec caractère Unicode ▲)
+           
             Label triangle = new Label("▲");
             triangle.setStyle("-fx-text-fill: #E53935; -fx-font-size: 10px;");
             Label urgentLabel = new Label("urgent");
@@ -636,16 +593,13 @@ public class GestionLivraisonsController implements Initializable {
             tagsBox.getChildren().add(tagUrgentBox);
         }
         
-        // Assembler tous les éléments dans la carte
+       
         carte.getChildren().addAll(enTete, clientLabel, infosLivraison, tagsBox);
         
         return carte;
     }
 
-    /**
-     * Action pour voir le QR code d'une livraison
-     * @param livraison La livraison dont on veut voir le QR code
-     */
+   
     private void voirQRCode(Livraison livraison) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/views/AfficherQRCode.fxml"));
@@ -668,10 +622,7 @@ public class GestionLivraisonsController implements Initializable {
         }
     }
 
-    /**
-     * Action pour modifier une livraison
-     * @param livraison La livraison à modifier
-     */
+   
     private void modifierLivraison(Livraison livraison) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/views/AjouterLivraison.fxml"));
@@ -692,7 +643,7 @@ public class GestionLivraisonsController implements Initializable {
             if (controller.isConfirme()) {
                 Livraison modif = controller.getNouvelleLivraison();
 
-                // Validation
+               
                 int codeClt = modif.getCodeClt();
                 LocalDate dateLiv = modif.getDate();
                 String priorite = modif.isUrgent() ? "urgent" : "normal";
@@ -701,7 +652,7 @@ public class GestionLivraisonsController implements Initializable {
                 float taxe = modif.getTaxe();
                 float cout = modif.getCout();
 
-                // NOUVEAU : Récupérer les nouvelles valeurs
+               
                 int medicamentId = modif.getMedicamentId();
                 int nouvelleQuantite = modif.getQuantite();
                 int ancienneQuantite = livraison.getQuantite();
@@ -709,7 +660,7 @@ public class GestionLivraisonsController implements Initializable {
 
                 if (!validateLivraison(codeClt, dateLiv, statut, type_liv)) return;
 
-                // NOUVEAU : Validation de la quantité
+                
                 if (nouvelleQuantite <= 0) {
                     showAlert(Alert.AlertType.ERROR, "Erreur", "La quantité doit être positive.");
                     return;
@@ -718,11 +669,10 @@ public class GestionLivraisonsController implements Initializable {
                 Connection conn = null;
                 try {
                     conn = DatabaseConnection.getConnection();
-                    conn.setAutoCommit(false); // Transaction
+                    conn.setAutoCommit(false); 
 
-                    // 1. Vérifier le stock pour le nouveau médicament (si changement)
+                   
                     if (medicamentId != ancienMedicamentId) {
-                        // Vérifier le stock du nouveau médicament
                         String checkNewStock = "SELECT nbrBoite FROM medicament WHERE idMed = ?";
                         try (PreparedStatement checkStmt = conn.prepareStatement(checkNewStock)) {
                             checkStmt.setInt(1, medicamentId);
@@ -744,7 +694,7 @@ public class GestionLivraisonsController implements Initializable {
                             }
                         }
 
-                        // 2. Rembourser l'ancien médicament (remettre la quantité dans le stock)
+                       
                         if (ancienMedicamentId > 0) {
                             String refundOldStock = "UPDATE medicament SET nbrBoite = nbrBoite + ? WHERE idMed = ?";
                             try (PreparedStatement refundStmt = conn.prepareStatement(refundOldStock)) {
@@ -754,7 +704,7 @@ public class GestionLivraisonsController implements Initializable {
                             }
                         }
 
-                        // 3. Déduire du nouveau médicament
+                       
                         String deductNewStock = "UPDATE medicament SET nbrBoite = nbrBoite - ? WHERE idMed = ?";
                         try (PreparedStatement deductStmt = conn.prepareStatement(deductNewStock)) {
                             deductStmt.setInt(1, nouvelleQuantite);
@@ -762,7 +712,7 @@ public class GestionLivraisonsController implements Initializable {
                             deductStmt.executeUpdate();
                         }
 
-                        // 4. Mettre à jour la table inclure
+                       
                         String updateInclure = "UPDATE inclure SET idMed = ?, quantite = ? WHERE numLiv = ?";
                         try (PreparedStatement stmtInclure = conn.prepareStatement(updateInclure)) {
                             stmtInclure.setInt(1, medicamentId);
@@ -772,11 +722,11 @@ public class GestionLivraisonsController implements Initializable {
                         }
 
                     } else {
-                        // Même médicament, ajustement de quantité
+                        
                         int difference = nouvelleQuantite - ancienneQuantite;
 
                         if (difference > 0) {
-                            // Vérifier si on peut augmenter la quantité
+                            
                             String checkStock = "SELECT nbrBoite FROM medicament WHERE idMed = ?";
                             try (PreparedStatement checkStmt = conn.prepareStatement(checkStock)) {
                                 checkStmt.setInt(1, medicamentId);
@@ -795,7 +745,7 @@ public class GestionLivraisonsController implements Initializable {
                             }
                         }
 
-                        // Mettre à jour le stock
+                       
                         String updateStock = "UPDATE medicament SET nbrBoite = nbrBoite - ? WHERE idMed = ?";
                         try (PreparedStatement stmtStock = conn.prepareStatement(updateStock)) {
                             stmtStock.setInt(1, difference);
@@ -803,7 +753,7 @@ public class GestionLivraisonsController implements Initializable {
                             stmtStock.executeUpdate();
                         }
 
-                        // Mettre à jour la quantité dans inclure
+                       
                         String updateInclure = "UPDATE inclure SET quantite = ? WHERE numLiv = ? AND idMed = ?";
                         try (PreparedStatement stmtInclure = conn.prepareStatement(updateInclure)) {
                             stmtInclure.setInt(1, nouvelleQuantite);
@@ -813,7 +763,7 @@ public class GestionLivraisonsController implements Initializable {
                         }
                     }
 
-                    // 5. Mettre à jour la livraison
+                   
                     String updateLivraison = "UPDATE livraison SET codeClt=?, dateLiv=?, priorite=?, statut=?, type_liv=?, taxe=?, cout=? WHERE numLiv=?";
                     try (PreparedStatement stmt = conn.prepareStatement(updateLivraison)) {
                         stmt.setInt(1, codeClt);
@@ -827,8 +777,8 @@ public class GestionLivraisonsController implements Initializable {
                         stmt.executeUpdate();
                     }
 
-                    conn.commit(); // Valider la transaction
-                    chargerLivraisons(); // Recharger pour avoir les bonnes infos
+                    conn.commit(); 
+                    chargerLivraisons(); 
                     showAlert(Alert.AlertType.INFORMATION, "Succès", "Livraison modifiée avec succès !");
 
                 } catch (SQLException e) {
@@ -859,10 +809,7 @@ public class GestionLivraisonsController implements Initializable {
         }
     }
 
-    /**
-     * Action pour supprimer une livraison
-     * @param livraison La livraison à supprimer
-     */
+    
     private void supprimerLivraison(GestionLivraisonsController.Livraison livraison) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/views/ConfirmerSuppression.fxml"));
@@ -881,7 +828,6 @@ public class GestionLivraisonsController implements Initializable {
             dialogStage.showAndWait();
 
             if (controller.isConfirmation()) {
-                // Supprimer d'abord les entrées dans inclure (clé étrangère)
                 String deleteInclure = "DELETE FROM inclure WHERE numLiv=?";
                 String deleteLivraison = "DELETE FROM livraison WHERE numLiv=?";
                 try (Connection conn = DatabaseConnection.getConnection();
@@ -891,7 +837,7 @@ public class GestionLivraisonsController implements Initializable {
                     stmt1.executeUpdate();
                     stmt2.setInt(1, livraison.getNumLiv());
                     stmt2.executeUpdate();
-                    chargerLivraisons(); // Recharger
+                    chargerLivraisons(); 
                     showAlert(Alert.AlertType.INFORMATION, "Succès", "Livraison supprimée avec succès !");
                 }
             }
@@ -910,9 +856,7 @@ public class GestionLivraisonsController implements Initializable {
         alert.showAndWait();
     }
 
-    /**
-     * Classe interne représentant une livraison
-     */
+   
     public static class Livraison {
         private int numLiv;
         private int codeClt;
@@ -946,7 +890,7 @@ public class GestionLivraisonsController implements Initializable {
             this.quantite = quantite;
         }
 
-        // Getters
+       
         public int getNumLiv() { return numLiv; }
         public int getCodeClt() { return codeClt; }
         public String getClient() { return client; }
@@ -961,10 +905,7 @@ public class GestionLivraisonsController implements Initializable {
         public int getMedicamentId() { return medicamentId; }
         public void setMedicamentId(int medicamentId) { this.medicamentId = medicamentId; }
 
-        /**
-         * Retourne la date formatée (dd/MM/yyyy)
-         * @return La date formatée
-         */
+        
         public String getDateFormatee() {
             if (date == null) return "";
             return String.format("%02d/%02d/%04d", 
@@ -973,7 +914,7 @@ public class GestionLivraisonsController implements Initializable {
                 date.getYear());
         }
 
-        // Setters
+       
         public void setNumLiv(int numLiv) { this.numLiv = numLiv; }
         public void setCodeClt(int codeClt) { this.codeClt = codeClt; }
         public void setClient(String client) { this.client = client; }
@@ -992,9 +933,9 @@ public class GestionLivraisonsController implements Initializable {
 
     private String normaliserClasseCSS(String texte) {
         if (texte == null) return "";
-        // Supprime les accents et met en minuscules
+        
         String sansAccent = Normalizer.normalize(texte, Normalizer.Form.NFD)
-                .replaceAll("\\p{M}", ""); // Enlève les diacritiques
+                .replaceAll("\\p{M}", "");
         return sansAccent.toLowerCase().replace(" ", "-");
     }
 
