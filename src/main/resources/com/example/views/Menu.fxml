@@ -13,12 +13,12 @@
       alignment="TOP_CENTER"
       styleClass="side-menu">
 
-    <!-- Logo -->
+   
     <ImageView fitHeight="130" preserveRatio="true">
         <Image url="/assets/logo.png"/>
     </ImageView>
 
-    <!-- Boutons du menu -->
+   
     <VBox alignment="TOP_LEFT" spacing="10" style="-fx-padding: 20 0 0 30;">
         <Label text="MENU" styleClass="menu-title" />
 
