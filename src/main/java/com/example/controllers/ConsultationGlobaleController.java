@@ -39,7 +39,7 @@ public class ConsultationGlobaleController {
         chargerMedicamentsPlusLivres();
     }
 
-    // ---------------------- BARRES DE PROGRESSION ----------------------
+   
     private void chargerLivraisonsParType() {
         String query = "SELECT type_liv, COUNT(*) AS total FROM livraison GROUP BY type_liv";
         int cold = 0, frozen = 0, danger = 0;
@@ -85,7 +85,7 @@ public class ConsultationGlobaleController {
         }
     }
 
-    // ---------------------- STATISTIQUES ----------------------
+   
     private void chargerStatsClients() {
         String queryTotal = "SELECT COUNT(*) FROM client";
         String queryNouveaux = "SELECT COUNT(*) FROM client WHERE MONTH(dateCreation) = MONTH(CURRENT_DATE())";
@@ -132,7 +132,7 @@ public class ConsultationGlobaleController {
         }
     }
 
-    // ---------------------- CLIENTS LES PLUS ACTIFS ----------------------
+   
     private void chargerClientsActifs() {
         String query = """
                 SELECT CONCAT('C', LPAD(C.codeClt, 3, '0')) AS codeClt,
@@ -160,14 +160,14 @@ public class ConsultationGlobaleController {
                 HBox ligne = new HBox(15);
                 ligne.getStyleClass().add("client-item");
 
-                // Badge du rang
+               
                 StackPane badge = new StackPane();
                 badge.getStyleClass().add("rank-badge");
                 Label lblRank = new Label(String.valueOf(rank));
                 lblRank.getStyleClass().add("rank-number");
                 badge.getChildren().add(lblRank);
 
-                // Infos client
+                
                 VBox textBox = new VBox(3);
                 Label lblCode = new Label(code);
                 lblCode.getStyleClass().add("client-code");
@@ -176,7 +176,7 @@ public class ConsultationGlobaleController {
                 textBox.getChildren().addAll(lblCode, lblNom);
                 HBox.setHgrow(textBox, Priority.ALWAYS);
 
-                // Total livraisons
+                
                 Label lblTotal = new Label(total + " livraison(s)");
                 lblTotal.getStyleClass().add("client-value");
 
@@ -191,7 +191,7 @@ public class ConsultationGlobaleController {
         }
     }
 
-    // ---------------------- MÉDICAMENTS LES PLUS LIVRÉS ----------------------
+   
     private void chargerMedicamentsPlusLivres() {
         String query = """
         SELECT CONCAT('M', LPAD(M.idMed, 3, '0')) AS idMed, M.nomMed, DATE_FORMAT(M.datePer, '%d/%m/%Y') AS peremption, COUNT(*) AS total
@@ -208,7 +208,7 @@ public class ConsultationGlobaleController {
 
             medicationsContainer.getChildren().clear();
 
-            // Titre
+           
             Label sectionTitle = new Label("Médicaments les plus livrés");
             sectionTitle.getStyleClass().add("section-title");
             medicationsContainer.getChildren().add(sectionTitle);
@@ -232,7 +232,7 @@ public class ConsultationGlobaleController {
                 VBox card = new VBox(5);
                 card.getStyleClass().add("medication-card");
 
-                // Badge rang
+                
                 HBox topRow = new HBox();
                 topRow.setAlignment(javafx.geometry.Pos.TOP_RIGHT);
                 Region spacer = new Region();
@@ -244,7 +244,7 @@ public class ConsultationGlobaleController {
                 badge.getChildren().add(lblRank);
                 topRow.getChildren().addAll(spacer, badge);
 
-                // Infos médicament
+               
                 Label lblId = new Label(idMed);
                 lblId.getStyleClass().add("medication-code");
                 Label lblNom = new Label(nomMed);
@@ -263,7 +263,7 @@ public class ConsultationGlobaleController {
                 index++;
             }
 
-            // Séparateur vertical
+            
             Region separator = new Region();
             separator.getStyleClass().add("vertical-separator");
 
