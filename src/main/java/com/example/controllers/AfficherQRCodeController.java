@@ -38,14 +38,11 @@ public class AfficherQRCodeController {
         btnFermer.setOnAction(e -> fermer());
     }
 
-    /**
-     * Initialise la fenêtre avec les données de la livraison
-     * @param livraison La livraison à afficher
-     */
+   
     public void setLivraison(GestionLivraisonsController.Livraison livraison) {
         this.livraison = livraison;
         
-        // Afficher les informations de la livraison
+        
         numeroLabel.setText(String.valueOf(livraison.getNumLiv()));
         clientLabel.setText(livraison.getClient());
         dateLabel.setText(livraison.getDateFormatee());
@@ -55,13 +52,11 @@ public class AfficherQRCodeController {
         taxeLabel.setText(livraison.getTaxe() + " DA");
         coutLabel.setText(livraison.getCout() + " DA");
         
-        // Générer et afficher le QR code
+        
         genererQRCode();
     }
 
-    /**
-     * Génère un QR code contenant les informations de la livraison
-     */
+   
     private void genererQRCode() {
         try {
             String qrText = String.format(
@@ -74,17 +69,17 @@ public class AfficherQRCodeController {
                 livraison.getType()
             );
 
-            // Configuration du QR code
+            
             Map<EncodeHintType, Object> hints = new HashMap<>();
             hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H);
             hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
             hints.put(EncodeHintType.MARGIN, 1);
 
-            // Générer le QR code
+           
             QRCodeWriter qrCodeWriter = new QRCodeWriter();
             BitMatrix bitMatrix = qrCodeWriter.encode(qrText, BarcodeFormat.QR_CODE, 200, 200, hints);
 
-            // Convertir BitMatrix en Image JavaFX
+            
             int width = bitMatrix.getWidth();
             int height = bitMatrix.getHeight();
             WritableImage writableImage = new WritableImage(width, height);
@@ -93,14 +88,14 @@ public class AfficherQRCodeController {
             for (int y = 0; y < height; y++) {
                 for (int x = 0; x < width; x++) {
                     if (bitMatrix.get(x, y)) {
-                        pixelWriter.setArgb(x, y, 0xFF000000); // Noir
+                        pixelWriter.setArgb(x, y, 0xFF000000); 
                     } else {
-                        pixelWriter.setArgb(x, y, 0xFFFFFFFF); // Blanc
+                        pixelWriter.setArgb(x, y, 0xFFFFFFFF); 
                     }
                 }
             }
 
-            // Afficher l'image
+            
             qrCodeImageView.setImage(writableImage);
 
         } catch (WriterException e) {
