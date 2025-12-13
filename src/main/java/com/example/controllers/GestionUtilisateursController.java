@@ -26,9 +26,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.regex.Pattern;
 
-/**
- * Contrôleur pour l'interface de gestion des utilisateurs
- */
+
 public class GestionUtilisateursController implements Initializable {
 
     @FXML private TextField searchField;
@@ -38,7 +36,7 @@ public class GestionUtilisateursController implements Initializable {
     private List<Utilisateur> utilisateurs = new ArrayList<>();
     private List<Utilisateur> utilisateursFiltres = new ArrayList<>();
 
-    // Regex pour validation nom/prenom/email
+   
     private static final Pattern NAME_PATTERN = Pattern.compile("^[A-Za-zÀ-ÖØ-öø-ÿ]+(?:[-' ][A-Za-zÀ-ÖØ-öø-ÿ]+)*$");
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
 
@@ -57,9 +55,7 @@ public class GestionUtilisateursController implements Initializable {
 
     }
 
-    /**
-     * Charge les utilisateurs depuis la DB (rôle = 'personnel')
-     */
+   
     private void chargerUtilisateurs() {
         utilisateurs.clear();
         String query = "SELECT idUser, nom, prenom, mail FROM utilisateur WHERE role = 'personnel'";
@@ -85,9 +81,7 @@ public class GestionUtilisateursController implements Initializable {
         afficherUtilisateurs();
     }
 
-    /**
-     * Configuration de la recherche
-     */
+    
     private void configurerRecherche() {
         searchField.textProperty().addListener((obs, oldVal, newVal) -> filtrerUtilisateurs(newVal));
     }
@@ -106,9 +100,7 @@ public class GestionUtilisateursController implements Initializable {
         afficherUtilisateurs();
     }
 
-    /**
-     * Configuration du bouton Ajouter
-     */
+    
     private void configurerBoutonAjouter() {
         btnAjouterUtilisateur.setOnAction(event -> {
             try {
@@ -128,7 +120,7 @@ public class GestionUtilisateursController implements Initializable {
                 if (controller.isConfirme()) {
                     Utilisateur nouvel = controller.getNouvelUtilisateur();
 
-                    // Validation et ajout dans DB
+                    
                     String mail = nouvel.getMail().trim().toLowerCase();
                     String nom = nouvel.getNom().trim();
                     String prenom = nouvel.getPrenom().trim();
@@ -169,33 +161,15 @@ public class GestionUtilisateursController implements Initializable {
         });
     }
 
-    /**
-     * Valide les champs d'un utilisateur (nom, prénom, mail, mot de passe).
-     * Cette version est utilisée pour l'ajout (modeModification = false).
-     *
-     * @param nom Nom
-     * @param prenom Prénom
-     * @param mail Email
-     * @param mdp Mot de passe
-     * @return true si valide, false sinon
-     */
+    
     private boolean validateUtilisateur(String nom, String prenom, String mail, String mdp) {
-        // Par défaut, false = ajout (nouvel utilisateur)
+       
         return validateUtilisateur(nom, prenom, mail, mdp, false);
     }
 
-    /**
-     * Valide les champs d'un utilisateur (nom, prénom, mail, mot de passe).
-     *
-     * @param nom Nom
-     * @param prenom Prénom
-     * @param mail Email
-     * @param mdp Mot de passe (peut être vide en modification)
-     * @param modeModification true si on modifie un utilisateur
-     * @return true si valide, false sinon
-     */
+    
     private boolean validateUtilisateur(String nom, String prenom, String mail, String mdp, boolean modeModification) {
-        // Vérification des champs obligatoires
+       
         if (nom == null || nom.isEmpty() ||
                 prenom == null || prenom.isEmpty() ||
                 mail == null || mail.isEmpty()) {
@@ -203,7 +177,7 @@ public class GestionUtilisateursController implements Initializable {
             return false;
         }
 
-        // Vérification nom/prénom avec regex
+       
         if (!NAME_PATTERN.matcher(nom).matches()) {
             showAlert(Alert.AlertType.ERROR, "Nom invalide", "Le nom ne doit contenir que des lettres.");
             return false;
@@ -213,33 +187,31 @@ public class GestionUtilisateursController implements Initializable {
             return false;
         }
 
-        // Vérification email
+        
         if (!EMAIL_PATTERN.matcher(mail).matches()) {
             showAlert(Alert.AlertType.ERROR, "Email invalide", "Veuillez entrer une adresse e-mail valide.");
             return false;
         }
 
-        // Vérification mot de passe
+        
         if (!modeModification) {
-            // Ajout : mot de passe obligatoire
+            
             if (mdp == null || mdp.length() < 10) {
                 showAlert(Alert.AlertType.ERROR, "Mot de passe trop court", "Le mot de passe doit contenir au minimum 10 caractères.");
                 return false;
             }
         } else {
-            // Modification : mot de passe facultatif mais s'il est saisi, minimum 10 caractères
+           
             if (mdp != null && !mdp.isEmpty() && mdp.length() < 10) {
                 showAlert(Alert.AlertType.ERROR, "Mot de passe trop court", "Le mot de passe doit contenir au minimum 10 caractères.");
                 return false;
             }
         }
 
-        return true; // Tout est valide
+        return true;
     }
 
-    /**
-     * Affiche les utilisateurs dans la grille
-     */
+    
     private void afficherUtilisateurs() {
         utilisateursGrid.getChildren().clear();
         int colonnes = 3;
@@ -286,13 +258,13 @@ public class GestionUtilisateursController implements Initializable {
 
     private void modifierUtilisateur(Utilisateur u) {
         try {
-            // Charger le FXML du formulaire
+           
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/views/AjouterUtilisateur.fxml"));
             Parent root = loader.load();
             AjouterUtilisateurController controller = loader.getController();
             controller.preparerModification(u);
 
-            // Créer la fenêtre modale
+            
             Stage dialog = new Stage();
             dialog.initModality(Modality.APPLICATION_MODAL);
             dialog.setTitle("Modifier un utilisateur");
@@ -301,15 +273,15 @@ public class GestionUtilisateursController implements Initializable {
             dialog.setScene(scene);
             dialog.showAndWait();
 
-            // Si l'utilisateur confirme la modification
+            
             if (controller.isConfirme()) {
                 Utilisateur modif = controller.getNouvelUtilisateur();
 
-                // Validation des champs (mot de passe facultatif)
+               
                 if (!validateUtilisateur(modif.getNom(), modif.getPrenom(), modif.getMail(),
-                        modif.getMotDePasse(), true)) return; // true = modeModification
+                        modif.getMotDePasse(), true)) return;
 
-                // Préparer la requête SQL
+                
                 String update;
                 boolean changerMotDePasse = modif.getMotDePasse() != null && !modif.getMotDePasse().isEmpty();
                 if (changerMotDePasse) {
@@ -335,7 +307,7 @@ public class GestionUtilisateursController implements Initializable {
 
                     stmt.executeUpdate();
 
-                    // Mise à jour locale
+                   
                     u.setNom(modif.getNom());
                     u.setPrenom(modif.getPrenom());
                     u.setMail(modif.getMail());
@@ -395,9 +367,7 @@ public class GestionUtilisateursController implements Initializable {
         alert.showAndWait();
     }
 
-    /**
-     * Classe Utilisateur
-     */
+   
     public static class Utilisateur {
         private int idUser;
         private String nom;
