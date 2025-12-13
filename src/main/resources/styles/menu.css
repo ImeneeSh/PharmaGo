@@ -1,26 +1,24 @@
-/* --- STYLE DU MENU LATÉRAL --- */
-/* Panneau du menu avec fond gris, coins arrondis et ombre portée pour la séparation visuelle */
 .side-menu {
-    -fx-background-color: #F5F5F5; /* Fond gris pour le panneau du menu */
-    -fx-background-radius: 20px; /* Coins arrondis */
+    -fx-background-color: #F5F5F5; 
+    -fx-background-radius: 20px;
     -fx-padding: 40 0 0 0;
     -fx-alignment: TOP_CENTER;
     -fx-min-width: 250px;
-    -fx-pref-width: 250px; /* Largeur augmentée pour afficher les noms complets */
-    -fx-max-width: 250px; /* Largeur augmentée pour afficher les noms complets */
-    -fx-min-height: -1; /* Permet au menu de prendre toute la hauteur disponible */
+    -fx-pref-width: 250px; 
+    -fx-max-width: 250px;
+    -fx-min-height: -1;
     -fx-font-family: "Open Sans";
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 5); /* Ombre portée pour créer l'effet de profondeur et la séparation */
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 5);
 }
 
-/* --- TITRE DU MENU --- */
+
 .menu-title {
     -fx-text-fill: #6E8268;
     -fx-font-size: 13px;
     -fx-font-weight: bold;
 }
 
-/* --- BOUTONS DU MENU --- */
+
 .menu-item, .menu-item-active {
     -fx-font-size: 15px;
     -fx-text-fill: #001910;
@@ -41,12 +39,12 @@
     -fx-line-spacing: 2px;
 }
 
-/* --- EFFET AU SURVOL --- */
+
 .menu-item:hover {
     -fx-background-color: rgba(0, 85, 29, 0.08);
 }
 
-/* --- ÉLÉMENT ACTIF --- */
+
 .menu-item-active {
     -fx-background-color: transparent;
     -fx-text-fill: #001910;
@@ -55,7 +53,7 @@
     -fx-border-radius: 0;
 }
 
-/* Icône colorée quand actif */
+
 .menu-item-active .icon {
     -fx-opacity: 1.0;
 }
