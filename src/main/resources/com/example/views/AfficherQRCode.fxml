@@ -11,18 +11,18 @@
 
     <VBox alignment="CENTER" spacing="25" styleClass="dialog-box">
 
-        <!-- Titre -->
+       
         <Label text="QR Code de la livraison" styleClass="dialog-title" />
 
-        <!-- Contenu principal : QR code et informations -->
+       
         <HBox spacing="30" alignment="CENTER">
-            <!-- QR Code -->
+           
             <VBox spacing="10" alignment="CENTER">
                 <ImageView fx:id="qrCodeImageView" fitWidth="200" fitHeight="200" preserveRatio="true" />
                 <Label text="Scannez le QR code" styleClass="qr-label" />
             </VBox>
 
-            <!-- Informations de la livraison -->
+           
             <VBox spacing="15" alignment="CENTER_LEFT" prefWidth="300">
                 <Label text="Informations de la livraison" styleClass="info-title" />
                 
@@ -59,7 +59,7 @@
             </VBox>
         </HBox>
 
-        <!-- Bouton -->
+       
         <HBox alignment="CENTER" spacing="25">
             <Button fx:id="btnFermer" text="Fermer" styleClass="btn-annuler"/>
         </HBox>
