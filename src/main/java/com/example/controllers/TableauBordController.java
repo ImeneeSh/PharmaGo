@@ -35,7 +35,6 @@ public class TableauBordController implements Initializable {
         chargerMedicamentsSurveiller();
     }
 
-    // ---------------------- STATS CLIENTS ----------------------
 
     private void chargerStatsClients() {
         String queryTotal = "SELECT COUNT(*) FROM client";
@@ -55,7 +54,6 @@ public class TableauBordController implements Initializable {
         }
     }
 
-    // ---------------------- STATS MÉDICAMENTS ----------------------
 
     private void chargerStatsMedicaments() {
         String queryTotal = "SELECT COUNT(*) FROM medicament";
@@ -71,7 +69,6 @@ public class TableauBordController implements Initializable {
         }
     }
 
-    // ---------------------- STATS LIVRAISONS ----------------------
 
     private void chargerStatsLivraisons() {
         String queryTotal = "SELECT COUNT(*) FROM livraison";
@@ -91,7 +88,6 @@ public class TableauBordController implements Initializable {
         }
     }
 
-    // ---------------------- LIVRAISONS RÉCENTES ----------------------
     private void chargerLivraisonsRecentes() {
         String query = """
         SELECT CONCAT('L', LPAD(L.numLiv, 3, '0')) AS numLiv, C.nom, C.prenom, L.statut
@@ -138,7 +134,6 @@ public class TableauBordController implements Initializable {
         }
     }
 
-    // Méthode utilitaire pour retourner la classe CSS selon le statut
     private String getStyleClassForStatut(String statut) {
         return switch (statut) {
             case "livrée" -> "status-delivered";
@@ -149,7 +144,6 @@ public class TableauBordController implements Initializable {
         };
     }
 
-    // ---------------------- MÉDICAMENTS À SURVEILLER ----------------------
     private void chargerMedicamentsSurveiller() {
         String query = """
         SELECT M.nomMed, L.dateLiv
