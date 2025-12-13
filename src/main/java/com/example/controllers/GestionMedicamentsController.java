@@ -29,32 +29,26 @@ import java.util.ResourceBundle;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-/**
- * Contrôleur pour l'interface de gestion des médicaments
- * Gère l'affichage, la recherche et les actions sur les médicaments
- */
+
 public class GestionMedicamentsController implements Initializable {
 
-    // Composants de l'interface FXML
-    @FXML
-    private TextField searchField; // Champ de recherche
     
     @FXML
-    private Button btnAjouterMedicament; // Bouton pour ajouter un médicament
+    private TextField searchField;
     
     @FXML
-    private GridPane medicamentsGrid; // Grille pour afficher les cartes médicaments
+    private Button btnAjouterMedicament; 
+    
+    @FXML
+    private GridPane medicamentsGrid; 
 
-    // Liste des médicaments
+   
     private List<Medicament> medicaments = new ArrayList<>();
     
-    // Liste filtrée des médicaments selon la recherche
+    
     private List<Medicament> medicamentsFiltres = new ArrayList<>();
 
-    /**
-     * Initialisation du contrôleur
-     * Charge les données et configure les événements
-     */
+    
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         chargerMedicaments();
@@ -69,9 +63,7 @@ public class GestionMedicamentsController implements Initializable {
         });
     }
 
-    /**
-     * Charge les médicaments depuis la base de données
-     */
+   
     private void chargerMedicaments() {
         medicaments.clear();
         String query = "SELECT idMed, nomMed, datePer, nbrBoite, prixMed FROM medicament ORDER BY idMed";
@@ -98,21 +90,15 @@ public class GestionMedicamentsController implements Initializable {
         afficherMedicaments();
     }
 
-    /**
-     * Configure la fonctionnalité de recherche en temps réel
-     * Filtre les médicaments selon le texte saisi dans le champ de recherche
-     */
+    
     private void configurerRecherche() {
-        // Écoute des changements dans le champ de recherche
+        
         searchField.textProperty().addListener((observable, oldValue, newValue) -> {
             filtrerMedicaments(newValue);
         });
     }
 
-    /**
-     * Filtre la liste des médicaments selon le critère de recherche
-     * @param critere Le texte de recherche (nom ou identifiant)
-     */
+    
     private void filtrerMedicaments(String critere) {
         if (critere == null || critere.trim().isEmpty()) {
             medicamentsFiltres = new ArrayList<>(medicaments);
@@ -128,10 +114,7 @@ public class GestionMedicamentsController implements Initializable {
         afficherMedicaments();
     }
 
-    /**
-     * Configure le bouton d'ajout de médicament
-     * Définit l'action à exécuter lors du clic
-     */
+   
     private void configurerBoutonAjouter() {
         btnAjouterMedicament.setOnAction(event -> {
             try {
@@ -151,7 +134,7 @@ public class GestionMedicamentsController implements Initializable {
                 if (controller.isConfirme()) {
                     Medicament nouveau = controller.getNouveauMedicament();
 
-                    // Validation
+                   
                     String nomMed = nouveau.getNom().trim();
                     LocalDate datePer = nouveau.getDatePeremption();
                     int nbrBoite = nouveau.getQuantité();
@@ -159,7 +142,7 @@ public class GestionMedicamentsController implements Initializable {
 
                     if (!validateMedicament(nomMed, datePer, nbrBoite, prixMed)) return;
 
-                    // Insertion dans la BDD
+                   
                     String insert = "INSERT INTO medicament (nomMed, datePer, nbrBoite, prixMed) VALUES (?, ?, ?, ?)";
                     try (Connection conn = DatabaseConnection.getConnection();
                          PreparedStatement stmt = conn.prepareStatement(insert, PreparedStatement.RETURN_GENERATED_KEYS)) {
@@ -190,9 +173,7 @@ public class GestionMedicamentsController implements Initializable {
         });
     }
 
-    /**
-     * Valide les champs d'un médicament
-     */
+    
     private boolean validateMedicament(String nomMed, LocalDate datePer, int nbrBoite, int prixMed) {
         if (nomMed == null || nomMed.isEmpty()) {
             showAlert(Alert.AlertType.ERROR, "Champs manquants", "Veuillez remplir le nom du médicament.");
@@ -217,36 +198,28 @@ public class GestionMedicamentsController implements Initializable {
         return true;
     }
 
-    /**
-     * Affiche les cartes médicaments dans la grille
-     * Crée dynamiquement les cartes pour chaque médicament filtré
-     */
+   
     private void afficherMedicaments() {
-        // Vider la grille avant de la remplir
+       
         medicamentsGrid.getChildren().clear();
         
-        // Calculer le nombre de colonnes (3 colonnes par ligne)
         int colonnes = 3;
         
-        // Créer une carte pour chaque médicament filtré
+        
         for (int i = 0; i < medicamentsFiltres.size(); i++) {
             Medicament medicament = medicamentsFiltres.get(i);
             
-            // Calculer la position dans la grille
+            
             int colonne = i % colonnes;
             int ligne = i / colonnes;
             
-            // Créer et ajouter la carte médicament
+           
             VBox carteMedicament = creerCarteMedicament(medicament);
             medicamentsGrid.add(carteMedicament, colonne, ligne);
         }
     }
 
-    /**
-     * Crée une carte visuelle pour un médicament
-     * @param medicament Le médicament à afficher
-     * @return La carte VBox créée
-     */
+   
     private VBox creerCarteMedicament(Medicament medicament) {
         VBox carte = new VBox(15);
         carte.setPadding(new Insets(25));
@@ -256,11 +229,11 @@ public class GestionMedicamentsController implements Initializable {
         boolean estPerime = medicament.estPerime();
         boolean ruptureStock = medicament.getQuantité() == 0;
 
-        // Styles de base
+       
         carte.getStyleClass().add("medicament-card");
         if (estPerime) carte.getStyleClass().add("medicament-card-expired");
 
-        // --- EN-TETE ---
+        
         HBox enTete = new HBox(10);
         enTete.setAlignment(Pos.CENTER_LEFT);
         Label codeLabel = new Label("M" + String.format("%03d", medicament.getIdMed()));
@@ -284,13 +257,12 @@ public class GestionMedicamentsController implements Initializable {
 
         enTete.getChildren().addAll(codeLabel, btnModifier, btnSupprimer);
 
-        // Nom
+       
         Label nomLabel = new Label(medicament.getNom());
         nomLabel.getStyleClass().add("medicament-nom");
 
-        // Informations
+       
         VBox infos = new VBox(10);
-        // Date de péremption
         HBox dateBox = new HBox(8);
         dateBox.setAlignment(Pos.CENTER_LEFT);
         ImageView iconCalendrier = new ImageView(new Image("/assets/calendrier.png"));
@@ -305,7 +277,7 @@ public class GestionMedicamentsController implements Initializable {
         dateLabels.getChildren().addAll(dateLabel, dateValue);
         dateBox.getChildren().addAll(iconCalendrier, dateLabels);
 
-        // Quantité
+       
         HBox qteBox = new HBox(8);
         qteBox.setAlignment(Pos.CENTER_LEFT);
         ImageView iconPilule = new ImageView(new Image("/assets/pilule.png"));
@@ -316,16 +288,14 @@ public class GestionMedicamentsController implements Initializable {
         qteLabel.getStyleClass().add("livraison-info");
         qteBox.getChildren().addAll(iconPilule, qteLabel);
 
-        // Prix
+        
         Label prixLabel = new Label("Prix : " + medicament.getPrix() + " DA");
         prixLabel.getStyleClass().add("livraison-taxe");
 
         infos.getChildren().addAll(dateBox, qteBox, prixLabel);
 
-        // --- AJOUTER TOUJOURS EN-TETE, NOM ET INFOS ---
         carte.getChildren().addAll(enTete, nomLabel, infos);
 
-        // --- ALERTES ---
         if (estPerime) {
             VBox perimeBox = creerAlerte(
                     "Périmé",
@@ -354,9 +324,7 @@ public class GestionMedicamentsController implements Initializable {
     }
 
 
-    /**
-     * 🔹 Crée une section d'alerte (périmé ou rupture)
-     */
+   
     private VBox creerAlerte(String titre, String sousTitre, String iconePath,
                              String styleBox, String styleTitre, String styleSousTitre) {
         HBox section = new HBox(8);
@@ -384,10 +352,7 @@ public class GestionMedicamentsController implements Initializable {
     }
 
 
-    /**
-     * Action pour modifier un médicament
-     * @param medicament Le médicament à modifier
-     */
+   
     private void modifierMedicament(Medicament medicament) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/views/AjouterMedicament.fxml"));
@@ -416,7 +381,6 @@ public class GestionMedicamentsController implements Initializable {
 
                 if (!validateMedicament(nomMed, datePer, nbrBoite, prixMed)) return;
 
-                // Mise à jour dans la BDD
                 String update = "UPDATE medicament SET nomMed=?, datePer=?, nbrBoite=?, prixMed=? WHERE idMed=?";
                 try (Connection conn = DatabaseConnection.getConnection();
                      PreparedStatement stmt = conn.prepareStatement(update)) {
@@ -429,7 +393,6 @@ public class GestionMedicamentsController implements Initializable {
 
                     stmt.executeUpdate();
 
-                    // Mise à jour locale
                     medicament.setNom(nomMed);
                     medicament.setDatePeremption(datePer);
                     medicament.setQuantité(nbrBoite);
@@ -446,10 +409,7 @@ public class GestionMedicamentsController implements Initializable {
         }
     }
 
-    /**
-     * Action pour supprimer un médicament
-     * @param medicament Le médicament à supprimer
-     */
+   
     private void supprimerMedicament(Medicament medicament) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/views/ConfirmerSuppression.fxml"));
@@ -493,9 +453,7 @@ public class GestionMedicamentsController implements Initializable {
         alert.showAndWait();
     }
 
-    /**
-     * Classe interne représentant un médicament
-     */
+   
     public static class Medicament {
         private int idMed;
         private String nom;
@@ -511,25 +469,19 @@ public class GestionMedicamentsController implements Initializable {
             this.prix = prix ;
         }
 
-        // Getters
+       
         public int getIdMed() { return idMed; }
         public String getNom() { return nom; }
         public LocalDate getDatePeremption() { return datePeremption; }
         public int getQuantité() {return quantité ;}
         public float getPrix() { return prix;}
 
-        /**
-         * Vérifie si le médicament est périmé
-         * @return true si la date de péremption est passée
-         */
+       
         public boolean estPerime() {
             return LocalDate.now().isAfter(datePeremption);
         }
 
-        /**
-         * Retourne la date de péremption formatée (dd/MM/yyyy)
-         * @return La date formatée
-         */
+        
         public String getDatePeremptionFormatee() {
             return String.format("%02d/%02d/%04d", 
                 datePeremption.getDayOfMonth(),
@@ -537,10 +489,7 @@ public class GestionMedicamentsController implements Initializable {
                 datePeremption.getYear());
         }
 
-        /**
-         * Calcule le nombre de jours depuis l'expiration
-         * @return Le nombre de jours depuis l'expiration (0 si non expiré)
-         */
+        
         public long getJoursDepuisExpiration() {
             if (estPerime()) {
                 return ChronoUnit.DAYS.between(datePeremption, LocalDate.now());
@@ -548,7 +497,7 @@ public class GestionMedicamentsController implements Initializable {
             return 0;
         }
 
-        // Setters
+        
         public void setIdMed(int idMed) { this.idMed = idMed; }
         public void setNom(String nom) { this.nom = nom; }
         public void setDatePeremption(LocalDate datePeremption) { this.datePeremption = datePeremption; }
