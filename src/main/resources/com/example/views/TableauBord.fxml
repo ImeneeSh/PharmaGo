@@ -11,29 +11,26 @@
             styleClass="root-dashboard">
 
 
-    <!-- MENU VERTICAL FIXE -->
     <left>
         <fx:include source="Menu.fxml" />
     </left>
 
-    <!-- CONTENU CENTRAL DÉFILABLE -->
-    <!-- HBox pour créer l'espacement entre le menu et le contenu -->
+   
     <center>
         <HBox spacing="0">
-            <!-- Region invisible pour créer l'espacement de 3mm (≈12px) entre le menu et le contenu -->
             <Region prefWidth="12" />
             <ScrollPane fitToWidth="true" fitToHeight="true" hbarPolicy="NEVER" style="-fx-background-color:transparent;" HBox.hgrow="ALWAYS">
                 <VBox alignment="TOP_CENTER" spacing="40" styleClass="dashboard-content" VBox.vgrow="ALWAYS">
 
-                <!-- Titre principal -->
+               
                 <VBox style="-fx-padding: 30 50 0 50;">
                     <Label text="Tableau de bord" styleClass="dashboard-title" />
                     <Label text="Bienvenue sur PharmaGo - Vue d'ensemble de votre activité" styleClass="dashboard-subtitle" />
                 </VBox>
 
-                <!-- Cartes principales -->
+               
                 <GridPane hgap="50" vgap="50" style="-fx-padding: 0 80 0 80;">
-                <!-- Carte Clients -->
+               
                     <VBox styleClass="card" GridPane.columnIndex="0" GridPane.rowIndex="0">
                         <HBox alignment="TOP_RIGHT">
                             <ImageView fitWidth="24" fitHeight="24" preserveRatio="true">
@@ -45,7 +42,7 @@
                         <Label fx:id="lblNouveauxClients" text="+2 clients ce mois-ci" styleClass="card-subtext"/>
                     </VBox>
 
-                    <!-- Carte Médicaments -->
+                   
                     <VBox styleClass="card" GridPane.columnIndex="1" GridPane.rowIndex="0">
                         <HBox alignment="TOP_RIGHT">
                             <ImageView fitWidth="24" fitHeight="24" preserveRatio="true">
@@ -57,7 +54,7 @@
                         <Label fx:id="lblNouveauxMedicaments" text="+5 médicaments ce mois-ci" styleClass="card-subtext"/>
                     </VBox>
 
-                    <!-- Carte Livraisons -->
+                  
                     <VBox styleClass="card" GridPane.columnIndex="0" GridPane.rowIndex="1">
                         <HBox alignment="TOP_RIGHT">
                             <ImageView fitWidth="24" fitHeight="24" preserveRatio="true">
@@ -69,7 +66,7 @@
                         <Label fx:id="lblNouvellesLivraisons" text="+2 livraisons ce mois-ci" styleClass="card-subtext"/>
                     </VBox>
 
-                    <!-- Carte Livraisons en attente -->
+                    
                     <VBox styleClass="card" GridPane.columnIndex="1" GridPane.rowIndex="1">
                         <HBox alignment="TOP_RIGHT">
                             <ImageView fitWidth="24" fitHeight="24" preserveRatio="true">
@@ -81,7 +78,7 @@
                     </VBox>
                 </GridPane>
 
-                <!-- Section Livraisons récentes -->
+              
                 <VBox style="-fx-padding: 0 50 0 50;">
                     <Label text="Livraisons récentes" styleClass="section-title"/>
                     <VBox fx:id="boxLivraisonsRecentes" spacing="10">
@@ -112,7 +109,7 @@
                 </VBox>
 
 
-                <!-- Section Médicaments à surveiller -->
+                
                 <VBox id="med-section" style="-fx-padding: 0 50 50 50;">
                     <Label text="Médicaments à surveiller" styleClass="section-title"/>
                     <VBox fx:id="boxMedicamentsSurveiller" spacing="10">
