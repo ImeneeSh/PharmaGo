@@ -1,4 +1,4 @@
-// ce fichier est responsable des actions / animations
+
 
 package com.example.controllers;
 
@@ -30,7 +30,7 @@ public class AccueilController implements Initializable {
     @FXML
     private GridPane gridPane;
 
-    @FXML // pour le défilement vertical
+    @FXML
     private ScrollPane scrollPane;
 
     @FXML
@@ -41,7 +41,7 @@ public class AccueilController implements Initializable {
 
     private boolean animationPlayed = false;
 
-    // action sur le bouton commencer
+    
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
@@ -51,10 +51,10 @@ public class AccueilController implements Initializable {
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/views/Authentification.fxml"));
                     Parent root = loader.load();
 
-                    // On récupère le stage courant
+                   
                     Stage stage = (Stage) boutonCommencer.getScene().getWindow();
 
-                    // Nouvelle scène avec CSS
+                    
                     Scene scene = new Scene(root);
                     scene.getStylesheets().add(getClass().getResource("/styles/Authentification.css").toExternalForm());
 
@@ -87,7 +87,7 @@ public class AccueilController implements Initializable {
         }
     }
 
-    //scroll lorsque je clique sur l'un des liens de la barre de navigation
+   
     private void scrollTo(Node section) {
         if (section == null || scrollPane == null || scrollPane.getContent() == null) return;
 
@@ -126,7 +126,6 @@ public class AccueilController implements Initializable {
         }
     }
 
-    // Pour les animations des cartes
     private void animateCard(Node node, int delay) {
         FadeTransition fade = new FadeTransition(Duration.millis(600), node);
         fade.setFromValue(0);
