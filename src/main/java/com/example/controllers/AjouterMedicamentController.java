@@ -12,7 +12,7 @@ import javafx.util.StringConverter;
 public class AjouterMedicamentController {
 
     @FXML private TextField nomField;
-    @FXML private DatePicker datePerField; // ✔ DatePicker
+    @FXML private DatePicker datePerField; 
 
     @FXML private TextField quantiteField;
     @FXML private TextField prixField;
@@ -29,7 +29,7 @@ public class AjouterMedicamentController {
     @FXML
     public void initialize() {
 
-        // ✔ Convertisseur format dd-MM-yyyy
+       
         datePerField.setConverter(new StringConverter<LocalDate>() {
             @Override
             public String toString(LocalDate date) {
@@ -47,36 +47,32 @@ public class AjouterMedicamentController {
             }
         });
 
-        // ❌ SUPPRESSION de la contrainte empêchant les dates passées
-        // (ne rien mettre ici pour DayCellFactory)
-
+        
         btnAnnuler.setOnAction(e -> fermer(false));
         btnConfirmer.setOnAction(e -> valider());
     }
 
 
-    /**
-     * Mode modification
-     */
+   
     public void preparerModification(GestionMedicamentsController.Medicament medicament) {
         this.medicamentAModifier = medicament;
         this.modeModification = true;
 
         nomField.setText(medicament.getNom());
-        datePerField.setValue(medicament.getDatePeremption()); // ✔ on met directement LocalDate
+        datePerField.setValue(medicament.getDatePeremption()); 
         quantiteField.setText(String.valueOf(medicament.getQuantité()));
         prixField.setText(String.valueOf((int) medicament.getPrix()));
     }
 
     private void valider() {
         try {
-            // Récupération des champs
+           
             String nom = nomField.getText().trim();
             String qteStr = quantiteField.getText().trim();
             String prixStr = prixField.getText().trim();
-            LocalDate datePer = datePerField.getValue(); // ✔ pas de texte !
+            LocalDate datePer = datePerField.getValue();
 
-            // --- VALIDATIONS ---
+           
 
             if (nom.isEmpty() || qteStr.isEmpty() || prixStr.isEmpty() || datePer == null) {
                 showAlert(Alert.AlertType.ERROR, "Champs manquants", "Veuillez remplir tous les champs.");
@@ -103,7 +99,6 @@ public class AjouterMedicamentController {
                 return;
             }
 
-            // --- AJOUT OU MODIFICATION ---
 
             if (modeModification && medicamentAModifier != null) {
                 medicamentAModifier.setNom(nom);
