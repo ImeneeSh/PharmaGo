@@ -41,17 +41,16 @@ public class InscriptionController {
 
     @FXML
     public void initialize() {
-        // Charger le logo (vérifie que le chemin est correct)
         try {
             logoImage.setImage(new Image(getClass().getResourceAsStream("/assets/logo.png")));
         } catch (Exception e) {
             System.out.println("Logo non trouvé: " + e.getMessage());
         }
 
-        // Action bouton inscription
+       
         btnInscrire.setOnAction(event -> sInscrire());
 
-        // Action lien connexion
+       
         linkConnexion.setOnAction(event -> ouvrirConnexion());
     }
 
@@ -62,7 +61,7 @@ public class InscriptionController {
         String password = passwordField.getText() != null ? passwordField.getText() : "";
         String confirmPassword = confirmPasswordField.getText() != null ? confirmPasswordField.getText() : "";
 
-        // Vérifications basiques
+       
         if(nom.isEmpty() || prenom.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
             showAlert(Alert.AlertType.ERROR, "Champs manquants", "Veuillez remplir tous les champs.");
             return;
@@ -93,11 +92,10 @@ public class InscriptionController {
             return;
         }
 
-        // Hachage du mot de passe avec BCrypt
+       
         String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt(12));
 
-        // Insertion dans la DB
-        // Remplace 'utilisateur' par le nom exact de ta table si différent
+       
         String insertSql = "INSERT INTO utilisateur (nom, prenom, mail, mdp) VALUES (?, ?, ?, ?)";
 
         try (Connection conn = DatabaseConnection.getConnection()) {
@@ -115,9 +113,9 @@ public class InscriptionController {
 
                 int affected = pstmt.executeUpdate();
                 if (affected > 0) {
-                    // Succès : afficher message puis rediriger vers tableau de bord
+                    
                     showAlert(Alert.AlertType.INFORMATION, "Inscription réussie", "Votre compte a été créé avec succès !");
-                    ouvrirTableauBord(); // redirection
+                    ouvrirTableauBord(); 
                 } else {
                     showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible de créer le compte. Veuillez réessayer.");
                 }
