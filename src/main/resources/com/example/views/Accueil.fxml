@@ -1,23 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- ce fichier décrit l’interface graphique principale de la page d’accueil -->
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
 
-<!-- CONTENEUR PRINCIPALE-->
 <ScrollPane fx:id="scrollPane" fitToWidth="true" fitToHeight="true" hbarPolicy="NEVER" vbarPolicy="NEVER"
             styleClass="scroll-pane"
             xmlns="http://javafx.com/javafx/21"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.example.controllers.AccueilController">
 
-    <!-- les VBOX empilent les éléments verticalement les uns sous les autres -->
     <VBox alignment="TOP_CENTER" styleClass="section-accueil">
 
-        <!-- BARRE DE NAVIGATION-->
+       
         <HBox styleClass="nav-bar" alignment="CENTER_RIGHT" spacing="50">
             <Hyperlink text="Fonctionnalités" fx:id="linkFonctionnalites" styleClass="nav-item" />
             <Hyperlink text="A propos" fx:id="linkApropos" styleClass="nav-item" />
@@ -28,7 +25,7 @@
             </ImageView>
         </HBox>
 
-        <!-- permet de super poser plusieurs éléments comme ici on a mis l'image sous le texte ext..-->
+       
         <StackPane prefHeight="550" maxWidth="Infinity" style="-fx-background-color: transparent;">
             <VBox alignment="CENTER_LEFT" spacing="20" style="-fx-padding: 100 0 0 120px;">
                 <Label text="Simplifiez vos" style="-fx-font-size: 52px; -fx-font-weight: bold; -fx-text-fill: #001910;" />
@@ -45,7 +42,7 @@
         </StackPane>
 
 
-        <!-- SECTION FONCTIONNALITES-->
+       
         <VBox  fx:id="sectionFonctionnalites" alignment="TOP_CENTER" spacing="50" style="-fx-padding: 190px 0 50px 0;" maxWidth="900">
         <Text text="Fonctionnalités principales" styleClass="titre-section" />
 
@@ -85,7 +82,7 @@
             </GridPane>
         </VBox>
 
-        <!-- SECTION À PROPOS -->
+        
         <VBox fx:id="sectionApropos" alignment="TOP_CENTER" spacing="20" styleClass="section-apropos">
             <Text text="À propos de PharmaGo" styleClass="titre-section" />
             <Text wrappingWidth="800" textAlignment="CENTER" styleClass="texte-apropos">
@@ -96,7 +93,7 @@
             </Text>
         </VBox>
 
-        <!-- SECTION AIDE -->
+       
         <VBox fx:id="sectionAide" alignment="TOP_CENTER" spacing="30" styleClass="section-aide">
             <Text text="Besoin d'aide ?" styleClass="titre-section" />
             <Text wrappingWidth="800" textAlignment="CENTER" styleClass="texte-apropos">
@@ -108,7 +105,7 @@
             </HBox>
         </VBox>
 
-        <!-- SECTION FOOTER-->
+        
         <HBox alignment="CENTER" styleClass="footer">
             <Label text="© 2025 PharmaGo. Tous droits réservés." style="-fx-text-fill: -color-principal;" />
         </HBox>
