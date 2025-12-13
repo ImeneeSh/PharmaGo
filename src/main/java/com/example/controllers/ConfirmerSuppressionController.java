@@ -9,35 +9,35 @@ import javafx.stage.Stage;
 
 public class ConfirmerSuppressionController {
 
-    // 🔹 Titres et labels communs
+   
     @FXML private Label titreLabel;
     @FXML private Label codeLabel;
     @FXML private Label nomLabel;
 
-    // 🔹 Partie client
+   
     @FXML private Label adresseLabel;
     @FXML private Label telephoneLabel;
     @FXML private VBox blocClient;
 
-    // 🔹 Partie médicament
+    
     @FXML private Label quantite;
     @FXML private Label prix;
     @FXML private VBox blocMedicament;
 
-    // Partie livraison
+   
     @FXML private Label quantiteLivraison;
     @FXML private Label taxe;
     @FXML private Label coutTotal;
     @FXML private VBox blocLivraison;
 
-    // Partie utilisateur
+   
     @FXML private VBox blocUtilisateur;
 
-    // 🔹 Boutons
+    
     @FXML private Button btnAnnuler;
     @FXML private Button btnConfirmer;
 
-    // 🔹 Résultat de la confirmation
+    
     private boolean confirmation = false;
 
     @FXML
@@ -48,16 +48,14 @@ public class ConfirmerSuppressionController {
             showSuccessAlert();
         });
 
-        // Par défaut : cacher tous les blocs spécifiques
+       
         if (blocClient != null) blocClient.setVisible(false);
         if (blocMedicament != null) blocMedicament.setVisible(false);
         if (blocLivraison != null) blocLivraison.setVisible(false);
         if (blocUtilisateur != null) blocUtilisateur.setVisible(false);
     }
 
-    // ============================================================
-    // 🧩 Cas Client
-    // ============================================================
+    
     public void setClient(GestionClientsController.Client client) {
         titreLabel.setText("Supprimer ce client ?");
         codeLabel.setText("Code : C" + String.format("%03d", client.getCodeClt()));
@@ -71,9 +69,7 @@ public class ConfirmerSuppressionController {
         blocUtilisateur.setVisible(false);
     }
 
-    // ============================================================
-    // 💊 Cas Médicament
-    // ============================================================
+    
     public void setMedicament(GestionMedicamentsController.Medicament medicament) {
         titreLabel.setText("Supprimer ce médicament ?");
         codeLabel.setText("Code : M" + String.format("%03d", medicament.getIdMed()));
@@ -87,9 +83,7 @@ public class ConfirmerSuppressionController {
         blocUtilisateur.setVisible(false);
     }
 
-    // ============================================================
-    // Cas Livraison
-    // ============================================================
+    
     public void setLivraison(GestionLivraisonsController.Livraison livraison) {
         titreLabel.setText("Supprimer cette livraison ?");
         codeLabel.setText("Code : L" + String.format("%04d", livraison.getNumLiv()));
@@ -104,9 +98,7 @@ public class ConfirmerSuppressionController {
         blocUtilisateur.setVisible(false);
     }
 
-    // ============================================================
-    // Cas Utilisateur
-    // ============================================================
+    
     public void setUtilisateur(GestionUtilisateursController.Utilisateur utilisateur) {
         titreLabel.setText("Supprimer cet utilisateur ?");
         codeLabel.setText("Code : U" + String.format("%03d", utilisateur.getIdUser()));
@@ -118,9 +110,7 @@ public class ConfirmerSuppressionController {
         blocUtilisateur.setVisible(true);
     }
 
-    // ============================================================
-    // ⚙️ Gestion fermeture
-    // ============================================================
+   
     private void fermer(boolean confirme) {
         this.confirmation = confirme;
         Stage stage = (Stage) btnAnnuler.getScene().getWindow();
@@ -131,9 +121,7 @@ public class ConfirmerSuppressionController {
         return confirmation;
     }
 
-    /**
-     * Affiche une alerte de succès après suppression
-     */
+   
     private void showSuccessAlert() {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Suppression réussie");
