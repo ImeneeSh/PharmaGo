@@ -5,31 +5,29 @@
 }
 
 .gestion-utilisateurs-content {
-    -fx-background-color: #F5F5F5; /* Fond gris pour le panneau de contenu */
-    -fx-background-radius: 20; /* Coins arrondis de 20px pour le panneau */
+    -fx-background-color: #F5F5F5; 
+    -fx-background-radius: 20; 
     -fx-padding: 40 0 60 0;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 5); /* Ombre portée pour créer l'effet de profondeur */
-    -fx-min-height: -1; /* Permet au contenu de prendre toute la hauteur disponible */
-    -fx-clip-shape: null; /* Permet aux coins arrondis d'être visibles même dans le ScrollPane */
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 5); 
+    -fx-min-height: -1; 
+    -fx-clip-shape: null;
 }
 
-/* === TITRES === */
-/* Titre principal "Gestion des clients" en vert foncé */
+
 .gestion-title {
     -fx-font-size: 32px;
     -fx-font-weight: bold;
-    -fx-text-fill: #001910; /* Vert foncé */
+    -fx-text-fill: #001910; 
 }
 
-/* Sous-titre en vert clair */
+
 .gestion-subtitle {
-    -fx-text-fill: #6E8268; /* Vert clair */
+    -fx-text-fill: #6E8268;
     -fx-font-size: 15px;
     -fx-font-weight: 600;
 }
 
-/* === BARRE DE RECHERCHE === */
-/* Conteneur de la barre de recherche */
+
 .search-container {
     -fx-background-color: #FFFFFF;
     -fx-background-radius: 10px;
@@ -39,7 +37,7 @@
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 4, 0, 0, 2);
 }
 
-/* Champ de texte de recherche */
+
 .search-field {
     -fx-background-color: transparent;
     -fx-border-color: transparent;
@@ -51,7 +49,7 @@
     -fx-border-color: transparent;
 }
 
-/* === BOUTON AJOUTER CLIENT === */
+
 .btn-ajouter-utilisateur {
     -fx-background-color: #6A7560;
     -fx-text-fill: #FFFFFF;
@@ -66,7 +64,7 @@
 }
 
 .btn-ajouter-utilisateur:hover {
-    -fx-background-color: #004014; /* Vert plus foncé au survol */
+    -fx-background-color: #004014; 
     -fx-effect: dropshadow(gaussian, rgba(0,85,29,0.4), 8, 0, 0, 4);
 }
 
@@ -74,8 +72,7 @@
     -fx-background-color: #003010;
 }
 
-/* === CARTE CLIENT === */
-/* Conteneur principal de chaque carte client */
+
 .utilisateur-card {
     -fx-background-color: #FFFFFF;
     -fx-background-radius: 15px;
@@ -84,36 +81,33 @@
     -fx-cursor: hand;
 }
 
-/* Effet au survol de la carte */
+
 .utilisateur-card:hover {
     -fx-effect: dropshadow(gaussian, rgba(0,85,29,0.2), 10, 0, 0, 5);
     -fx-translate-y: -3;
 }
 
-/* === ÉLÉMENTS DE LA CARTE CLIENT === */
-/* Code client (ex: C001) */
+
 .utilisateur-code {
     -fx-font-size: 18px;
     -fx-font-weight: bold;
-    -fx-text-fill: #001910; /* Vert foncé */
+    -fx-text-fill: #001910; 
 }
 
-/* Nom du client */
+
 .utilisateur-nom {
     -fx-font-size: 16px;
     -fx-font-weight: 600;
     -fx-text-fill: #333333;
 }
 
-/* Informations de contact (adresse, téléphone) */
 .utilisateur-info {
     -fx-font-size: 13px;
     -fx-text-fill: #666666;
     -fx-wrap-text: true;
 }
 
-/* === BOUTONS D'ACTION DANS LA CARTE === */
-/* Boutons icônes (modifier, supprimer) */
+
 .btn-icon {
     -fx-background-color: transparent;
     -fx-border-color: transparent;
@@ -131,12 +125,10 @@
     -fx-alignment: TOP_LEFT;
 }
 
-/* =========================================================================*/
 
-/* === DIALOG DE SUPPRESSION === */
 
 .dialog-background {
-    -fx-background-color: rgba(0, 0, 0, 0.35); /* Fond semi-transparent */
+    -fx-background-color: rgba(0, 0, 0, 0.35); 
     -fx-alignment: CENTER;
 }
 
@@ -171,7 +163,7 @@
     -fx-text-fill: #666666;
 }
 
-/* Boutons */
+
 .btn-annuler {
     -fx-background-color: #B0B0B0;
     -fx-text-fill: white;
@@ -196,10 +188,9 @@
     -fx-background-color: #C62828;
 }
 
-/*=================================================================*/
 
 .btn-ajouter {
-    -fx-background-color: #6E8268; /* Vert doux */
+    -fx-background-color: #6E8268; 
     -fx-text-fill: white;
     -fx-font-weight: bold;
     -fx-background-radius: 8;
